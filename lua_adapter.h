@@ -26,6 +26,10 @@ class LuaAdapter {
 		
 		int getInteger(const char*);		
 		std::string getString(const char*);
+		
+		bool openTable(const char*);		
+		int getIntegerField(const char*);
+		std::string getStringField(const char*);  
    
    
    		int callFunction(const char*, const unsigned char, int []);		

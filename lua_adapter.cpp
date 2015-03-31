@@ -58,6 +58,44 @@
 			}
 			return "";  
 		} 
+		
+		
+		bool LuaAdapter::openTable(const char *pVarName) {
+		 	if(!this->loaded)
+		 		return false;
+		 		
+		 	lua_getglobal(this->Lua, pVarName); 
+		 	
+		 	return ( lua_istable(this->Lua, -1) );
+		} 
+		
+		
+		int LuaAdapter::getIntegerField(const char *pFieldName) {
+		 	if(lua_istable(this->Lua, -1) == false)
+		 		return -1;		 	
+		 	lua_getfield(this->Lua, -1, pFieldName);
+		 	
+			if ( lua_isnumber(this->Lua, -1)) {		   
+				const int Result = {lua_tointeger(this->Lua, -1)};
+				lua_pop(this->Lua, 1);
+				return Result;
+			}
+			return -1;  
+		} 
+   		
+   		 
+   		std::string LuaAdapter::getStringField(const char *pFieldName) {
+		 	if(lua_istable(this->Lua, -1) == false)
+		 		return "";		 	
+		 	lua_getfield(this->Lua, -1, pFieldName);
+		 	
+			if ( lua_isstring(this->Lua, -1)) {		   
+				const std::string Result = {lua_tostring(this->Lua, -1)};
+				lua_pop(this->Lua, 1);
+				return Result;
+			}
+			return "";  
+		} 
    
    
    		int LuaAdapter::callFunction(const char *pFunctionName, const unsigned char argc, int args[]){
@@ -68,7 +106,7 @@
 	   		for(unsigned char i=0; i<argc; i++)
 	   			lua_pushnumber(this->Lua, args[i]);
 
-	   		if (lua_pcall(this->Lua, argc, 1, 0))
+	   		if (lua_pcall(this->Lua, argc, 1, 0) != LUA_OK)
 		  		return -1;
 
 			if ( lua_isnumber(this->Lua, -1)) {		   
