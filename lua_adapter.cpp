@@ -169,7 +169,7 @@ bool LuaAdapter::getField(const char *name, std::string &result) {
 
 bool LuaAdapter::getField(const char *name, int &result) {
 	if(this->getField(name)==false)            	 
-	r	eturn false;            
+	return false;            
 	if (lua_isnumber(this->Lua, -1) != 1) {
 		lua_pop(this->Lua, 1);	
 		return false;
@@ -267,9 +267,9 @@ bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, doub
 	return false;
 }
 
-result = lua_tonumber(this->Lua, -1);            
-lua_pop(this->Lua, 2);	
-return true;
+    result = lua_tonumber(this->Lua, -1);            
+    lua_pop(this->Lua, 2);	
+    return true;
 }
 
 
@@ -280,7 +280,7 @@ bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, floa
 	}            
 	if(this->getI(i)==false) {
 		lua_pop(this->Lua, 2);
-	r	eturn false;
+	return false;
 	}
 	
 	result = (float)lua_tonumber(this->Lua, -1);            
