@@ -2,9 +2,13 @@
 Use this lightweight wrapper- / adapter-class as an interface between Lua and C++.
 
 Usage:
-- see test.cpp
+   
+      int width {0};
+      lua.get("width", width);	
+» see *test.cpp* for more examples
 
-Compile: "g++ -std=c++0x lua_adapter.cpp test.cpp  -llua -ldl -Wall"
+Compile: 
+      g++ -std=c++0x lua_adapter.cpp test.cpp  -llua -ldl -Wall
 
 
 
