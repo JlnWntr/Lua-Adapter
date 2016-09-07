@@ -5,15 +5,15 @@ Usage:
    
       int width {0};
       lua.get("width", width);	
-» see *test.cpp* for more examples
+» see **test.cpp** for more examples
 
 Compile: 
+      
       g++ -std=c++0x lua_adapter.cpp test.cpp  -llua -ldl -Wall
 
 
 
 Requirements:
-- (newest) g++/gcc compiler
 - liblua5.2-dev
 - liblua5.2-0 (or later)
 
