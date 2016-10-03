@@ -35,6 +35,11 @@ bool LuaAdapter::load(const char* name){
 }
 
 
+bool LuaAdapter::load(const std::string name){
+    return this->load(name.c_str());
+}
+
+
 bool LuaAdapter::getField(const char* name){
     if((!this->Lua)
     || (!this->loaded)
