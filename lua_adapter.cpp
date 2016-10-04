@@ -97,7 +97,7 @@ bool LuaAdapter::get(const char *name, std::string &result) {
     if(this->getGlobal(name)==false)
         return false;
 
-    if ( lua_isstring(this->Lua, -1)==false) {
+    if(lua_type(this->Lua, -1) != LUA_TSTRING){
         lua_pop(this->Lua, 1);			
         return false;   						
     }
@@ -187,7 +187,7 @@ bool LuaAdapter::getField(const char *name, std::string &result) {
     if(this->getField(name)==false)            	 
         return false;		 		
 
-    if (lua_isstring(this->Lua, -1) != 1) {
+    if(lua_type(this->Lua, -1) != LUA_TSTRING) {
         lua_pop(this->Lua, 1);	
         return false;
     }
