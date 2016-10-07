@@ -1,6 +1,3 @@
---functionInLua(23, 24)
-
-
 number = 33.33
 
 title = "A Title"
@@ -15,11 +12,10 @@ matrix ={
 }
 
 
-
-
 -- 123 is a default-value for GlobalVar but CAN be changed from C/C++
 -- AFTER loading this lua-file and BEFORE calling init() (see test.cpp)
 if GlobalVar == nil then GlobalVar = 123 end
+
 
 Table1 = {ID = 1,   Val = GlobalVar}      -- Val = 123
 
@@ -43,4 +39,4 @@ function gcd(n, m)
     end
 end
 
-
+--functionInLua(23, 24)
