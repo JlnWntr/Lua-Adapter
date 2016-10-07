@@ -5,9 +5,19 @@
 
 int main (int argc, char *argv[]) {  	
     
-    LuaAdapter lua;
+    LuaAdapter lua("test.lua");
+    
+    //simply parameterize your application!
+    int height {0};
+    lua.get("height", height);	
+    std::cout << "height: " << height << "\n";
 
-    // Hint: You CAN change a default value of a global lua variable BEFORE loading the actual lua-file
+    // let's close ..
+    lua.close();
+    // and (re-)initialize for further tests..
+    lua.init();
+    
+    // Hint: You CAN change a (default) value of a global lua variable BEFORE loading the actual lua-file
     if(lua.set("GlobalVar", 321)==false){
         std::cout << "Could not set 'GlobalVar'!\n";
     }
@@ -16,7 +26,7 @@ int main (int argc, char *argv[]) {
     lua.load("test.lua");	
 
     
-    //get int
+    //get an int
     int width {0};
     lua.get("width", width);	
     std::cout << "width: " << width << "\n";
@@ -45,7 +55,7 @@ int main (int argc, char *argv[]) {
         lua.getField("Val", Val);	
         std::cout << "Val: " << Val << "\n";
 
-        lua.closeTable(); // close tables when you're done
+        lua.closeTable(); // close "Table1"
     }
 
     std::cout << "\n";
@@ -60,7 +70,7 @@ int main (int argc, char *argv[]) {
             }
             std::cout << "\n"; 
         }
-        lua.closeTable();
+        lua.closeTable(); // close table "matrix"
     }
     std::cout << "\n";
 
@@ -82,25 +92,21 @@ int main (int argc, char *argv[]) {
             lua.getField("B", B);	
             std::cout << "\t B: " << B << "\n";
 
-            lua.closeTable();
+            lua.closeTable(); // close nested table "Test"
         }
-        lua.closeTable();
+        lua.closeTable(); // close "Table2"
     }
 
     // Check lua's internal stack
     std::cout << "\n";
-    std::cout << "Lua stack top: " << lua.getTop() << "\n";
+    std::cout << "Lua stack top: " << lua.getTop() << "\n"; // should be 0
 
 
-    // calling a function from test.lua to compute stuff:
+    // calling a function from test.lua to compute stuff
     int test[] = {36, 24};
     int result {0};
     lua.callFunction("gcd", 2, test, result);
     std::cout << "gcd: " << result << "\n"; 	
-
-
-    std::cout << "\nLua stack top: " << lua.getTop() << "\n";
-    std::cout << "\n"; 		
 
     return 0;
 }
