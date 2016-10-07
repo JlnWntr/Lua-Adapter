@@ -21,13 +21,26 @@ class LuaAdapter {
 
     public:	
 
+        /**
+        * Default constructor
+        * Calls init()!        
+        */
         LuaAdapter();
+
+        /**
+        * This constructor inits lua and loads a .lua-file directly.
+        */
+        LuaAdapter(const std::string name);
+
+        /**
+        * Destructor        
+        */
         ~LuaAdapter();	
 
         /**
         * Initialize Lua and all its libs
         * Does NOT load any lua-sourcefile
-        * Set your default (local) vars after calling this function!         
+        * LuaAdapter calls this internally single-handed.        
         */
         void init(); 
 

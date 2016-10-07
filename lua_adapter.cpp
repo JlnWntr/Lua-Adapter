@@ -12,6 +12,17 @@ LuaAdapter::LuaAdapter()
 }		
 
 
+LuaAdapter::LuaAdapter(const std::string name)
+    :Lua{nullptr}
+    ,loaded{false}		
+    ,print{false}
+    ,outputPrefix{"Lua» "}
+{
+    this->init();
+    this->load(name);  			 							
+}
+
+
 void LuaAdapter::init(){
     if(this->Lua)
         return;
