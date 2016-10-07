@@ -140,6 +140,7 @@ bool LuaAdapter::openTable(const char *name) {
             std::cout << this->outputPrefix << "open table '" << name << "' \n";
         return true;
     }
+    this->pop();
     return false;
 }
 
@@ -148,23 +149,26 @@ bool LuaAdapter::openNestedTable(const char *name){
     if((!this->Lua) || (!this->loaded) ){		 		
         return false;
     }
+    if(this->print)
+            std::cout << "\t" << this->outputPrefix << "opening nested table '" << name << "' ... ";
 
-    if(lua_istable(this->Lua, -1) == false) {				
+    if(lua_istable(this->Lua, -1) == false) {       
         return false;
     }		
 
     lua_getfield(this->Lua, -1, name);
 
     if (lua_isnil(this->Lua, -1)) {
-        lua_pop(this->Lua, 1);
+        this->pop();
         return false;
     }
 
     if(lua_istable(this->Lua, -1)){
-    if(this->print)
-        std::cout << "\t" << this->outputPrefix << "open nested table '" << name << "' \n";
+        if(this->print)
+            std::cout << "ok! \n";
         return true;
     }
+    this->pop();
     return false;
 }
 
@@ -302,12 +306,11 @@ bool LuaAdapter::set(const char *name, const float value){
 
 
 bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, double &result){	
-    if(this->getI(j)==false) {
-        lua_pop(this->Lua, 1);
+    if(this->getI(j)==false) {        
         return false;
     }            
     if(this->getI(i)==false) {
-        lua_pop(this->Lua, 2);
+        lua_pop(this->Lua, 1);
         return false;
     }
     if(lua_isnumber(this->Lua, -1))
@@ -320,12 +323,11 @@ bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, doub
 
 
 bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, float &result){	
-    if(this->getI(j)==false) {
-        lua_pop(this->Lua, 1);
+    if(this->getI(j)==false) {        
         return false;
     }            
     if(this->getI(i)==false) {
-        lua_pop(this->Lua, 2);
+        lua_pop(this->Lua, 1);
         return false;
     }
     if(lua_isnumber(this->Lua, -1))
@@ -338,12 +340,11 @@ bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, floa
 
 
 bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, int &result){	
-    if(this->getI(j)==false) {
-        lua_pop(this->Lua, 1);
+    if(this->getI(j)==false) {       
         return false;
     }            
     if(this->getI(i)==false) {
-        lua_pop(this->Lua, 2);
+        lua_pop(this->Lua, 1);
         return false;
     }
     if(lua_isnumber(this->Lua, -1))

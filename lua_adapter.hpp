@@ -125,7 +125,7 @@ class LuaAdapter {
         void closeTable(){
             return this->pop(1);
         }
-
+        
         /**
         * Calls a lua-function
         * @param name of the function
