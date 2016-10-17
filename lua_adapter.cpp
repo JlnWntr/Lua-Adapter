@@ -33,16 +33,40 @@ void LuaAdapter::init(){
 
 bool LuaAdapter::load(const char* name){
     this->init();
+    
+    if ( (luaL_loadfile(this->Lua, name) == 0) && this->eval() ){
+        this->loaded = true;
+        return true;
+    }
+    std::cout << this->outputPrefix << "Error in Lua-file '";
+    std::cout << name << "': ";
+    std::cout << lua_tostring(this->Lua, -1);
+    std::cout << "\n";
+    
+    this->loaded=false;
+    return false;   
+}
 
-    if ( luaL_loadfile(this->Lua, name) || lua_pcall(this->Lua, 0, 0, 0) ){
-        std::cout << "Error in Lua-file '" << name << "': ";
-        std::cout << lua_tostring(this->Lua, -1);
-        std::cout << "\n";
-        this->loaded=false;
+
+ bool LuaAdapter::eval(){
+    if(this->print==false)           
+        return ((this->Lua) && (lua_pcall(this->Lua, 0, 0, 0)==0));
+
+    if(!this->Lua){
+        std::cout << this->outputPrefix << "Error: Lua-state invalid. Call init() first!\n";
         return false;
-    }	
-    this->loaded = true;
-    return true;
+    }
+    const short int pcall {lua_pcall(this->Lua, 0, 0, 0)};
+    if(pcall==0)
+        return true;    
+    std::cout << this->outputPrefix << "Error: pcall failed. Code: ";
+    std::cout << pcall;
+    std::cout << ", '" << lua_tostring(this->Lua, -1) << "'\n";     
+    /* LUA_ERRRUN: a runtime error. (2)
+     * LUA_ERRMEM: memory allocation error. (4)
+     * LUA_ERRERR: error while running the error handler function. (5)
+    */
+    return false;
 }
 
 
@@ -76,14 +100,15 @@ bool LuaAdapter::getI(unsigned short int i){
     return true;		
 }
 
+
 bool LuaAdapter::getGlobal(const char* name){
     if((!this->Lua)
-    || (!this->loaded)
+    //|| (!this->loaded)
     || (!name)
     )		 		
         return false;		 	
 
-    lua_getglobal(this->Lua, name); 
+    lua_getglobal(this->Lua, name); //void
     return true;		
 }
 

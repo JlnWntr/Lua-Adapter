@@ -42,7 +42,13 @@ class LuaAdapter {
         * Does NOT load any lua-sourcefile
         * LuaAdapter calls this internally single-handed.        
         */
-        void init(); 
+        void init();
+
+        /**
+        * Calls lua_pcall(Lua, 0, 0, 0)
+        * @return true on success, false on error 
+        */
+        bool eval();        
 
         /** 
         * Loads a *.lua-sourcefile         
