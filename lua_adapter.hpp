@@ -167,10 +167,17 @@ class LuaAdapter {
         bool flush();
 
         /**
-        * Set debug output
-        * @param mode if mode==true, lua-adapter will print out everything	         
+        * After calling debug(),
+        * lua-adapter will print out debug-information for each following function-call.
         */
-        void setLogMode(bool mode);  
+        void debug(){
+            this->setLogMode(true);
+        }
+        /**
+        * Set debug output on or off
+        * @param mode if mode==true, see debug()         
+        */
+        void setLogMode(bool mode);
 
         /**
         * Pops i entries from Lua's internal stack
