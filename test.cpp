@@ -111,7 +111,7 @@ int main (int argc, char *argv[]) {
     std::cout << "\n";
 
 
-    // Push a C/C++-function to our lua-stack...
+    // 'Declare' a C/C++-function for lua
     lua.pushFunction(testCFunction, "testFunction");
 
     // and call it!

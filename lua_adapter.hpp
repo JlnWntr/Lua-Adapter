@@ -166,6 +166,7 @@ class LuaAdapter {
 
         /**
         * Makes a C-/C++-function-call available for lua
+        * (it's called pushFunction(), but you're not 'incrementing' the stack)
         * @param function C-/C++-function       
         * @param functionName name of the function
         * @return true on success, false on error  
