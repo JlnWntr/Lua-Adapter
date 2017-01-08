@@ -2,8 +2,8 @@
     #include "lua_adapter.hpp"
 #endif
 
-LuaAdapter::LuaAdapter()
-    :Lua{nullptr}
+LuaAdapter::LuaAdapter(lua_State *const lua)
+    :Lua{lua}
     ,loaded{false}		
     ,print{false}
     ,outputPrefix{"Lua» "}
@@ -392,15 +392,15 @@ bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, int 
 }
 
 
-bool LuaAdapter::callFunction(const char *pFunctionName, const unsigned short int argc, int args[], int &result){
+bool LuaAdapter::callFunction(const char *functionName, const unsigned short int argc, int args[], int &result){
     if(!this->loaded) {				
         return false;
     }		
-    lua_getglobal(this->Lua, pFunctionName);
+    lua_getglobal(this->Lua, functionName);
 
     for(unsigned char i=0; i<argc; i++)
-    if(args + i)
-        lua_pushnumber(this->Lua, args[i]);
+        if(args + i)
+            lua_pushnumber(this->Lua, args[i]);
 
     if (
         (lua_pcall(this->Lua, argc, 1, 0) != LUA_OK)
@@ -415,9 +415,50 @@ bool LuaAdapter::callFunction(const char *pFunctionName, const unsigned short in
 }
 
 
-void LuaAdapter::pushFunction(Lua_callback_function pFunction, const char *pFunctionName) {			
-    lua_pushcfunction(this->Lua, pFunction); 
-    lua_setglobal(this->Lua, pFunctionName);  
+bool LuaAdapter::callFunction(const char *functionName, double &result){
+    if(!this->loaded) {				
+        return false;
+    }		
+    lua_getglobal(this->Lua, functionName);
+    
+    if (
+        (lua_pcall(this->Lua, 0, 1, 0) != LUA_OK)
+    ||	(lua_isnumber(this->Lua, -1) == false)
+    ){
+        lua_pop(this->Lua, 1);        
+        return false;
+    }	            
+    result = lua_tonumber(this->Lua, -1);
+    lua_pop(this->Lua, 1);
+    return false;
+}
+
+
+bool LuaAdapter::pushFunction(Lua_callback_function function, const char *functionName) {			
+    if(!this->Lua)				
+        return false;
+    
+    lua_pushcfunction(this->Lua, function); 
+    lua_setglobal(this->Lua, functionName);
+    return true;
+}
+
+
+bool LuaAdapter::push(double number){
+    if(!this->Lua)				
+        return false;
+    
+    lua_pushnumber(this->Lua, number);
+    return true;
+}
+
+
+bool LuaAdapter::push(const char * string){
+    if(!this->Lua)				
+        return false;
+    
+    lua_pushstring(this->Lua, string);
+    return true;
 }
 
 

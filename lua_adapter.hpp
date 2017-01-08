@@ -22,10 +22,11 @@ class LuaAdapter {
     public:	
 
         /**
-        * Default constructor
-        * Calls init()!        
+        * Default constructor        
+        * Hint: Calls init()!
+        * @param lua (re-)uses an existing lua_state. See example in test.cpp at testCFunction()
         */
-        LuaAdapter();
+        LuaAdapter(lua_State *const lua = nullptr);
 
         /**
         * This constructor inits lua and loads a .lua-file directly.
@@ -153,12 +154,35 @@ class LuaAdapter {
         * @param result returned value of the function
         * @return true on success, false on error       
         */
-        bool callFunction(const char* name, const unsigned short int argc, int args[], int &result);
+        bool callFunction(const char* functionName, const unsigned short int argc, int args[], int &result);
 
         /**
-        *   
+        * Calls a lua-function
+        * @param name of the function       
+        * @param result returned value of the function
+        * @return true on success, false on error       
         */
-        void pushFunction(Lua_callback_function, const char*) ;
+        bool callFunction(const char* functionName, double &result);
+
+        /**
+        * Makes a C-/C++-function-call available for lua
+        * @param function C-/C++-function       
+        * @param functionName name of the function
+        * @return true on success, false on error  
+        */
+        bool pushFunction(Lua_callback_function function, const char *functionName);
+
+        /**
+        * Push data on the lua-stack. (Mind the stack!)
+        * @param number number to push
+        * @param string string to push
+        * @return true on success, false on error       
+        */
+        bool push(double number);
+        bool push(const char * string);
+        bool push(std::string string){
+            return this->push(string.c_str());
+        }        
 
         /**
         * Resets Lua's internal stack
