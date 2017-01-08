@@ -1,6 +1,7 @@
 #ifndef LUA_H
 	#include "lua_adapter.hpp"
 #endif
+static int testCFunction(lua_State *L);
 
 
 int main (int argc, char *argv[]) {  	
@@ -106,7 +107,34 @@ int main (int argc, char *argv[]) {
     int test[] = {36, 24};
     int result {0};
     lua.callFunction("gcd", 2, test, result);
-    std::cout << "gcd: " << result << "\n"; 	
+    std::cout << "gcd: " << result << "\n";
+    std::cout << "\n";
 
+
+    // Push a C/C++-function to our lua-stack...
+    lua.pushFunction(testCFunction, "testFunction");
+
+    // and call it!
+    double result2 {0};   
+    lua.callFunction("testFunction", result2);
+    std::cout << "testing C-Function: " << result2 << "\n";
+
+
+    std::cout << "Lua stack top: " << lua.getTop() << "\n"; // 0
     return 0;
+}
+
+
+// This function can be called from Lua
+static int testCFunction(lua_State *L){
+    LuaAdapter lua {L};    
+    double number {0};
+    lua.get("number", number);
+
+    std::cout << "Number: "<< number << "\n";
+    std::cout << "Lua stack top: " << lua.getTop() << "\n"; // 1
+
+    number *=2;
+    lua.push(number);
+    return 1;    
 }
