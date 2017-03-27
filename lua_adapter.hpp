@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2015-2017 JlnWntr (jlnwntr@gmail.com)
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,30 +22,21 @@
 
 
 #ifndef LUA_ADAPTER_H
-	#define LUA_ADAPTER_H
-	
-	#include <iostream>
-	#include <lua.hpp>
-	#include <lauxlib.h>
-	#include <lualib.h>
+    #define LUA_ADAPTER_H
 
-	typedef int (*Lua_callback_function)(lua_State *L); 
+    #include <iostream>
+    #include <lua5.3/lua.hpp>
+    #include <lua5.3/lauxlib.h>
+    #include <lua5.3/lualib.h>
+
+    typedef int (*Lua_callback_function)(lua_State *L);
 
 class LuaAdapter {
-	
-    private:
-        lua_State *Lua;
-        bool loaded;
-        bool print;
-        const std::string outputPrefix;
-        bool getField(const char* name);
-        bool getI(unsigned short int i);
-        bool getGlobal(const char* name);               
 
-    public:	
+    public:
 
         /**
-        * Default constructor        
+        * Default constructor
         * Hint: Calls init()!
         * @param lua (re-)uses an existing lua_state. See example in test.cpp at testCFunction()
         */
@@ -53,59 +44,60 @@ class LuaAdapter {
 
         /**
         * This constructor inits lua and loads a .lua-file directly.
+        * @param filename .lua-file to load
         */
-        LuaAdapter(const std::string name);
+        LuaAdapter(const std::string filename);
 
         /**
-        * Destructor        
+        * Destructor
         */
-        ~LuaAdapter();	
+        ~LuaAdapter();
 
         /**
         * Initialize Lua and all its libs
         * Does NOT load any lua-sourcefile
-        * LuaAdapter calls this internally single-handed.        
+        * LuaAdapter calls this internally single-handed.
         */
         void init();
 
         /**
         * Calls lua_pcall(Lua, 0, 0, 0)
-        * @return true on success, false on error 
-        */
-        bool eval();        
-
-        /** 
-        * Loads a *.lua-sourcefile         
-        * Set your default (local) lua-vars before you call this function!
-        * @param name lua-filename
         * @return true on success, false on error
         */
-        bool load(const char* name);
-        bool load(const std::string name);
+        bool eval();
+
+        /**
+        * Loads a *.lua-sourcefile
+        * Set your default (local) lua-vars before you call this function!
+        * @param filename lua-file to load
+        * @return true on success, false on error
+        */
+        bool load(const char* filename);
+        bool load(const std::string filename);
 
         /**
         * @param name Name of the variable inside loaded .lua-file
-        * @param result value is saved in this variable 
+        * @param result value is saved in this variable
         * @return true on success, false on error
         */
-        bool get(const char* name, int &result);       	
-        bool get(const char* name, std::string &result);        
+        bool get(const char* name, int &result);
+        bool get(const char* name, std::string &result);
         bool get(const char* name, double &result);
         bool get(const char* name, float &result);
 
         /**
         * Opens a lua-table
-        * @param name Name of the table inside loaded .lua-file         
+        * @param name Name of the table inside loaded .lua-file
         * @return true on success, false on error
         */
-        bool openTable(const char* name);    
+        bool openTable(const char* name);
         bool openTable(std::string name){
             return this->openTable(name.c_str());
         }
 
         /**
         * Opens a table(-field) inside a table
-        * @param name Name of the table inside the opened table       
+        * @param name Name of the table inside the opened table
         * @return true on success, false on error
         */
         bool openNestedTable(const char *name);
@@ -119,7 +111,7 @@ class LuaAdapter {
         * @param result value of the field
         * @return true on success, false on error
         */
-        bool getField(const char *name, std::string &result);        
+        bool getField(const char *name, std::string &result);
         bool getField(const char *name, int &result);
 
         /**
@@ -138,7 +130,7 @@ class LuaAdapter {
         * Example: identity ={
         *               {1, 0, 0},
         *               {0, 1, 0},
-        *               {0, 0, 1},                       
+        *               {0, 0, 1},
         *           }
         * @param j row
         * @param i col
@@ -153,9 +145,9 @@ class LuaAdapter {
         * Sets the value of global lua-var.
         * @param name of the variable
         * @param value the var's value
-        * @return true on success, false on error       
+        * @return true on success, false on error
         */
-        bool set(const char *name, const char *value);        
+        bool set(const char *name, const char *value);
         bool set(const char *name, int value);
         bool set(const char *name, const double value);
         bool set(const char *name, const float value);
@@ -163,36 +155,36 @@ class LuaAdapter {
         /**
         * Closes a table
         * Call this function after every opening (and use) of a table!
-        * (Prevents "stack-smashing".)         
+        * (Prevents "stack-smashing".)
         */
         void closeTable(){
             return this->pop(1);
         }
-        
+
         /**
         * Calls a lua-function
         * @param name of the function
         * @param argc number of arguments passed to the function
         * @param args arguments
         * @param result returned value of the function
-        * @return true on success, false on error       
+        * @return true on success, false on error
         */
         bool callFunction(const char* functionName, const unsigned short int argc, int args[], int &result);
 
         /**
         * Calls a lua-function
-        * @param name of the function       
+        * @param name of the function
         * @param result returned value of the function
-        * @return true on success, false on error       
+        * @return true on success, false on error
         */
         bool callFunction(const char* functionName, double &result);
 
         /**
         * Makes a C-/C++-function-call available for lua
         * (it's called pushFunction(), but you're not 'incrementing' the stack)
-        * @param function C-/C++-function       
+        * @param function C-/C++-function
         * @param functionName name of the function
-        * @return true on success, false on error  
+        * @return true on success, false on error
         */
         bool pushFunction(Lua_callback_function function, const char *functionName);
 
@@ -200,17 +192,17 @@ class LuaAdapter {
         * Push data on the lua-stack. (Mind the stack!)
         * @param number number to push
         * @param string string to push
-        * @return true on success, false on error       
+        * @return true on success, false on error
         */
         bool push(double number);
         bool push(const char * string);
         bool push(std::string string){
             return this->push(string.c_str());
-        }        
+        }
 
         /**
         * Resets Lua's internal stack
-        * @return true on success, false on error      
+        * @return true on success, false on error
         */
         bool flush();
 
@@ -223,16 +215,16 @@ class LuaAdapter {
         }
         /**
         * Set debug output on or off
-        * @param mode if mode==true, see debug()         
+        * @param mode if mode==true, see debug()
         */
         void setLogMode(bool mode);
 
         /**
         * Pops i entries from Lua's internal stack
-        * @param i number of entries     
+        * @param i number of entries
         */
         void pop(signed short int i=1) {
-            lua_pop(this->Lua, i);		
+            lua_pop(this->Lua, i);
         }
 
         /**
@@ -251,11 +243,38 @@ class LuaAdapter {
             return lua_type(this->Lua, 0);
         }
 
-        /** 
+        /**
         * "Closes" the loaded *.lua-sourcefile
         * This function is called by the destructor of this class!
-        * */		
-        void close();		
-    };
+        * */
+        void close();
 
-    #endif
+
+    private:
+        lua_State *Lua;
+        bool loaded;
+        bool print;
+        const std::string outputPrefix;
+
+        /**
+        * Gets a field from an opened table and puts its value on the stack
+        * @param name Name of the field
+        * @return true on success, false on error
+        */
+        bool getField(const char* name);
+
+        /**
+        * Gets the i-th (nested) field from an opened table
+        * @param i the i-th field
+        * @return true on success, false on error
+        */
+        bool getI(unsigned short int i);
+
+        /**
+        * Gets the value of a globally loaded lua-variable
+        * @param name Name of the vairable
+        * @return true on success, false on error
+        */
+        bool getGlobal(const char* name);
+};
+#endif
