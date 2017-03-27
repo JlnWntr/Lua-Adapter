@@ -7,8 +7,8 @@ height = 400
 
 matrix ={
     {111,222,333},
-	{444,555,666},
-	{777,888,999}
+    {444,555,666},
+    {777,888,999}
 }
 
 
@@ -19,20 +19,20 @@ if GlobalVar == nil then GlobalVar = 123 end
 
 Table1 = {ID = 1,   Val = GlobalVar}      -- Val = 123
 
-Table2 	= { 
-	X = 1+15-3, 
-	Y = 1+10, 
-	W = 3, 
-	H = 10,
-	Test = {
+Table2  = {
+    X = 1+15-3,
+    Y = 1+10,
+    W = 3,
+    H = 10,
+    Test = {
         A= 12, B= 12
-    }				
+    }
 }
 
 function gcd(n, m)
-	q = math.floor(n/m)
-	r = n - m * q
-	if r==0 then
+    q = math.floor(n/m)
+    r = n - m * q
+    if r==0 then
         return m
     else
         return gcd(m,r)
