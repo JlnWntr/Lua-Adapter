@@ -11,12 +11,12 @@ Usage:
 
 Compile: 
       
-      g++ lua_adapter.cpp test.cpp -std=c++0x -llua -ldl -Wall
+      g++ lua_adapter.cpp test.cpp -std=c++0x -llua5.3 -ldl -Wall
 
 
 
 Requirements:
-- liblua5.2-dev
-- liblua5.2-0 (or later)
+- liblua5.3-dev
+- liblua5.3-0 (or later)
 
 
