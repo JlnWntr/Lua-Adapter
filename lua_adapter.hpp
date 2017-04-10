@@ -84,6 +84,7 @@ class LuaAdapter {
         bool get(const char* name, std::string &result);
         bool get(const char* name, double &result);
         bool get(const char* name, float &result);
+        bool get(const char* name, bool &result);
 
         /**
         * Opens a lua-table
@@ -151,6 +152,7 @@ class LuaAdapter {
         bool set(const char *name, int value);
         bool set(const char *name, const double value);
         bool set(const char *name, const float value);
+        bool set(const char *name, const bool value);
 
         /**
         * Closes a table
