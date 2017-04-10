@@ -67,6 +67,11 @@ int main (int argc, char *argv[]) {
     lua.get("title", title);	
     std::cout << "title: " << title << "\n";
 
+    //get boolean
+    bool boolean {false};
+    lua.get("fullscreen", boolean);	
+    std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
+
     std::cout << "\n";
 
     // tables

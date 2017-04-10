@@ -4,6 +4,7 @@ title = "A Title"
 
 width = 600
 height = 400
+fullscreen = true
 
 matrix ={
     {111,222,333},
