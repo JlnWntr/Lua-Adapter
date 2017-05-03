@@ -12,7 +12,6 @@ matrix ={
     {777,888,999}
 }
 
-
 -- 123 is a default-value for GlobalVar but CAN be changed from C/C++
 -- AFTER loading this lua-file and BEFORE calling init() (see test.cpp)
 if GlobalVar == nil then GlobalVar = 123 end
