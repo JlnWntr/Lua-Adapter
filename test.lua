@@ -18,7 +18,7 @@ matrix ={
 if GlobalVar == nil then GlobalVar = 123 end
 
 
-Table1 = {ID = 1,   Val = GlobalVar}      -- Val = 123
+Table1 = {ID = 1,   Value = GlobalVar, Text = "Test"}      -- Val = 123
 
 Table2  = {
     X = 1+15-3,

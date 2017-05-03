@@ -441,6 +441,23 @@ bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, int 
 }
 
 
+bool LuaAdapter::getNestedField(unsigned short int j, unsigned short int i, std::string &result){
+    if(this->getI(j)==false) {
+        return false;
+    }
+    if(this->getI(i)==false) {
+        lua_pop(this->Lua, 1);
+        return false;
+    }
+    if(lua_isstring(this->Lua, -1))
+        result = lua_tostring(this->Lua, -1);
+    if(this->print)
+        std::cout << "\t"  << "\t"  << this->outputPrefix << "get nested string-field (" << j << "|"<< i << ")' = '" << result << "' \n";
+    lua_pop(this->Lua, 2);
+    return true;
+}
+
+
 bool LuaAdapter::callFunction(const char *functionName, const unsigned short int argc, int args[], int &result){
     if(!this->loaded) {
         return false;

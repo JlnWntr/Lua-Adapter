@@ -104,7 +104,7 @@ class LuaAdapter {
         bool openNestedTable(const char *name);
         bool openNestedTable(std::string name){
             return this->openNestedTable(name.c_str());
-        }
+        }        
 
         /**
         * Gets a field from an opened table
@@ -141,6 +141,7 @@ class LuaAdapter {
         bool getNestedField(unsigned short int j, unsigned short int i, double &result);
         bool getNestedField(unsigned short int j, unsigned short int i, float &result);
         bool getNestedField(unsigned short int j, unsigned short int i, int &result);
+        bool getNestedField(unsigned short int j, unsigned short int i, std::string &result);
 
         /**
         * Sets the value of global lua-var.

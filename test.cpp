@@ -80,9 +80,13 @@ int main (int argc, char *argv[]) {
         lua.getField("ID", ID);	
         std::cout << "ID: " << ID << "\n";
 
-        int Val {0};
-        lua.getField("Val", Val);	
-        std::cout << "Val: " << Val << "\n";
+        int Value {0};
+        lua.getField("Value", Value);	
+        std::cout << "Value: " << Value << "\n";
+                
+        std::string Text {};
+        lua.getField("Text", Text);	
+        std::cout << "Text: " << Text << "\n";
 
         lua.closeTable(); // close "Table1"
     }
