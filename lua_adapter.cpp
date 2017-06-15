@@ -30,7 +30,7 @@ LuaAdapter::LuaAdapter(lua_State *const lua)
 	this->Init();
 }
 
-LuaAdapter::LuaAdapter(const std::string filename)
+LuaAdapter::LuaAdapter(const std::string& filename)
 	: Lua{ nullptr }, loaded{ false }, print{ false }, outputPrefix{ "Lua > " } {
 	this->Init();
 	this->Load(filename);
@@ -81,7 +81,7 @@ bool LuaAdapter::Eval() {
 	return false;
 }
 
-bool LuaAdapter::Load(const std::string filename) {
+bool LuaAdapter::Load(const std::string& filename) {
 	return this->Load(filename.c_str());
 }
 

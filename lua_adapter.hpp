@@ -49,7 +49,7 @@ public:
 	* This constructor inits lua and loads a .lua-file directly.
 	* @param filename .lua-file to load
 	*/
-	LuaAdapter(const std::string filename);
+	LuaAdapter(const std::string& filename);
 
 	/**
 	* Destructor
@@ -76,7 +76,7 @@ public:
 	* @return true on success, false on error
 	*/
 	bool Load(const char *filename);
-	bool Load(const std::string filename);
+	bool Load(const std::string& filename);
 
 	/**
 	* @param name Name of the variable inside loaded .lua-file
@@ -95,7 +95,7 @@ public:
 	* @return true on success, false on error
 	*/
 	bool OpenTable(const char *name);
-	bool OpenTable(std::string name) { return this->OpenTable(name.c_str()); }
+	bool OpenTable(const std::string& name) { return this->OpenTable(name.c_str()); }
 
 	/**
 	* Opens a table(-field) inside a table
@@ -103,7 +103,7 @@ public:
 	* @return true on success, false on error
 	*/
 	bool OpenNestedTable(const char *name);
-	bool OpenNestedTable(std::string name) {
+	bool OpenNestedTable(const std::string& name) {
 		return this->OpenNestedTable(name.c_str());
 	}
 
@@ -209,7 +209,7 @@ public:
 	*/
 	bool Push(double number);
 	bool Push(const char *string);
-	bool Push(std::string string) { return this->Push(string.c_str()); }
+	bool Push(const std::string& string) { return this->Push(string.c_str()); }
 
 	/**
 	* Resets Lua's internal stack
