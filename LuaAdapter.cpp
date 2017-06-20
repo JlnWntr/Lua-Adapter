@@ -21,8 +21,9 @@
 * SOFTWARE.
 */
 
-#include <string>
-#include "LuaAdapter.h"
+#ifndef LUA_ADAPTER_H
+#include "LuaAdapter.hpp"
+#endif
 
 
 LuaAdapter::LuaAdapter(lua_State *const lua)

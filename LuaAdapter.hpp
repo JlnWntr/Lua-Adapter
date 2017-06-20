@@ -1,5 +1,3 @@
-#pragma once
-
 /*
 * Copyright (c) 2015-2017 JlnWntr (jlnwntr@gmail.com)
 *
@@ -22,15 +20,13 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+#ifndef LUA_ADAPTER_H
+#define LUA_ADAPTER_H
 
 #include <iostream>
-
-extern "C" 
-{
-#include <lauxlib.h>
-#include <lua.hpp>
-#include <lualib.h>
-}
+#include <lua5.3/lauxlib.h>
+#include <lua5.3/lua.hpp>
+#include <lua5.3/lualib.h>
 
 typedef int(*Lua_callback_function)(lua_State *L);
 
@@ -280,3 +276,4 @@ private:
 	*/
 	bool GetGlobal(const char *name);
 };
+#endif
