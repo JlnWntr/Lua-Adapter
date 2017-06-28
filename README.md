@@ -11,7 +11,7 @@ Usage:
 
 Compile: 
       
-      g++ LuaAdapter.cpp test.cpp -std=c++0x -llua5.3 -ldl -Wall
+      g++ LuaAdapter.cpp test.cpp -std=c++0x -llua5.3 -Wall
 
 
 
