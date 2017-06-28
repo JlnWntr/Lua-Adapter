@@ -452,6 +452,7 @@ bool LuaAdapter::GetNestedField(unsigned short int j, unsigned short int i,
 	return true;
 }
 
+
 bool LuaAdapter::CallFunction(const char *functionName,
 	const unsigned short int argc, int args[],
 	int &result) {
@@ -517,7 +518,7 @@ bool LuaAdapter::Push(const char *string) {
 }
 
 void LuaAdapter::Close() {
-	if ((!this->Lua) || (!this->loaded))
+	if (!this->Lua)
 		return;
 	this->Flush();
 	lua_close(this->Lua);

@@ -24,9 +24,8 @@
 #define LUA_ADAPTER_H
 
 #include <iostream>
-#include <lua5.3/lauxlib.h>
 #include <lua5.3/lua.hpp>
-#include <lua5.3/lualib.h>
+
 
 typedef int(*Lua_callback_function)(lua_State *L);
 
@@ -168,6 +167,14 @@ public:
 	* (Prevents "stack-smashing".)
 	*/
 	void CloseTable() { return this->Pop(1); }
+        
+    /**
+	* Execute any string	
+    * @param string to execute, for example "test = io.read()"
+	*/
+    bool DoString(const char *string){
+        return luaL_dostring(this->Lua, string);      
+    }
 
 	/**
 	* Calls a lua-function
