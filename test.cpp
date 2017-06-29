@@ -25,6 +25,9 @@
 #include "LuaAdapter.hpp"
 #endif
 
+static int testFunction(lua_State *L);
+
+
 int main(int argc, char *argv[]) {
 
   LuaAdapter lua{"test.lua"};
@@ -141,17 +144,38 @@ int main(int argc, char *argv[]) {
   std::cout << "gcd: " << result << "\n";
   std::cout << "\n";
 
-   
+  // 'Declare' a C/C++-function for lua
+  lua.PushFunction(testFunction, "testFunction");
+
+  // and call it!
+  double result2{0};
+  lua.CallFunction("testFunction", result2);
+  std::cout << "testing C-Function: " << result2 << "\n";
+
+  std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // 0
+    
   // execute any string in lua
   /*std::string readLineResult {};
   lua.DoString("readline = io.read()"); // read from console :)
   lua.Get("readline", readLineResult);
   std::cout << "Readline: " << readLineResult << "\n";
-  */
-  
-  std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // 0
-  
+  */  
   
   return 0;
 }
+
+
+// This function can be called from Lua
+static int testFunction(lua_State *L) {
+  LuaAdapter lua{L};
+  double number{0};
+  lua.Get("number", number);
+
+  std::cout << "Number: " << number << "\n";
+ 
+  number *= 2;
+  lua.Push(number);
+  return 1;
+}
+
 
