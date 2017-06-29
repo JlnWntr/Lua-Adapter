@@ -257,9 +257,9 @@ public:
 	void Close();
 
 private:
-	lua_State *Lua;
-	bool loaded;
+	lua_State *Lua;	
 	bool print;
+    bool single;
 	const std::string outputPrefix;
 
 	/**

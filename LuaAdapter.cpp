@@ -27,19 +27,19 @@
 
 
 LuaAdapter::LuaAdapter(lua_State *const lua)
-	: Lua{ lua }, loaded{ false }, print{ false }, outputPrefix{ "Lua > " } {
+	: Lua{ lua }, print{ false }, single{(lua) ? false : true}, outputPrefix{ "Lua > " } {
 	this->Init();
 }
 
 LuaAdapter::LuaAdapter(const std::string& filename)
-	: Lua{ nullptr }, loaded{ false }, print{ false }, outputPrefix{ "Lua > " } {
-	this->Init();
+	: Lua{ nullptr }, print{ false }, single{true}, outputPrefix{ "Lua > " } {	
 	this->Load(filename);
 }
 
-void LuaAdapter::Init() {
-	if (this->Lua)
+void LuaAdapter::Init() { 
+	if(this->Lua){        
 		return;
+    }   
 	this->Lua = luaL_newstate();
 	luaL_openlibs(this->Lua);
 }
@@ -47,16 +47,14 @@ void LuaAdapter::Init() {
 bool LuaAdapter::Load(const char *filename) {
 	this->Init();
 
-	if ((luaL_loadfile(this->Lua, filename) == 0) && this->Eval()) {
-		this->loaded = true;
+	if ((luaL_loadfile(this->Lua, filename) == 0) && this->Eval()) {		
 		return true;
 	}
 	std::cout << this->outputPrefix << "Error in Lua-file '";
 	std::cout << filename << "': ";
 	std::cout << lua_tostring(this->Lua, -1);
 	std::cout << "\n";
-
-	this->loaded = false;
+	
 	return false;
 }
 
@@ -87,7 +85,7 @@ bool LuaAdapter::Load(const std::string& filename) {
 }
 
 bool LuaAdapter::GetField(const char *name) {
-	if ((!this->Lua) || (!this->loaded) || (!name) ||
+	if ((!this->Lua) || (!name) ||
 		(!lua_istable(this->Lua, -1)))
 		return false;
 
@@ -96,7 +94,7 @@ bool LuaAdapter::GetField(const char *name) {
 }
 
 bool LuaAdapter::GetI(unsigned short int i) {
-	if ((!this->Lua) || (!this->loaded) || (!lua_istable(this->Lua, -1)) ||
+	if ((!this->Lua) || (!lua_istable(this->Lua, -1)) ||
 		(i < 1))
 		return false;
 
@@ -105,9 +103,7 @@ bool LuaAdapter::GetI(unsigned short int i) {
 }
 
 bool LuaAdapter::GetGlobal(const char *name) {
-	if ((!this->Lua)
-		//|| (!this->loaded)
-		|| (!name))
+	if ((!this->Lua) || (!name))
 		return false;
 
 	lua_getglobal(this->Lua, name); // void
@@ -197,7 +193,7 @@ bool LuaAdapter::OpenTable(const char *name) {
 }
 
 bool LuaAdapter::OpenNestedTable(const char *name) {
-	if ((!this->Lua) || (!this->loaded)) {
+	if ((!this->Lua)) {
 		return false;
 	}
 	if (this->print)
@@ -226,7 +222,7 @@ bool LuaAdapter::OpenNestedTable(const char *name) {
 
 unsigned short int LuaAdapter::GetTableLength() {
 	unsigned short int result{ 0 };
-	if ((!this->Lua) || (!this->loaded)) {
+	if ((!this->Lua) ) {
 		return result;
 	}
 	if (lua_istable(this->Lua, -1) == false) {
@@ -239,7 +235,7 @@ unsigned short int LuaAdapter::GetTableLength() {
 }
 
 bool LuaAdapter::Flush() {
-	if ((!this->Lua) || (!this->loaded))
+	if ((!this->Lua) )
 		return false;
 
 	lua_settop(this->Lua, 0);
@@ -456,7 +452,7 @@ bool LuaAdapter::GetNestedField(unsigned short int j, unsigned short int i,
 bool LuaAdapter::CallFunction(const char *functionName,
 	const unsigned short int argc, int args[],
 	int &result) {
-	if (!this->loaded) {
+	if (!this->Lua) {
 		return false;
 	}
 	lua_getglobal(this->Lua, functionName);
@@ -476,7 +472,7 @@ bool LuaAdapter::CallFunction(const char *functionName,
 }
 
 bool LuaAdapter::CallFunction(const char *functionName, double &result) {
-	if (!this->loaded) {
+	if (!this->Lua) {
 		return false;
 	}
 	lua_getglobal(this->Lua, functionName);
@@ -518,12 +514,11 @@ bool LuaAdapter::Push(const char *string) {
 }
 
 void LuaAdapter::Close() {
-	if (!this->Lua)
+	if ((!this->Lua) || (!this->single))
 		return;
-	this->Flush();
+	//this->Flush();
 	lua_close(this->Lua);
 
-	this->loaded = false;
 	this->Lua = nullptr;
 }
 
