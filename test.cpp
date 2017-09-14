@@ -31,6 +31,7 @@ static int testFunction(lua_State *L);
 int main(int argc, char *argv[]) {
 
   LuaAdapter lua{"test.lua"};
+  lua.Debug();
 
   // simply parameterize your application!
   int height{0};
