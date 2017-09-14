@@ -29,43 +29,43 @@
 class MiniLua {
 
 public:
-	/**
-	* Default constructor		
-    * @param filename .lua-file to load
-	*/
-	MiniLua(const std::string& filename="");
-	
-	/**
-    * Gets the value of a variable.
-	* @param name of the variable inside loaded .lua-file
-	* @param result value is saved in this variable
-	* @return true on success, false on error
-	*/
-	bool Get(const char *name, int &result);
-	bool Get(const char *name, std::string &result);
-	bool Get(const char *name, double &result);
-	bool Get(const char *name, float &result);
-	bool Get(const char *name, bool &result);
+  /**
+  * Default constructor
+  * @param filename .lua-file to load
+  */
+  MiniLua(const std::string &filename = "");
 
-    /**
-	* Closes lua state
-	*/
-    void Close();
+  /**
+  * Gets the value of a variable.
+  * @param name of the variable inside loaded .lua-file
+  * @param result value is saved in this variable
+  * @return true on success, false on error
+  */
+  bool Get(const char *name, int &result);
+  bool Get(const char *name, std::string &result);
+  bool Get(const char *name, double &result);
+  bool Get(const char *name, float &result);
+  bool Get(const char *name, bool &result);
 
-    /**
-	* Destructor
-    * calls Close()
-	*/
-	~MiniLua();	
+  /**
+  * Closes lua state
+  */
+  void Close();
 
-private:	
-	/**
-	* Gets the value of a globally loaded lua-variable
-	* @param name Name of the variable
-	* @return true on success, false on error
-	*/
-	bool GetGlobal(const char *name);
+  /**
+  * Destructor
+  * calls Close()
+  */
+  ~MiniLua();
 
-    lua_State *Lua;		    
+private:
+  /**
+  * Gets the value of a globally loaded lua-variable
+  * @param name Name of the variable
+  * @return true on success, false on error
+  */
+  bool GetGlobal(const char *name);
+
+  lua_State *Lua;
 };
 #endif

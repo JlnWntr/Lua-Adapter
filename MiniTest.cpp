@@ -27,8 +27,8 @@
 
 int main(int argc, char *argv[]) {
 
-  MiniLua lua{"test.lua"};  
-  
+  MiniLua lua{"test.lua"};
+
   // get int
   int width{0};
   lua.Get("width", width);
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   float flt{0.0};
   lua.Get("float", flt);
   std::cout << "float: " << flt << "\n";
-   
+
   // get string
   std::string title{"empty"};
   lua.Get("title", title);

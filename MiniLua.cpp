@@ -25,23 +25,20 @@
 #include "MiniLua.hpp"
 #endif
 
-MiniLua::MiniLua
-(const std::string &filename)
-:Lua{nullptr}
-{        
-    this->Lua = luaL_newstate();
-    luaL_openlibs(this->Lua);
-    
-    if(this->Lua && (filename.length() > 0)){
-        luaL_loadfile(this->Lua, filename.c_str());
-        lua_pcall(this->Lua, 0, 0, 0);
-    }
+MiniLua::MiniLua(const std::string &filename) : Lua{nullptr} {
+  this->Lua = luaL_newstate();
+  luaL_openlibs(this->Lua);
+
+  if (this->Lua && (filename.length() > 0)) {
+    luaL_loadfile(this->Lua, filename.c_str());
+    lua_pcall(this->Lua, 0, 0, 0);
+  }
 }
 
 bool MiniLua::GetGlobal(const char *name) {
   if ((!this->Lua) || (!name))
     return false;
-  lua_getglobal(this->Lua, name); 
+  lua_getglobal(this->Lua, name);
   return true;
 }
 
@@ -52,7 +49,7 @@ bool MiniLua::Get(const char *name, int &result) {
     lua_pop(this->Lua, 1);
     return false;
   }
-  result = lua_tointeger(this->Lua, -1);  
+  result = lua_tointeger(this->Lua, -1);
   lua_pop(this->Lua, 1);
   return true;
 }
@@ -62,8 +59,9 @@ bool MiniLua::Get(const char *name, std::string &result) {
     return false;
   if (lua_type(this->Lua, -1) != LUA_TSTRING) {
     lua_pop(this->Lua, 1);
-    return false;  }
-  result = lua_tostring(this->Lua, -1);  
+    return false;
+  }
+  result = lua_tostring(this->Lua, -1);
   lua_pop(this->Lua, 1);
   return true;
 }
@@ -75,7 +73,7 @@ bool MiniLua::Get(const char *name, double &result) {
     lua_pop(this->Lua, 1);
     return false;
   }
-  result = lua_tonumber(this->Lua, -1); 
+  result = lua_tonumber(this->Lua, -1);
   lua_pop(this->Lua, 1);
   return true;
 }
@@ -95,14 +93,14 @@ bool MiniLua::Get(const char *name, bool &result) {
     lua_pop(this->Lua, 1);
     return false;
   }
-  result = lua_toboolean(this->Lua, -1);  
+  result = lua_toboolean(this->Lua, -1);
   lua_pop(this->Lua, 1);
   return true;
 }
 
 void MiniLua::Close() {
   if (!this->Lua)
-    return;  
+    return;
   lua_close(this->Lua);
   this->Lua = nullptr;
 }
