@@ -12,8 +12,21 @@ Usage:
 Compile: 
       
       g++ LuaAdapter.cpp test.cpp -std=c++0x -llua5.3 -Wall
+      
+---
 
+*NEW:* Minimal Lua-Adapter
 
+     MiniLua lua("test.lua"); 
+     
+     std::string title{"empty"};
+     lua.Get("title", title);
+
+Compile & test: 
+      
+      g++ MiniLua.cpp MiniTest.cpp -std=c++0x -llua5.3
+  
+---
 
 Requirements:
 - liblua5.3-dev
