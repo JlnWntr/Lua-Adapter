@@ -502,6 +502,7 @@ bool LuaAdapter::Push(double number) {
   return true;
 }
 
+// TODO use pushlstring and define specific length
 bool LuaAdapter::Push(const char *string) {
   if (!this->Lua)
     return false;
