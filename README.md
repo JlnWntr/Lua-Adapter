@@ -11,11 +11,9 @@ Usage:
 
 Compilation & testing: 
       
-      g++ LuaAdapter.cpp test.cpp -std=c++0x -llua5.3 -Wall      
+      g++ LuaAdapter.cpp test.cpp -std=c++0x -llua -ldl -Wall      
 
 
 Requirements:
-- liblua5.3-dev
-- liblua5.3-0 (or later)
-
+      [Download and install Lua](https://www.lua.org/download.html).
 
