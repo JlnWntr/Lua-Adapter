@@ -24,7 +24,7 @@
 #define MINI_LUA_H
 
 #include <iostream>
-#include <lua5.3/lua.hpp>
+#include <lua.hpp>
 
 class MiniLua {
 
