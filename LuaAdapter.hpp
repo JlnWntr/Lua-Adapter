@@ -149,6 +149,15 @@ public:
 	bool GetNestedField(unsigned short int j, unsigned short int i, int &result);
 	bool GetNestedField(unsigned short int j, unsigned short int i,
 		std::string &result);
+    /**
+	* Like above but gets a ("3D"-)field value.
+    * @param k row
+	* @param j col
+	* @param i inner table
+	* @param result value
+	* @return true on success, false on error
+	*/
+    bool GetNestedField(unsigned short int k, unsigned short int j, unsigned short int i, int &result);
 
 	/**
 	* Sets the value of global lua-var.
@@ -168,13 +177,13 @@ public:
 	* (Prevents "stack-smashing".)
 	*/
 	void CloseTable() { return this->Pop(1); }
-        
+
     /**
-	* Execute any string	
+	* Execute any string
     * @param string to execute, for example "test = io.read()"
 	*/
     bool DoString(const char *string){
-        return luaL_dostring(this->Lua, string);      
+        return luaL_dostring(this->Lua, string);
     }
 
 	/**
@@ -258,7 +267,7 @@ public:
 	void Close();
 
 private:
-	lua_State *Lua;	
+	lua_State *Lua;
 	bool print;
     bool single;
 	const std::string outputPrefix;
