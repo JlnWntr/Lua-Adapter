@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017 JlnWntr (jlnwntr@gmail.com)
+ * Copyright (c) 2015-2018 JlnWntr (jlnwntr@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@
 
 static int testFunction(lua_State *L);
 
-
 int main(int argc, char *argv[]) {
 
   LuaAdapter lua{"test.lua"};
@@ -37,7 +36,7 @@ int main(int argc, char *argv[]) {
   int height{0};
   lua.Get("height", height);
   std::cout << "height: " << height << "\n";
-   
+
   // let's close ..
   lua.Close();
   // and (re-)initialize for further tests..
@@ -61,7 +60,7 @@ int main(int argc, char *argv[]) {
   double number{0};
   lua.Get("number", number);
   std::cout << "Number: " << number << "\n";
-   
+
   // get string
   std::string title{"empty"};
   lua.Get("title", title);
@@ -110,7 +109,7 @@ int main(int argc, char *argv[]) {
     lua.CloseTable(); // close table "matrix"
   }
   std::cout << "\n";
- 
+
   // more table-tests
   if (lua.OpenTable("Table2")) {
     int X{0};
@@ -154,17 +153,16 @@ int main(int argc, char *argv[]) {
   std::cout << "testing C-Function: " << result2 << "\n";
 
   std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // 0
-    
+
   // execute any string in lua
   /*std::string readLineResult {};
   lua.DoString("readline = io.read()"); // read from console :)
   lua.Get("readline", readLineResult);
   std::cout << "Readline: " << readLineResult << "\n";
-  */  
-  
+  */
+
   return 0;
 }
-
 
 // This function can be called from Lua
 static int testFunction(lua_State *L) {
@@ -173,10 +171,8 @@ static int testFunction(lua_State *L) {
   lua.Get("number", number);
 
   std::cout << "Number: " << number << "\n";
- 
+
   number *= 2;
   lua.Push(number);
   return 1;
 }
-
-
