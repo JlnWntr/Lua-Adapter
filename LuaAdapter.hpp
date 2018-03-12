@@ -129,6 +129,7 @@ public:
   bool GetField(unsigned short int i, int &result);
   bool GetField(unsigned short int i, double &result);
   bool GetField(unsigned short int i, float &result);
+  bool GetField(unsigned short int i, std::string &result);
 
   /**
   * Gets a ("2D"-)field value from an opened table.

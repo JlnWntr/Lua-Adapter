@@ -321,6 +321,21 @@ bool LuaAdapter::GetField(unsigned short int i, float &result) {
   return true;
 }
 
+bool LuaAdapter::GetField(unsigned short int i, std::string &result) {
+  if (this->GetI(i) == false)
+    return false;
+  if (lua_type(this->Lua, -1) != LUA_TSTRING) {
+    lua_pop(this->Lua, 1);
+    return false;
+  }
+  result = lua_tostring(this->Lua, -1);
+  if (this->print)
+    std::cout << "\t" << this->outputPrefix << "get string-field " << i << " = '"
+              << result << "' \n";
+  lua_pop(this->Lua, 1);
+  return true;
+}
+
 bool LuaAdapter::Set(const char *name, const char *value) {
   if (!this->Lua)
     return false;
