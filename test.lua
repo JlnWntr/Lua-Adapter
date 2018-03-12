@@ -21,6 +21,7 @@ if GlobalVar == nil then GlobalVar = 123 end
 Table1 = {ID = 1,   Value = GlobalVar, Text = "Test"}      -- Val = 123
 
 Table2  = {
+    t = "Table2",
     X = 1+15-3,
     Y = 1+10,
     W = 3,
@@ -29,6 +30,8 @@ Table2  = {
         A= 12, B= 10
     }
 }
+
+Strings = {"Key", "Value"};
 
 function gcd(n, m)
     q = math.floor(n/m)

@@ -133,6 +133,19 @@ int main(int argc, char *argv[]) {
     lua.CloseTable(); // close "Table2"
   }
 
+  if (lua.OpenTable("Strings")) {
+    std::string k, v;
+
+    // Get string-field by index
+    lua.GetField(1, k);
+    lua.GetField(2, v);
+
+    std::cout << "Key: " << k << "\n";
+    std::cout << "Value: " << v << "\n";
+
+    lua.CloseTable(); // close "Strings"
+  }
+
   // Check lua's internal stack
   std::cout << "\n";
   std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // should be 0
