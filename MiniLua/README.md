@@ -5,8 +5,12 @@ Usage:
 
      MiniLua lua{"test.lua"};
 
+     int width {0};
+     lua.Get("width", width);
+
      std::string title{"empty"};
-     lua.Get("title", title);
+     if(lua.Get("title", title))
+        std::cout << title;
 
 Compile & test:
 

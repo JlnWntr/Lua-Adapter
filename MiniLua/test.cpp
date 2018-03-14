@@ -32,27 +32,27 @@ int main(int argc, char *argv[]) {
   // get int
   int width{0};
   lua.Get("width", width);
-  std::cout << "width: " << width << "\n";
+    std::cout << "width: " << width << "\n";
 
   // get double
   double number{0};
-  lua.Get("number", number);
-  std::cout << "number: " << number << "\n";
+  if(lua.Get("number", number))
+    std::cout << "number: " << number << "\n";
 
   // get float
   float flt{0.0};
-  lua.Get("float", flt);
-  std::cout << "float: " << flt << "\n";
+  if(lua.Get("float", flt))
+    std::cout << "float: " << flt << "\n";
 
   // get string
   std::string title{"empty"};
-  lua.Get("title", title);
-  std::cout << "title: " << title << "\n";
+  if(lua.Get("title", title))
+    std::cout << "title: " << title << "\n";
 
   // get boolean
   bool boolean{false};
-  lua.Get("fullscreen", boolean);
-  std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
+  if(lua.Get("fullscreen", boolean))
+    std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
 
   return 0;
 }
