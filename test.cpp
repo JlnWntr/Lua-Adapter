@@ -25,31 +25,42 @@
 #include "LuaAdapter.hpp"
 #endif
 
-static int testFunction(lua_State *L);
+static int test_function(lua_State *L);
 
 int main(int argc, char *argv[]) {
 
   LuaAdapter lua{"test.lua"};
-  lua.Debug();
+  //lua.Debug();
 
-  // simply parameterize your application!
+  /**
+   * Parameterize your application.
+   */
   int height{0};
   lua.Get("height", height);
-  std::cout << "height: " << height << "\n";
+  std::cout << "height: " << height << "\n\n";
 
   // let's close ..
   lua.Close();
   // and (re-)initialize for further tests..
   lua.Init();
 
-  // Hint: You CAN change a (default) value of a global lua variable BEFORE
-  // loading the actual lua-file
+  /**
+   * Hint: You CAN change a (default) value of a global lua variable BEFORE
+   *loading the actual lua-file
+   */
   if (lua.Set("GlobalVar", 321) == false) {
     std::cout << "Could not set 'GlobalVar'!\n";
   }
 
-  // and THEN load the script:
+  /**
+   * Define a C/C++-function that can be called from lua (see test.lua)
+   **/
+   lua.PushFunction(test_function, "test_function");
+  /**
+   * and THEN load the script:
+   */
   lua.Load("test.lua");
+
 
   // get an int
   int width{0};
@@ -73,7 +84,9 @@ int main(int argc, char *argv[]) {
 
   std::cout << "\n";
 
-  // tables
+  /**
+   * table-tests
+   */
   if (lua.OpenTable("Table1")) {
     int ID{0};
     lua.GetField("ID", ID);
@@ -91,6 +104,7 @@ int main(int argc, char *argv[]) {
   }
 
   std::cout << "\n";
+
 
   if (lua.OpenTable("matrix")) {
 
@@ -110,7 +124,9 @@ int main(int argc, char *argv[]) {
   }
   std::cout << "\n";
 
-  // more table-tests
+  /**
+   * more table-tests
+   */
   if (lua.OpenTable("Table2")) {
     int X{0};
     lua.GetField("X", X);
@@ -150,41 +166,31 @@ int main(int argc, char *argv[]) {
   std::cout << "\n";
   std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // should be 0
 
-  // calling a function from test.lua to compute stuff
+
+  /**
+   * calling a lua-function (see test.lua)
+   */
   int test[] = {36, 24};
   int result{0};
   lua.CallFunction("gcd", 2, test, result);
   std::cout << "gcd: " << result << "\n";
   std::cout << "\n";
 
-  // 'Declare' a C/C++-function for lua
-  lua.PushFunction(testFunction, "testFunction");
 
-  // and call it!
-  double result2{0};
-  lua.CallFunction("testFunction", result2);
-  std::cout << "testing C-Function: " << result2 << "\n";
-
-  std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // 0
-
-  // execute any string in lua
-  /*std::string readLineResult {};
-  lua.DoString("readline = io.read()"); // read from console :)
-  lua.Get("readline", readLineResult);
-  std::cout << "Readline: " << readLineResult << "\n";
-  */
+  test_function(nullptr); // this is just to ignore a compile-warning
 
   return 0;
 }
 
-// This function can be called from Lua
-static int testFunction(lua_State *L) {
+
+/**
+ * This C++-function can be called from Lua
+ */
+static int test_function(lua_State *L) {
+  if(!L)
+    return 1;
   LuaAdapter lua{L};
-  double number{0};
-  lua.Get("number", number);
-
-  std::cout << "Number: " << number << "\n";
-
+  double number{lua_tonumber(L, 1)};  /* get argument */
   number *= 2;
   lua.Push(number);
   return 1;
