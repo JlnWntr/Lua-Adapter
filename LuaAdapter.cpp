@@ -505,6 +505,40 @@ bool LuaAdapter::CallFunction(const char *functionName,
   return false;
 }
 
+bool LuaAdapter::CallFunction(const char *functionName, const char *const string, const size_t length) {
+  if (!this->Lua) {
+    return false;
+  }
+  lua_getglobal(this->Lua, functionName);
+  lua_pushlstring(this->Lua, string, length);
+  if ((lua_pcall(this->Lua, 1, 1, 0) != LUA_OK)) {
+    lua_pop(this->Lua, 1);
+    return false;
+  }
+  lua_pop(this->Lua, 1);
+  return false;
+}
+
+
+bool LuaAdapter::CallFunction(const char *functionName, const std::string arg, std::string &result) {
+  if (!this->Lua) {
+    return false;
+  }
+  lua_getglobal(this->Lua, functionName);
+  lua_pushlstring(this->Lua, arg.c_str(), arg.length());
+
+//std::cout << "\n\n!!!\n\n";
+
+  if ((lua_pcall(this->Lua, 1, 1, 0) != LUA_OK) ||
+      (lua_isstring(this->Lua, -1) == false)) {
+    lua_pop(this->Lua, 1);
+    return false;
+  }
+  result = lua_tostring(this->Lua, -1);
+  lua_pop(this->Lua, 1);
+  return true;
+}
+
 bool LuaAdapter::CallFunction(const char *functionName, double &result) {
   if (!this->Lua) {
     return false;

@@ -189,22 +189,39 @@ public:
 
   /**
   * Calls a lua-function
-  * @param name of the function
-  * @param argc number of arguments passed to the function
-  * @param args arguments
-  * @param result returned value of the function
+  * @param name of the lua-function
+  * @param argc number of arguments passed to the lua-function
+  * @param args function-arguments
+  * @param result new value from the lua-function
   * @return true on success, false on error
   */
   bool CallFunction(const char *functionName, const unsigned short int argc,
                     int args[], int &result);
+  /**
+  * Calls a lua-function
+  * @param functionName of the lua-function
+  * @param string a string-argument
+  * @param length of this string
+  * @return true on success, false on error
+  */
+  bool CallFunction(const char *functionName, const char *const string, const size_t length);
 
   /**
   * Calls a lua-function
-  * @param name of the function
-  * @param result returned value of the function
+  * @param name of the lua-function
+  * @param result new value from the lua-function
   * @return true on success, false on error
   */
   bool CallFunction(const char *functionName, double &result);
+
+  /**
+  * Calls a lua-function
+  * @param name of the lua-function
+  * @param arg argument of the lua-function
+  * @param result new value (string) from the lua-function
+  * @return true on success, false on error
+  */
+  bool CallFunction(const char *functionName, const std::string arg, std::string &result);
 
   /**
   * Makes a C-/C++-function-call available for lua
