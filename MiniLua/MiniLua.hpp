@@ -23,8 +23,8 @@
 #ifndef MINI_LUA_H
 #define MINI_LUA_H
 
-#include <iostream>
 #include <lua.hpp>
+#include <string>
 
 class MiniLua {
 
@@ -36,7 +36,7 @@ public:
   MiniLua(const std::string &filename = "");
 
   /**
-  * Gets the value of a variable.
+  * Gets the value of a lua-variable.
   * @param name of the variable inside loaded .lua-file
   * @param result value is saved in this variable
   * @return true on success, false on error

@@ -24,6 +24,7 @@
 #ifndef MINI_LUA_H
 #include "MiniLua.hpp"
 #endif
+#include <iostream>
 
 int main(int argc, char *argv[]) {
 
