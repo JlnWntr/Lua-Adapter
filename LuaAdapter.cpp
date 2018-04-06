@@ -502,7 +502,7 @@ bool LuaAdapter::CallFunction(const char *functionName,
   }
   result = lua_tointeger(this->Lua, -1);
   lua_pop(this->Lua, 1);
-  return false;
+  return true;
 }
 
 bool LuaAdapter::CallFunction(const char *functionName, const char *const string, const size_t length) {
@@ -516,9 +516,32 @@ bool LuaAdapter::CallFunction(const char *functionName, const char *const string
     return false;
   }
   lua_pop(this->Lua, 1);
-  return false;
+  return true;
 }
 
+bool LuaAdapter::CallFunction(const char *functionName, const char *const string,  size_t &length, std::string &result) {
+  if (!this->Lua) {
+    return false;
+  }
+  lua_getglobal(this->Lua, functionName);
+  lua_pushlstring(this->Lua, string, length);
+
+  if ((lua_pcall(this->Lua, 1, 1, 0) != LUA_OK) ||
+      (lua_isstring(this->Lua, -1) == false)) {
+    lua_pop(this->Lua, 1);
+    std::cout << "Lua-Adapter-Error: CallFunction: lua_isstring results to false!\n";
+    return false;
+  }
+  size_t l {0};
+  const char *buffer {lua_tolstring(this->Lua, -1, &l)};
+  if((!buffer) || (l==0)){
+    return false;
+  }
+  length = l;
+  result = std::string{buffer, length};
+  lua_pop(this->Lua, 1);
+  return true;
+}
 
 bool LuaAdapter::CallFunction(const char *functionName, const std::string arg, std::string &result) {
   if (!this->Lua) {
@@ -526,8 +549,6 @@ bool LuaAdapter::CallFunction(const char *functionName, const std::string arg, s
   }
   lua_getglobal(this->Lua, functionName);
   lua_pushlstring(this->Lua, arg.c_str(), arg.length());
-
-//std::cout << "\n\n!!!\n\n";
 
   if ((lua_pcall(this->Lua, 1, 1, 0) != LUA_OK) ||
       (lua_isstring(this->Lua, -1) == false)) {
@@ -552,7 +573,7 @@ bool LuaAdapter::CallFunction(const char *functionName, double &result) {
   }
   result = lua_tonumber(this->Lua, -1);
   lua_pop(this->Lua, 1);
-  return false;
+  return true;
 }
 
 bool LuaAdapter::PushFunction(Lua_callback_function function,

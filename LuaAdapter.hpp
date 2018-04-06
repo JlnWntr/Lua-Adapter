@@ -208,6 +208,16 @@ public:
 
   /**
   * Calls a lua-function
+  * @param functionName of the lua-function
+  * @param string a string-argument
+  * @param length of this string
+  * @param result new value (string) from the lua-function
+  * @return true on success, false on error
+  */
+  bool CallFunction(const char *functionName, const char *const string, size_t &length, std::string &result);
+
+  /**
+  * Calls a lua-function
   * @param name of the lua-function
   * @param result new value from the lua-function
   * @return true on success, false on error
