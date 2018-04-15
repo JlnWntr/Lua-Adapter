@@ -529,7 +529,6 @@ bool LuaAdapter::CallFunction(const char *functionName, const char *const string
   if ((lua_pcall(this->Lua, 1, 1, 0) != LUA_OK) ||
       (lua_isstring(this->Lua, -1) == false)) {
     lua_pop(this->Lua, 1);
-    std::cout << "Lua-Adapter-Error: CallFunction: lua_isstring results to false!\n";
     return false;
   }
   size_t l {0};
