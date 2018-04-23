@@ -24,6 +24,7 @@
 #define LUA_ADAPTER_H
 
 #include <iostream>
+#include <string>
 #include <lua.hpp>
 
 typedef int (*Lua_callback_function)(lua_State *L);
