@@ -43,6 +43,10 @@ function gcd(n, m)
     end
 end
 
+function test()
+    print("\n Lua: Test \n")
+end
+
 -- Calling a C/C++-function
 if(not (test_function==nil)) then
     print ("Lua: ".. 44 .. " * 2 = " .. test_function(44))

@@ -168,14 +168,18 @@ int main(int argc, char *argv[]) {
 
 
   /**
-   * calling a lua-function (see test.lua)
+   * calling a lua-function
+   **/
+  lua.CallFunction("test");
+
+  /**
+   * calling another lua-function (see test.lua)
    */
   int test[] = {36, 24};
   int result{0};
   lua.CallFunction("gcd", 2, test, result);
   std::cout << "gcd: " << result << "\n";
   std::cout << "\n";
-
 
   test_function(nullptr); // this is just to ignore a compile-warning
 
