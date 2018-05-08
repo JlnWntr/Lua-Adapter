@@ -484,7 +484,7 @@ bool LuaAdapter::GetNestedField(unsigned short int k, unsigned short int j,
 }
 
 bool LuaAdapter::CallFunction(const char *functionName,
-                              const unsigned short int argc, int args[],
+                              const unsigned short int argc, const int args[],
                               int &result) {
   if (!this->Lua) {
     return false;
@@ -494,13 +494,13 @@ bool LuaAdapter::CallFunction(const char *functionName,
   for (unsigned char i = 0; i < argc; i++)
     if (args + i)
       lua_pushnumber(this->Lua, args[i]);
-
-  if ((lua_pcall(this->Lua, argc, 1, 0) != LUA_OK) ||
-      (lua_isnumber(this->Lua, -1) == false)) {
-    lua_pop(this->Lua, 1);
+  if (lua_pcall(this->Lua, argc, 1, 0) != LUA_OK){
     return false;
   }
-  result = lua_tointeger(this->Lua, -1);
+
+  if(lua_isnumber(this->Lua, -1)) {
+    result = lua_tointeger(this->Lua, -1);
+  }
   lua_pop(this->Lua, 1);
   return true;
 }
@@ -517,6 +517,17 @@ bool LuaAdapter::CallFunction(const char *functionName, const char *const string
   }
   lua_pop(this->Lua, 1);
   return true;
+}
+
+bool LuaAdapter::CallFunction(const char *functionName) {
+  if (!this->Lua) {
+    return false;
+  }
+  lua_getglobal(this->Lua, functionName);
+  if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK) {
+    return true;
+  }
+  return false;
 }
 
 bool LuaAdapter::CallFunction(const char *functionName, const char *const string,  size_t &length, std::string &result) {

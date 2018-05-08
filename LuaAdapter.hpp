@@ -197,7 +197,7 @@ public:
   * @return true on success, false on error
   */
   bool CallFunction(const char *functionName, const unsigned short int argc,
-                    int args[], int &result);
+                    const int args[], int &result);
   /**
   * Calls a lua-function
   * @param functionName of the lua-function
@@ -206,6 +206,13 @@ public:
   * @return true on success, false on error
   */
   bool CallFunction(const char *functionName, const char *const string, const size_t length);
+
+  /**
+  * Calls a lua-function
+  * @param functionName of the lua-function
+  * @return true on success, false on error
+  */
+  bool CallFunction(const char *functionName);
 
   /**
   * Calls a lua-function
