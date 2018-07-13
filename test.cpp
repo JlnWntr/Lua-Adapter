@@ -36,7 +36,7 @@ static int test_function(lua_State *L);
 int main(int argc, char *argv[]) {
 
   LuaAdapter lua{"test.lua"};
-  //lua.Debug();
+  // lua.Debug();
 
   /**
    * Parameterize your application.
@@ -68,8 +68,7 @@ int main(int argc, char *argv[]) {
 
   std::cout << "\n";
 
-
-/** - TABLE-TESTS ----------------------------------------------------*/
+  /** - TABLE-TESTS ----------------------------------------------------*/
   LuaTable luaTable{lua};
 
   if (luaTable.Open("Table1")) {
@@ -142,23 +141,23 @@ int main(int argc, char *argv[]) {
     luaTable.Close(); // close "Strings"
   }
 
-
   /* ------------------ ------------------------------------------------*/
   // Check lua's internal stack
   std::cout << "\n";
   std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // should be 0
- // let's close ..
+
+  // let's close ..
   lua.Close();
   // and (re-)initialize for further tests..
   lua.Init();
 
-/** - FUNCTION-TESTS -------------------------------------------------*/
+  /** - FUNCTION-TESTS -------------------------------------------------*/
 
   LuaFunction luaFunction{lua};
   /**
    * Define a C/C++-function that can be called from lua (see test.lua)
    **/
-   luaFunction.Push(test_function, "test_function");
+  luaFunction.Push(test_function, "test_function");
   /**
    * and THEN load the script:
    */
@@ -187,10 +186,10 @@ int main(int argc, char *argv[]) {
  * This C++-function can be called from Lua
  */
 static int test_function(lua_State *L) {
-  if(!L)
+  if (!L)
     return 1;
   LuaAdapter lua{L};
-  double number{lua_tonumber(L, 1)};  /* get argument */
+  double number{lua_tonumber(L, 1)}; /* get argument */
   number *= 2;
   lua.Push(number);
   return 1;
