@@ -13,12 +13,7 @@ matrix ={
     {777,888,999}
 }
 
--- 123 is a default-value for GlobalVar but CAN be changed from C/C++ BEFORE
--- loading the actual lua-file (see test.cpp)
-if GlobalVar == nil then GlobalVar = 123 end
-
-
-Table1 = {ID = 1,   Value = GlobalVar, Text = "Test"}      -- Val = 123
+Table1 = {ID = 1,   Value = 123, Text = "Test"}      -- Val = 123
 
 Table2  = {
     t = "Table2",
@@ -48,6 +43,6 @@ function test()
 end
 
 -- Calling a C/C++-function
-if(not (test_function==nil)) then
+if not (test_function==nil)  then
     print ("Lua: ".. 44 .. " * 2 = " .. test_function(44))
 end

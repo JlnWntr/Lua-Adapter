@@ -24,6 +24,12 @@
 #ifndef LUA_ADAPTER_H
 #include "LuaAdapter.hpp"
 #endif
+#ifndef LUA_FUNCTION_H
+#include "LuaFunction.hpp"
+#endif
+#ifndef LUA_TABLE_H
+#include "LuaTable.hpp"
+#endif
 
 static int test_function(lua_State *L);
 
@@ -35,32 +41,10 @@ int main(int argc, char *argv[]) {
   /**
    * Parameterize your application.
    */
+  // get height
   int height{0};
   lua.Get("height", height);
   std::cout << "height: " << height << "\n\n";
-
-  // let's close ..
-  lua.Close();
-  // and (re-)initialize for further tests..
-  lua.Init();
-
-  /**
-   * Hint: You CAN change a (default) value of a global lua variable BEFORE
-   *loading the actual lua-file
-   */
-  if (lua.Set("GlobalVar", 321) == false) {
-    std::cout << "Could not set 'GlobalVar'!\n";
-  }
-
-  /**
-   * Define a C/C++-function that can be called from lua (see test.lua)
-   **/
-   lua.PushFunction(test_function, "test_function");
-  /**
-   * and THEN load the script:
-   */
-  lua.Load("test.lua");
-
 
   // get an int
   int width{0};
@@ -84,100 +68,113 @@ int main(int argc, char *argv[]) {
 
   std::cout << "\n";
 
-  /**
-   * table-tests
-   */
-  if (lua.OpenTable("Table1")) {
+
+/** - TABLE-TESTS ----------------------------------------------------*/
+  LuaTable luaTable{lua};
+
+  if (luaTable.Open("Table1")) {
     int ID{0};
-    lua.GetField("ID", ID);
+    luaTable.Get("ID", ID);
     std::cout << "ID: " << ID << "\n";
 
     int Value{0};
-    lua.GetField("Value", Value);
+    luaTable.Get("Value", Value);
     std::cout << "Value: " << Value << "\n";
 
     std::string Text{};
-    lua.GetField("Text", Text);
+    luaTable.Get("Text", Text);
     std::cout << "Text: " << Text << "\n";
 
-    lua.CloseTable(); // close "Table1"
+    luaTable.Close(); // close "Table1"
   }
-
   std::cout << "\n";
 
-
-  if (lua.OpenTable("matrix")) {
+  if (luaTable.Open("matrix")) {
 
     // Get the length of the table
-    const unsigned short int length{lua.GetTableLength()};
+    const unsigned short int length{luaTable.Length()};
     std::cout << "Table-length: " << length << "\n";
 
     for (unsigned char j = 1; j <= length; j++) {
       for (unsigned char i = 1; i <= length; i++) {
         int temp = 0;
-        lua.GetNestedField(j, i, temp); // matrix[j][i]
+        luaTable.Get(j, i, temp); // matrix[j][i]
         std::cout << temp << " ";
       }
       std::cout << "\n";
     }
-    lua.CloseTable(); // close table "matrix"
+    luaTable.Close(); // close table "matrix"
   }
   std::cout << "\n";
 
-  /**
-   * more table-tests
-   */
-  if (lua.OpenTable("Table2")) {
+  if (luaTable.Open("Table2")) {
     int X{0};
-    lua.GetField("X", X);
+    luaTable.Get("X", X);
     std::cout << "X: " << X << "\n";
 
     int Y{0};
-    lua.GetField("Y", Y);
+    luaTable.Get("Y", Y);
     std::cout << "Y: " << Y << "\n";
 
-    if (lua.OpenNestedTable("Test")) {
+    if (luaTable.Open("Test")) { // open 'nested' table "Test"
       int A = 0;
-      lua.GetField("A", A);
+      luaTable.Get("A", A);
       std::cout << "\t A: " << A << "\n";
       int B = 0;
-      lua.GetField("B", B);
+      luaTable.Get("B", B);
       std::cout << "\t B: " << B << "\n";
 
-      lua.CloseTable(); // close nested table "Test"
+      luaTable.Close(); // close nested table "Test"
     }
-    lua.CloseTable(); // close "Table2"
+    luaTable.Close(); // close "Table2"
   }
 
-  if (lua.OpenTable("Strings")) {
+  if (luaTable.Open("Strings")) {
     std::string k, v;
 
     // Get string-field by index
-    lua.GetField(1, k);
-    lua.GetField(2, v);
+    luaTable.Get(1, k);
+    luaTable.Get(2, v);
 
     std::cout << "Key: " << k << "\n";
     std::cout << "Value: " << v << "\n";
 
-    lua.CloseTable(); // close "Strings"
+    luaTable.Close(); // close "Strings"
   }
 
+
+  /* ------------------ ------------------------------------------------*/
   // Check lua's internal stack
   std::cout << "\n";
   std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // should be 0
+ // let's close ..
+  lua.Close();
+  // and (re-)initialize for further tests..
+  lua.Init();
 
+/** - FUNCTION-TESTS -------------------------------------------------*/
+
+  LuaFunction luaFunction{lua};
+  /**
+   * Define a C/C++-function that can be called from lua (see test.lua)
+   **/
+   luaFunction.Push(test_function, "test_function");
+  /**
+   * and THEN load the script:
+   */
+  lua.Load("test.lua");
 
   /**
    * calling a lua-function
    **/
-  lua.CallFunction("test");
+  luaFunction.Call("test");
 
   /**
    * calling another lua-function (see test.lua)
    */
   int test[] = {36, 24};
   int result{0};
-  lua.CallFunction("gcd", 2, test, result);
+  luaFunction.Call("gcd", 2, test, result);
   std::cout << "gcd: " << result << "\n";
   std::cout << "\n";
 
@@ -185,7 +182,6 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-
 
 /**
  * This C++-function can be called from Lua
