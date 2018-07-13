@@ -26,13 +26,12 @@
 #endif
 
 LuaAdapter::LuaAdapter(lua_State *const lua)
-    : Lua{lua}, print{false}, single{(lua) ? false : true},
-      outputPrefix{"Lua > "} {
+    : Lua{lua}, print{false}, single{(lua) ? false : true}       {
   this->Init();
 }
 
 LuaAdapter::LuaAdapter(const std::string &filename)
-    : Lua{nullptr}, print{false}, single{true}, outputPrefix{"Lua > "} {
+    : Lua{nullptr}, print{false}, single{true} {
   this->Load(filename);
 }
 
@@ -50,7 +49,7 @@ bool LuaAdapter::Load(const char *filename) {
   if ((luaL_loadfile(this->Lua, filename) == 0) && this->Eval()) {
     return true;
   }
-  std::cout << this->outputPrefix << "Error in Lua-file '";
+  std::cout << LUA_PREFIX << "Error in Lua-file '";
   std::cout << filename << "': ";
   std::cout << lua_tostring(this->Lua, -1);
   std::cout << "\n";
@@ -63,14 +62,14 @@ bool LuaAdapter::Eval() {
     return ((this->Lua) && (lua_pcall(this->Lua, 0, 0, 0) == 0));
 
   if (!this->Lua) {
-    std::cout << this->outputPrefix
+    std::cout << LUA_PREFIX
               << "Error: Lua-state invalid. Call init() first!\n";
     return false;
   }
   const int pcall{lua_pcall(this->Lua, 0, 0, 0)};
   if (pcall == 0)
     return true;
-  std::cout << this->outputPrefix << "Error: pcall failed. Code: ";
+  std::cout << LUA_PREFIX << "Error: pcall failed. Code: ";
   std::cout << pcall;
   std::cout << ", '" << lua_tostring(this->Lua, -1) << "'\n";
   /* LUA_ERRRUN: a runtime error. (2)
@@ -84,21 +83,8 @@ bool LuaAdapter::Load(const std::string &filename) {
   return this->Load(filename.c_str());
 }
 
-bool LuaAdapter::GetField(const char *name) {
-  if ((!this->Lua) || (!name) || (!lua_istable(this->Lua, -1)))
-    return false;
 
-  lua_getfield(this->Lua, -1, name);
-  return true;
-}
 
-bool LuaAdapter::GetI(unsigned short int i) {
-  if ((!this->Lua) || (!lua_istable(this->Lua, -1)) || (i < 1))
-    return false;
-
-  lua_rawgeti(this->Lua, -1, i);
-  return true;
-}
 
 bool LuaAdapter::GetGlobal(const char *name) {
   if ((!this->Lua) || (!name))
@@ -118,7 +104,7 @@ bool LuaAdapter::Get(const char *name, int &result) {
   }
   result = lua_tointeger(this->Lua, -1);
   if (this->print)
-    std::cout << this->outputPrefix << "get int '" << name << "' = '" << result
+    std::cout << LUA_PREFIX << "get int '" << name << "' = '" << result
               << "' \n";
   lua_pop(this->Lua, 1);
   return true;
@@ -134,7 +120,7 @@ bool LuaAdapter::Get(const char *name, std::string &result) {
   }
   result = lua_tostring(this->Lua, -1);
   if (this->print)
-    std::cout << this->outputPrefix << "get string '" << name << "' = '"
+    std::cout << LUA_PREFIX << "get string '" << name << "' = '"
               << result << "' \n";
   lua_pop(this->Lua, 1);
   return true;
@@ -150,7 +136,7 @@ bool LuaAdapter::Get(const char *name, double &result) {
   }
   result = lua_tonumber(this->Lua, -1);
   if (this->print)
-    std::cout << this->outputPrefix << "get double '" << name << "' = '"
+    std::cout << LUA_PREFIX << "get double '" << name << "' = '"
               << result << "' \n";
   lua_pop(this->Lua, 1);
   return true;
@@ -174,63 +160,13 @@ bool LuaAdapter::Get(const char *name, bool &result) {
   }
   result = lua_toboolean(this->Lua, -1);
   if (this->print)
-    std::cout << this->outputPrefix << "get boolean '" << name << "' = '"
+    std::cout << LUA_PREFIX << "get boolean '" << name << "' = '"
               << result << "' \n";
   lua_pop(this->Lua, 1);
   return true;
 }
 
-bool LuaAdapter::OpenTable(const char *name) {
-  if (this->GetGlobal(name) && lua_istable(this->Lua, -1)) {
-    if (this->print)
-      std::cout << this->outputPrefix << "open table '" << name << "' \n";
-    return true;
-  }
-  this->Pop();
-  return false;
-}
 
-bool LuaAdapter::OpenNestedTable(const char *name) {
-  if ((!this->Lua)) {
-    return false;
-  }
-  if (this->print)
-    std::cout << "\t" << this->outputPrefix << "opening nested table '" << name
-              << "' ... ";
-
-  if (lua_istable(this->Lua, -1) == false) {
-    return false;
-  }
-
-  lua_getfield(this->Lua, -1, name);
-
-  if (lua_isnil(this->Lua, -1)) {
-    this->Pop();
-    return false;
-  }
-
-  if (lua_istable(this->Lua, -1)) {
-    if (this->print)
-      std::cout << "ok! \n";
-    return true;
-  }
-  this->Pop();
-  return false;
-}
-
-unsigned short int LuaAdapter::GetTableLength() {
-  unsigned short int result{0};
-  if ((!this->Lua)) {
-    return result;
-  }
-  if (lua_istable(this->Lua, -1) == false) {
-    return result;
-  }
-  lua_len(this->Lua, -1);
-  result = lua_tointeger(this->Lua, -1);
-  this->Pop();
-  return result;
-}
 
 bool LuaAdapter::Flush() {
   if ((!this->Lua))
@@ -240,101 +176,8 @@ bool LuaAdapter::Flush() {
   return true;
 }
 
-void LuaAdapter::SetLogMode(bool mode) { this->print = mode; }
 
-bool LuaAdapter::GetField(const char *name, std::string &result) {
-  if (this->GetField(name) == false)
-    return false;
 
-  if (lua_type(this->Lua, -1) != LUA_TSTRING) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = lua_tostring(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t" << this->outputPrefix << "get string-field '" << name
-              << "' = '" << result << "' \n";
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::GetField(const char *name, int &result) {
-  if (this->GetField(name) == false)
-    return false;
-  if (lua_isnumber(this->Lua, -1) != 1) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = lua_tointeger(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t" << this->outputPrefix << "get int-field '" << name
-              << "' = '" << result << "' \n";
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::GetField(unsigned short int i, int &result) {
-  if (this->GetI(i) == false)
-    return false;
-
-  if (lua_isnumber(this->Lua, -1) != 1) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = lua_tointeger(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t" << this->outputPrefix << "get int-field " << i << " = '"
-              << result << "' \n";
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::GetField(unsigned short int i, double &result) {
-  if (this->GetI(i) == false)
-    return false;
-
-  if (lua_isnumber(this->Lua, -1) != 1) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = lua_tonumber(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t" << this->outputPrefix << "get double-field " << i
-              << " = '" << result << "' \n";
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::GetField(unsigned short int i, float &result) {
-  if (this->GetI(i) == false)
-    return false;
-
-  if (lua_isnumber(this->Lua, -1) != 1) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = (float)lua_tonumber(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t" << this->outputPrefix << "get float-field " << i << " = '"
-              << result << "' \n";
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::GetField(unsigned short int i, std::string &result) {
-  if (this->GetI(i) == false)
-    return false;
-  if (lua_type(this->Lua, -1) != LUA_TSTRING) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = lua_tostring(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t" << this->outputPrefix << "get string-field " << i << " = '"
-              << result << "' \n";
-  lua_pop(this->Lua, 1);
-  return true;
-}
 
 bool LuaAdapter::Set(const char *name, const char *value) {
   if (!this->Lua)
@@ -342,7 +185,7 @@ bool LuaAdapter::Set(const char *name, const char *value) {
   lua_pushstring(this->Lua, value);
   lua_setglobal(this->Lua, name);
   if (this->print)
-    std::cout << this->outputPrefix << "set string '" << name << "' = '"
+    std::cout << LUA_PREFIX << "set string '" << name << "' = '"
               << value << "' \n";
   return true;
 }
@@ -354,7 +197,7 @@ bool LuaAdapter::Set(const char *name, int value) {
   lua_pushnumber(this->Lua, value);
   lua_setglobal(this->Lua, name);
   if (this->print)
-    std::cout << this->outputPrefix << "set int '" << name << "' = '" << value
+    std::cout << LUA_PREFIX << "set int '" << name << "' = '" << value
               << "' \n";
   return true;
 }
@@ -365,7 +208,7 @@ bool LuaAdapter::Set(const char *name, const double value) {
   lua_pushnumber(this->Lua, value);
   lua_setglobal(this->Lua, name);
   if (this->print)
-    std::cout << this->outputPrefix << "set double '" << name << "' = '"
+    std::cout << LUA_PREFIX << "set double '" << name << "' = '"
               << value << "' \n";
   return true;
 }
@@ -376,7 +219,7 @@ bool LuaAdapter::Set(const char *name, const bool value) {
   lua_pushboolean(this->Lua, value);
   lua_setglobal(this->Lua, name);
   if (this->print)
-    std::cout << this->outputPrefix << "set boolean '" << name << "' = '"
+    std::cout << LUA_PREFIX << "set boolean '" << name << "' = '"
               << value << "' \n";
   return true;
 }
@@ -385,216 +228,8 @@ bool LuaAdapter::Set(const char *name, const float value) {
   return this->Set(name, (double)value);
 }
 
-bool LuaAdapter::GetNestedField(unsigned short int j, unsigned short int i,
-                                double &result) {
-  if (this->GetI(j) == false) {
-    return false;
-  }
-  if (this->GetI(i) == false) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  if (lua_isnumber(this->Lua, -1))
-    result = lua_tonumber(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t"
-              << "\t" << this->outputPrefix << "get nested double-field (" << j
-              << "|" << i << ")' = '" << result << "' \n";
-  lua_pop(this->Lua, 2);
-  return true;
-}
 
-bool LuaAdapter::GetNestedField(unsigned short int j, unsigned short int i,
-                                float &result) {
-  if (this->GetI(j) == false) {
-    return false;
-  }
-  if (this->GetI(i) == false) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  if (lua_isnumber(this->Lua, -1))
-    result = (float)lua_tonumber(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t"
-              << "\t" << this->outputPrefix << "get nested float-field (" << j
-              << "|" << i << ")' = '" << result << "' \n";
-  lua_pop(this->Lua, 2);
-  return true;
-}
 
-bool LuaAdapter::GetNestedField(unsigned short int j, unsigned short int i,
-                                int &result) {
-  if (this->GetI(j) == false) {
-    return false;
-  }
-  if (this->GetI(i) == false) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  if (lua_isnumber(this->Lua, -1))
-    result = lua_tointeger(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t"
-              << "\t" << this->outputPrefix << "get nested int-field (" << j
-              << "|" << i << ")' = '" << result << "' \n";
-  lua_pop(this->Lua, 2);
-  return true;
-}
-
-bool LuaAdapter::GetNestedField(unsigned short int j, unsigned short int i,
-                                std::string &result) {
-  if (this->GetI(j) == false) {
-    return false;
-  }
-  if (this->GetI(i) == false) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  if (lua_isstring(this->Lua, -1))
-    result = lua_tostring(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t"
-              << "\t" << this->outputPrefix << "get nested string-field (" << j
-              << "|" << i << ")' = '" << result << "' \n";
-  lua_pop(this->Lua, 2);
-  return true;
-}
-
-bool LuaAdapter::GetNestedField(unsigned short int k, unsigned short int j,
-                                unsigned short int i, int &result) {
-  if (this->GetI(k) == false) {
-    return false;
-  }
-  if (this->GetI(j) == false) {
-    return false;
-  }
-  if (this->GetI(i) == false) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  if (lua_isnumber(this->Lua, -1))
-    result = lua_tointeger(this->Lua, -1);
-  if (this->print)
-    std::cout << "\t"
-              << "\t" << this->outputPrefix << "get nested int-field (" << j
-              << "|" << i << ")' = '" << result << "' \n";
-  lua_pop(this->Lua, 3);
-  return true;
-}
-
-bool LuaAdapter::CallFunction(const char *functionName,
-                              const unsigned short int argc, const int args[],
-                              int &result) {
-  if (!this->Lua) {
-    return false;
-  }
-  lua_getglobal(this->Lua, functionName);
-
-  for (unsigned char i = 0; i < argc; i++)
-    if (args + i)
-      lua_pushnumber(this->Lua, args[i]);
-  if (lua_pcall(this->Lua, argc, 1, 0) != LUA_OK){
-    return false;
-  }
-
-  if(lua_isnumber(this->Lua, -1)) {
-    result = lua_tointeger(this->Lua, -1);
-  }
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::CallFunction(const char *functionName, const char *const string, const size_t length) {
-  if (!this->Lua) {
-    return false;
-  }
-  lua_getglobal(this->Lua, functionName);
-  lua_pushlstring(this->Lua, string, length);
-  if ((lua_pcall(this->Lua, 1, 1, 0) != LUA_OK)) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::CallFunction(const char *functionName) {
-  if (!this->Lua) {
-    return false;
-  }
-  lua_getglobal(this->Lua, functionName);
-  if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK) {
-    return true;
-  }
-  return false;
-}
-
-bool LuaAdapter::CallFunction(const char *functionName, const char *const string,  size_t &length, std::string &result) {
-  if (!this->Lua) {
-    return false;
-  }
-  lua_getglobal(this->Lua, functionName);
-  lua_pushlstring(this->Lua, string, length);
-
-  if ((lua_pcall(this->Lua, 1, 1, 0) != LUA_OK) ||
-      (lua_isstring(this->Lua, -1) == false)) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  size_t l {0};
-  const char *buffer {lua_tolstring(this->Lua, -1, &l)};
-  if((!buffer) || (l==0)){
-    return false;
-  }
-  length = l;
-  result = std::string{buffer, length};
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::CallFunction(const char *functionName, const std::string arg, std::string &result) {
-  if (!this->Lua) {
-    return false;
-  }
-  lua_getglobal(this->Lua, functionName);
-  lua_pushlstring(this->Lua, arg.c_str(), arg.length());
-
-  if ((lua_pcall(this->Lua, 1, 1, 0) != LUA_OK) ||
-      (lua_isstring(this->Lua, -1) == false)) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = lua_tostring(this->Lua, -1);
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::CallFunction(const char *functionName, double &result) {
-  if (!this->Lua) {
-    return false;
-  }
-  lua_getglobal(this->Lua, functionName);
-
-  if ((lua_pcall(this->Lua, 0, 1, 0) != LUA_OK) ||
-      (lua_isnumber(this->Lua, -1) == false)) {
-    lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = lua_tonumber(this->Lua, -1);
-  lua_pop(this->Lua, 1);
-  return true;
-}
-
-bool LuaAdapter::PushFunction(Lua_callback_function function,
-                              const char *functionName) {
-  if (!this->Lua)
-    return false;
-
-  lua_pushcfunction(this->Lua, function);
-  lua_setglobal(this->Lua, functionName);
-  return true;
-}
 
 bool LuaAdapter::Push(double number) {
   if (!this->Lua)

@@ -27,8 +27,7 @@
 #include <string>
 #include <lua.hpp>
 
-typedef int (*Lua_callback_function)(lua_State *L);
-
+#define LUA_PREFIX "Lua > "
 class LuaAdapter {
 
 public:
@@ -86,84 +85,6 @@ public:
   bool Get(const char *name, bool &result);
 
   /**
-  * Opens a lua-table
-  * @param name Name of the table inside loaded lua state
-  * @return true on success, false on error
-  */
-  bool OpenTable(const char *name);
-  bool OpenTable(const std::string &name) {
-    return this->OpenTable(name.c_str());
-  }
-
-  /**
-  * Opens a table(-field) inside a table
-  * @param name Name of the table inside the opened table
-  * @return true on success, false on error
-  */
-  bool OpenNestedTable(const char *name);
-  bool OpenNestedTable(const std::string &name) {
-    return this->OpenNestedTable(name.c_str());
-  }
-
-  /**
-  * Get the length of the current (opened) table
-  * [tables with integer keys and without 'nil-holes']
-  * @return the length of the table
-  */
-  unsigned short int GetTableLength();
-
-  /**
-  * Gets a field from an opened table
-  * @param name Name of the field
-  * @param result value of the field
-  * @return true on success, false on error
-  */
-  bool GetField(const char *name, std::string &result);
-  bool GetField(const char *name, int &result);
-
-  /**
-  * Gets a field from an opened table
-  * @param i i-th field (starting at 1)
-  * @param result value of the field
-  * @return true on success, false on error
-  */
-  bool GetField(unsigned short int i, int &result);
-  bool GetField(unsigned short int i, double &result);
-  bool GetField(unsigned short int i, float &result);
-  bool GetField(unsigned short int i, std::string &result);
-
-  /**
-  * Gets a ("2D"-)field value from an opened table.
-  * NOTE: DO NOT CALL openNestedTable(name) for this!
-  * Example: identity ={
-  *               {1, 0, 0},
-  *               {0, 1, 0},
-  *               {0, 0, 1},
-  *           }
-  * @param j row
-  * @param i col
-  * @param result value of the field
-  * @return true on success, false on error
-  */
-  bool GetNestedField(unsigned short int j, unsigned short int i,
-                      double &result);
-  bool GetNestedField(unsigned short int j, unsigned short int i,
-                      float &result);
-  bool GetNestedField(unsigned short int j, unsigned short int i, int &result);
-  bool GetNestedField(unsigned short int j, unsigned short int i,
-                      std::string &result);
-  /**
-      * Like above but gets a ("3D"-)field value.
-  * @param k row
-      * @param j col
-      * @param i inner table
-      * @param result value
-      * @return true on success, false on error
-      */
-  bool GetNestedField(unsigned short int k, unsigned short int j,
-                      unsigned short int i, int &result);
-
-  /**
   * Sets the value of global lua-var.
   * @param name of the variable
   * @param value the var's value
@@ -176,79 +97,10 @@ public:
   bool Set(const char *name, const bool value);
 
   /**
-  * Closes a table
-  * Call this function after every opening (and use) of a table!
-  * (Prevents "stack-smashing".)
-  */
-  void CloseTable() { return this->Pop(1); }
-
-  /**
       * Execute any string
   * @param string to execute, for example "test = io.read()"
       */
   bool DoString(const char *string) { return luaL_dostring(this->Lua, string); }
-
-  /**
-  * Calls a lua-function
-  * @param name of the lua-function
-  * @param argc number of arguments passed to the lua-function
-  * @param args function-arguments
-  * @param result new value from the lua-function
-  * @return true on success, false on error
-  */
-  bool CallFunction(const char *functionName, const unsigned short int argc,
-                    const int args[], int &result);
-  /**
-  * Calls a lua-function
-  * @param functionName of the lua-function
-  * @param string a string-argument
-  * @param length of this string
-  * @return true on success, false on error
-  */
-  bool CallFunction(const char *functionName, const char *const string, const size_t length);
-
-  /**
-  * Calls a lua-function
-  * @param functionName of the lua-function
-  * @return true on success, false on error
-  */
-  bool CallFunction(const char *functionName);
-
-  /**
-  * Calls a lua-function
-  * @param functionName of the lua-function
-  * @param string a string-argument
-  * @param length of this string
-  * @param result new value (string) from the lua-function
-  * @return true on success, false on error
-  */
-  bool CallFunction(const char *functionName, const char *const string, size_t &length, std::string &result);
-
-  /**
-  * Calls a lua-function
-  * @param name of the lua-function
-  * @param result new value from the lua-function
-  * @return true on success, false on error
-  */
-  bool CallFunction(const char *functionName, double &result);
-
-  /**
-  * Calls a lua-function
-  * @param name of the lua-function
-  * @param arg argument of the lua-function
-  * @param result new value (string) from the lua-function
-  * @return true on success, false on error
-  */
-  bool CallFunction(const char *functionName, const std::string arg, std::string &result);
-
-  /**
-  * Makes a C-/C++-function-call available for lua
-  * (it's called pushFunction(), but you're not 'incrementing' the stack)
-  * @param function C-/C++-function
-  * @param functionName name of the function
-  * @return true on success, false on error
-  */
-  bool PushFunction(Lua_callback_function function, const char *functionName);
 
   /**
   * Push data on the lua-stack. (Mind the stack!)
@@ -271,12 +123,13 @@ public:
   * lua-adapter will print out debug-information for each following
   * function-call.
   */
-  void Debug() { this->SetLogMode(true); }
+  void Debug() { this->print = true; }
   /**
   * Set debug output on or off
   * @param mode if mode==true, see debug()
   */
-  void SetLogMode(bool mode);
+
+  bool IsDebugging() const {return this->print;}
 
   /**
   * Pops i entries from Lua's internal stack
@@ -296,6 +149,10 @@ public:
   */
   int GetType() const { return lua_type(this->Lua, 0); }
 
+  lua_State *const GetLuaState()const{
+      return this->Lua;
+  }
+
   /**
   * "Closes" the loaded *.lua-sourcefile
   * This function is called by the destructor of this class!
@@ -306,21 +163,6 @@ private:
   lua_State *Lua;
   bool print;
   bool single;
-  const std::string outputPrefix;
-
-  /**
-  * Gets a field from an opened table and puts its value on the stack
-  * @param name Name of the field
-  * @return true on success, false on error
-  */
-  bool GetField(const char *name);
-
-  /**
-  * Gets the i-th (nested) field from an opened table
-  * @param i the i-th field
-  * @return true on success, false on error
-  */
-  bool GetI(unsigned short int i);
 
   /**
   * Gets the value of a globally loaded lua-variable
