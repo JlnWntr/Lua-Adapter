@@ -2,9 +2,8 @@
 #include "LuaFunction.hpp"
 #endif
 
-bool LuaFunction::Call(const char *functionName,
-                              const unsigned short int argc, const int args[],
-                              int &result) {
+bool LuaFunction::Call(const char *functionName, const unsigned short int argc,
+                       const int args[], int &result) {
   if (!this->Lua) {
     return false;
   }
@@ -13,18 +12,19 @@ bool LuaFunction::Call(const char *functionName,
   for (unsigned char i = 0; i < argc; i++)
     if (args + i)
       lua_pushnumber(this->Lua, args[i]);
-  if (lua_pcall(this->Lua, argc, 1, 0) != LUA_OK){
+  if (lua_pcall(this->Lua, argc, 1, 0) != LUA_OK) {
     return false;
   }
 
-  if(lua_isnumber(this->Lua, -1)) {
+  if (lua_isnumber(this->Lua, -1)) {
     result = lua_tointeger(this->Lua, -1);
   }
   lua_pop(this->Lua, 1);
   return true;
 }
 
-bool LuaFunction::Call(const char *functionName, const char *const string, const size_t length) {
+bool LuaFunction::Call(const char *functionName, const char *const string,
+                       const size_t length) {
   if (!this->Lua) {
     return false;
   }
@@ -49,7 +49,8 @@ bool LuaFunction::Call(const char *functionName) {
   return false;
 }
 
-bool LuaFunction::Call(const char *functionName, const char *const string,  size_t &length, std::string &result) {
+bool LuaFunction::Call(const char *functionName, const char *const string,
+                       size_t &length, std::string &result) {
   if (!this->Lua) {
     return false;
   }
@@ -61,9 +62,9 @@ bool LuaFunction::Call(const char *functionName, const char *const string,  size
     lua_pop(this->Lua, 1);
     return false;
   }
-  size_t l {0};
-  const char *buffer {lua_tolstring(this->Lua, -1, &l)};
-  if((!buffer) || (l==0)){
+  size_t l{0};
+  const char *buffer{lua_tolstring(this->Lua, -1, &l)};
+  if ((!buffer) || (l == 0)) {
     return false;
   }
   length = l;
@@ -72,7 +73,8 @@ bool LuaFunction::Call(const char *functionName, const char *const string,  size
   return true;
 }
 
-bool LuaFunction::Call(const char *functionName, const std::string arg, std::string &result) {
+bool LuaFunction::Call(const char *functionName, const std::string arg,
+                       std::string &result) {
   if (!this->Lua) {
     return false;
   }
@@ -106,7 +108,7 @@ bool LuaFunction::Call(const char *functionName, double &result) {
 }
 
 bool LuaFunction::Push(Lua_callback_function function,
-                              const char *functionName) {
+                       const char *functionName) {
   if (!this->Lua)
     return false;
 
@@ -115,15 +117,8 @@ bool LuaFunction::Push(Lua_callback_function function,
   return true;
 }
 
-LuaFunction::LuaFunction(LuaAdapter &lua)
-    : Lua{lua.GetLuaState()} {
+LuaFunction::LuaFunction(LuaAdapter &lua) : Lua{lua.GetLuaState()} {}
 
-}
+LuaFunction::LuaFunction(lua_State *const lua) : Lua{lua} {}
 
-LuaFunction::LuaFunction(lua_State *const lua)
-    : Lua{lua} {
-}
-
-LuaFunction::~LuaFunction()
-     {
-}
+LuaFunction::~LuaFunction() {}

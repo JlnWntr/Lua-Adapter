@@ -24,98 +24,93 @@
 #ifndef LUA_FUNCTION_H
 #define LUA_FUNCTION_H
 
-
 #ifndef LUA_ADAPTER_H
 #include "LuaAdapter.hpp"
 #endif
-
-
 
 typedef int (*Lua_callback_function)(lua_State *L);
 
 class LuaFunction {
 
-
-    public:
-
-     /**
-  * Default constructor
-  * @param lua uses an existing lua_state
+public:
+  /**
+  *Default constructor
+  *@param lua uses an existing lua_state
   */
   LuaFunction(LuaAdapter &lua);
   LuaFunction(lua_State *const lua = nullptr);
-
 
   /**
   * Destructor
   */
   ~LuaFunction();
 
-         /**
-          * Calls a lua-function
-          * @param name of the lua-function
-          * @param argc number of arguments passed to the lua-function
-          * @param args function-arguments
-          * @param result new value from the lua-function
-          * @return true on success, false on error
-          */
-          bool Call(const char *functionName, const unsigned short int argc,
-                            const int args[], int &result);
-          /**
-          * Calls a lua-function
-          * @param functionName of the lua-function
-          * @param string a string-argument
-          * @param length of this string
-          * @return true on success, false on error
-          */
-          bool Call(const char *functionName, const char *const string, const size_t length);
+  /**
+   * Calls a lua-function
+   * @param name of the lua-function
+   * @param argc number of arguments passed to the lua-function
+   * @param args function-arguments
+   * @param result new value from the lua-function
+   * @return true on success, false on error
+   */
+  bool Call(const char *functionName, const unsigned short int argc,
+            const int args[], int &result);
+  /**
+  * Calls a lua-function
+  * @param functionName of the lua-function
+  * @param string a string-argument
+  * @param length of this string
+  * @return true on success, false on error
+  */
+  bool Call(const char *functionName, const char *const string,
+            const size_t length);
 
-          /**
-          * Calls a lua-function
-          * @param functionName of the lua-function
-          * @return true on success, false on error
-          */
-          bool Call(const char *functionName);
+  /**
+  * Calls a lua-function
+  * @param functionName of the lua-function
+  * @return true on success, false on error
+  */
+  bool Call(const char *functionName);
 
-          /**
-          * Calls a lua-function
-          * @param functionName of the lua-function
-          * @param string a string-argument
-          * @param length of this string
-          * @param result new value (string) from the lua-function
-          * @return true on success, false on error
-          */
-          bool Call(const char *functionName, const char *const string, size_t &length, std::string &result);
+  /**
+  * Calls a lua-function
+  * @param functionName of the lua-function
+  * @param string a string-argument
+  * @param length of this string
+  * @param result new value (string) from the lua-function
+  * @return true on success, false on error
+  */
+  bool Call(const char *functionName, const char *const string, size_t &length,
+            std::string &result);
 
-          /**
-          * Calls a lua-function
-          * @param name of the lua-function
-          * @param result new value from the lua-function
-          * @return true on success, false on error
-          */
-          bool Call(const char *functionName, double &result);
+  /**
+  * Calls a lua-function
+  * @param name of the lua-function
+  * @param result new value from the lua-function
+  * @return true on success, false on error
+  */
+  bool Call(const char *functionName, double &result);
 
-          /**
-          * Calls a lua-function
-          * @param name of the lua-function
-          * @param arg argument of the lua-function
-          * @param result new value (string) from the lua-function
-          * @return true on success, false on error
-          */
-          bool Call(const char *functionName, const std::string arg, std::string &result);
+  /**
+  * Calls a lua-function
+  * @param name of the lua-function
+  * @param arg argument of the lua-function
+  * @param result new value (string) from the lua-function
+  * @return true on success, false on error
+  */
+  bool Call(const char *functionName, const std::string arg,
+            std::string &result);
 
-          /**
-          * Makes a C-/C++-function-call available for lua
-          * (it's called pushFunction(), but you're not 'incrementing' the stack)
-          * @param function C-/C++-function
-          * @param functionName name of the function
-          * @return true on success, false on error
-          */
-          bool Push(Lua_callback_function function, const char *functionName);
+  /**
+  * Makes a C-/C++-function-call available for lua
+  * (it's called pushFunction(), but you're not 'incrementing' the stack)
+  * @param function C-/C++-function
+  * @param functionName name of the function
+  * @return true on success, false on error
+  */
+  bool Push(Lua_callback_function function, const char *functionName);
 
-
-
-    private:
-      lua_State *const Lua;
+private:
+  lua_State *const Lua;
 };
 #endif
