@@ -24,8 +24,8 @@
 #define LUA_ADAPTER_H
 
 #include <iostream>
-#include <string>
 #include <lua.hpp>
+#include <string>
 
 #define LUA_PREFIX "Lua > "
 class LuaAdapter {
@@ -129,7 +129,7 @@ public:
   * @param mode if mode==true, see debug()
   */
 
-  bool IsDebugging() const {return this->print;}
+  bool IsDebugging() const { return this->print; }
 
   /**
   * Pops i entries from Lua's internal stack
@@ -149,9 +149,7 @@ public:
   */
   int GetType() const { return lua_type(this->Lua, 0); }
 
-  lua_State *const GetLuaState()const{
-      return this->Lua;
-  }
+  lua_State *const GetLuaState() const { return this->Lua; }
 
   /**
   * "Closes" the loaded *.lua-sourcefile
