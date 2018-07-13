@@ -11,7 +11,7 @@ Usage:
 
 Compile & test:
 
-      g++ LuaAdapter.cpp test.cpp -std=c++0x -llua -ldl -Wall
+      g++ LuaAdapter.cpp LuaFunction.cpp LuaTable.cpp test.cpp -std=c++0x -llua -ldl -Wall
 
 
 Requirements:
