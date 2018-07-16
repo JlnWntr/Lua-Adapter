@@ -40,10 +40,20 @@ public:
   LuaFunction(LuaAdapter &lua);
   LuaFunction(lua_State *const lua = nullptr);
 
+
+
   /**
   * Destructor
   */
   ~LuaFunction();
+
+  /**
+   * (Re-)Sets the lua state
+   * @param lua lua_state
+  */
+  void SetLuaState(lua_State *const lua){
+    this->Lua = lua;
+  }
 
   /**
    * Calls a lua-function
@@ -110,7 +120,18 @@ public:
   */
   bool Push(Lua_callback_function function, const char *functionName);
 
+
+
 private:
-  lua_State *const Lua;
+  lua_State *Lua;
+
+  /**
+  * Calls lua's pcall and outputs errors.
+  * @param nargs number of args
+  * @param nresults number of results
+  * @param int msgh see https://www.lua.org/manual/5.3/manual.html#lua_pcall
+  * @return true on success, false on error
+  */
+  bool pcall(int nargs, int nresults, int msgh);
 };
 #endif
