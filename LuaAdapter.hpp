@@ -28,6 +28,7 @@
 #include <string>
 
 #define LUA_PREFIX "Lua > "
+
 class LuaAdapter {
 
 public:

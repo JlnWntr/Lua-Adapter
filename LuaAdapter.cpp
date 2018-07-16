@@ -49,10 +49,10 @@ bool LuaAdapter::Load(const char *filename) {
   if ((luaL_loadfile(this->Lua, filename) == 0) && this->Eval()) {
     return true;
   }
-  std::cout << LUA_PREFIX << "Error in Lua-file '";
-  std::cout << filename << "': ";
-  std::cout << lua_tostring(this->Lua, -1);
-  std::cout << "\n";
+  std::cerr << LUA_PREFIX << "Error in Lua-file '";
+  std::cerr << filename << "': ";
+  std::cerr << lua_tostring(this->Lua, -1);
+  std::cerr << "\n";
 
   return false;
 }
@@ -62,19 +62,20 @@ bool LuaAdapter::Eval() {
     return ((this->Lua) && (lua_pcall(this->Lua, 0, 0, 0) == 0));
 
   if (!this->Lua) {
-    std::cout << LUA_PREFIX << "Error: Lua-state invalid. Call init() first!\n";
+    std::cerr << LUA_PREFIX << "Error: Lua-state invalid. Call init() first!\n";
     return false;
   }
   const int pcall{lua_pcall(this->Lua, 0, 0, 0)};
   if (pcall == 0)
     return true;
-  std::cout << LUA_PREFIX << "Error: pcall failed. Code: ";
-  std::cout << pcall;
-  std::cout << ", '" << lua_tostring(this->Lua, -1) << "'\n";
+  std::cerr << LUA_PREFIX << "Error: pcall failed. Code: ";
+  std::cerr << pcall;
+  std::cerr << ", '" << lua_tostring(this->Lua, -1) << "'\n";
   /* LUA_ERRRUN: a runtime error. (2)
   * LUA_ERRMEM: memory allocation error. (4)
   * LUA_ERRERR: error while running the error handler function. (5)
   */
+  this->Pop();
   return false;
 }
 

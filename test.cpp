@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
  */
 static int test_function(lua_State *L) {
   if (!L)
-    return 1;
+    return 0;
   LuaAdapter lua{L};
   double number{lua_tonumber(L, 1)}; /* get argument */
   number *= 2;

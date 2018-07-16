@@ -44,6 +44,14 @@ public:
   ~LuaTable();
 
   /**
+   * (Re-)Sets the lua state
+   * @param lua lua_state
+  */
+  void SetLuaState(lua_State *const lua){
+    this->Lua = lua;
+  }
+
+  /**
   * Gets a field from an opened table and puts its value on the stack
   * @param name Name of the field
   * @return true on success, false on error
@@ -138,7 +146,7 @@ private:
   */
   bool GetI(unsigned short int i);
 
-  lua_State *const Lua;
+  lua_State *Lua;
   const bool print;
 };
 #endif
