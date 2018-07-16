@@ -130,14 +130,10 @@ bool LuaFunction::Push(Lua_callback_function function,
 }
 
 bool LuaFunction::pcall(int nargs, int nresults, int msgh){
-  //luaL_traceback(this->Lua, this->Lua, nullptr, 0);
-
   const int call {lua_pcall(this->Lua, nargs, nresults, msgh)};
   if (call == LUA_OK){
     return true;
   }
- //std::cerr << "\tTraceback: " << lua_tostring(this->Lua, -1);
- // lua_pop(this->Lua, 1);
   std::cerr << LUA_PREFIX << "Error: pcall failed. Code: ";
   std::cerr << call;
   std::cerr << ", '" << lua_tostring(this->Lua, -1) << "'\n";
