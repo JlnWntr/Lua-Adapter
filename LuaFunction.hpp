@@ -63,34 +63,34 @@ public:
    * @param result new value from the lua-function
    * @return true on success, false on error
    */
-  bool Call(const char *functionName, const unsigned short int argc,
+  bool Call(const char *function_name, const unsigned short int argc,
             const int args[], int &result);
   /**
   * Calls a lua-function
-  * @param functionName of the lua-function
+  * @param function_name of the lua-function
   * @param string a string-argument
   * @param length of this string
   * @return true on success, false on error
   */
-  bool Call(const char *functionName, const char *const string,
+  bool Call(const char *function_name, const char *const string,
             const size_t length);
 
   /**
   * Calls a lua-function
-  * @param functionName of the lua-function
+  * @param function_name of the lua-function
   * @return true on success, false on error
   */
-  bool Call(const char *functionName);
+  bool Call(const char *function_name);
 
   /**
   * Calls a lua-function
-  * @param functionName of the lua-function
+  * @param function_name of the lua-function
   * @param string a string-argument
   * @param length of this string
   * @param result new value (string) from the lua-function
   * @return true on success, false on error
   */
-  bool Call(const char *functionName, const char *const string, size_t &length,
+  bool Call(const char *function_name, const char *const string, size_t &length,
             std::string &result);
 
   /**
@@ -99,7 +99,16 @@ public:
   * @param result new value from the lua-function
   * @return true on success, false on error
   */
-  bool Call(const char *functionName, double &result);
+  bool Call(const char *function_name, double &result);
+
+  /**
+  * Calls a lua-function
+  * @param name of the lua-function
+  * @param integer argument
+  * @param result new value from the lua-function
+  * @return true on success, false on error
+  */
+    bool Call(const char *function_name, const int arg, int &result);
 
   /**
   * Calls a lua-function
@@ -108,17 +117,17 @@ public:
   * @param result new value (string) from the lua-function
   * @return true on success, false on error
   */
-  bool Call(const char *functionName, const std::string arg,
+  bool Call(const char *function_name, const std::string arg,
             std::string &result);
 
   /**
   * Makes a C-/C++-function-call available for lua
   * (it's called pushFunction(), but you're not 'incrementing' the stack)
   * @param function C-/C++-function
-  * @param functionName name of the function
+  * @param function_name name of the function
   * @return true on success, false on error
   */
-  bool Push(Lua_callback_function function, const char *functionName);
+  bool Push(Lua_callback_function function, const char *function_name);
 
 
 
@@ -132,6 +141,6 @@ private:
   * @param int msgh see https://www.lua.org/manual/5.3/manual.html#lua_pcall
   * @return true on success, false on error
   */
-  bool pcall(int nargs, int nresults, int msgh);
+  bool Pcall(int nargs, int nresults, int msgh);
 };
 #endif
