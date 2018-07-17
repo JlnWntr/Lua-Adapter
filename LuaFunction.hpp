@@ -100,6 +100,7 @@ public:
   * @return true on success, false on error
   */
   bool Call(const char *function_name, double &result);
+  bool Call(const char *function_name, int &result);
 
   /**
   * Calls a lua-function

@@ -119,6 +119,14 @@ bool LuaFunction::Call(const char *function_name, double &result) {
   return true;
 }
 
+bool LuaFunction::Call(const char *function_name, int &result) {
+  double temp{0.0};
+  if(this->Call(function_name, temp) == false)
+    return false;
+  result = (int)(temp);
+  return true;
+}
+
 bool LuaFunction::Call(const char *function_name, const int arg, int &result) {
   if (!this->Lua) {
     return false;
