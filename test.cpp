@@ -65,10 +65,11 @@ int main(int argc, char *argv[]) {
   bool boolean{false};
   lua.Get("fullscreen", boolean);
   std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
-
   std::cout << "\n";
 
-  /** - TABLE-TESTS ----------------------------------------------------*/
+  /**
+   * Test tables
+   **/
   LuaTable luaTable{lua};
 
   if (luaTable.Open("Table1")) {
@@ -141,44 +142,37 @@ int main(int argc, char *argv[]) {
     luaTable.Close(); // close "Strings"
   }
 
-  /* ------------------ ------------------------------------------------*/
+  /** ------------------ ------------------------------------------- **/
   // Check lua's internal stack
   std::cout << "\n";
   std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // should be 0
+  lua.Close();// let's close ..
+  lua.Init();// and (re-)initialize for further tests..
+  /** ------------------ ------------------------------------------- **/
 
-  // let's close ..
-  lua.Close();
-  // and (re-)initialize for further tests..
-  lua.Init();
-
-  /** - FUNCTION-TESTS -------------------------------------------------*/
-
-  LuaFunction luaFunction{lua};
   /**
-   * Define a C/C++-function that can be called from lua (see test.lua)
+   * Test function calls
    **/
+  LuaFunction luaFunction{lua};
+
+  // Define a C/C++-function that can be called from lua (see test.lua)
   luaFunction.Push(test_function, "test_function");
-  /**
-   * and THEN load the script:
-   */
+
+  // THEN load the script:
   lua.Load("test.lua");
 
-  /**
-   * calling a lua-function
-   **/
+  // call a lua-function
   luaFunction.Call("test");
 
-  /**
-   * calling another lua-function (see test.lua)
-   */
+  // call another lua-function (see test.lua)
   int test[] = {36, 24};
   int result{0};
   luaFunction.Call("gcd", 2, test, result);
   std::cout << "gcd: " << result << "\n";
   std::cout << "\n";
 
-  test_function(nullptr); // this is just to ignore a compile-warning
-
+  test_function(nullptr); // this is to ignore a compile-warning
+  std::cout << "Test ended!\n";
   return 0;
 }
 
@@ -189,7 +183,7 @@ static int test_function(lua_State *L) {
   if (!L)
     return 0;
   LuaAdapter lua{L};
-  double number{lua_tonumber(L, 1)}; /* get argument */
+  double number{lua_tonumber(L, 1)};
   number *= 2;
   lua.Push(number);
   return 1;
