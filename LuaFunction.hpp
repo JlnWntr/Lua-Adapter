@@ -50,9 +50,13 @@ public:
   /**
    * (Re-)Sets the lua state
    * @param lua lua_state
+   * @return true on success, false on error
   */
-  void SetLuaState(lua_State *const lua){
+  bool SetLuaState(lua_State *const lua){
+    if(!lua)
+      return false;
     this->Lua = lua;
+    return true;
   }
 
   /**

@@ -55,8 +55,9 @@ public:
   * Initialize Lua and all its libs
   * Does NOT load any lua-sourcefile
   * LuaAdapter calls this internally single-handed.
+  * @return true on success, false on error
   */
-  void Init();
+  bool Init();
 
   /**
   * Calls lua_pcall(Lua, 0, 0, 0)

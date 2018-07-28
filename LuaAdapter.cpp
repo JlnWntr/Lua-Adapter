@@ -35,12 +35,16 @@ LuaAdapter::LuaAdapter(const std::string &filename)
   this->Load(filename);
 }
 
-void LuaAdapter::Init() {
+bool LuaAdapter::Init() {
   if (this->Lua) {
-    return;
+    return true;
   }
   this->Lua = luaL_newstate();
+  if (!this->Lua) {
+    return false;
+  }
   luaL_openlibs(this->Lua);
+  return true;
 }
 
 bool LuaAdapter::Load(const char *filename) {
