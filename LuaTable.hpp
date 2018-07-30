@@ -56,13 +56,6 @@ public:
   }
 
   /**
-  * Gets a field from an opened table and puts its value on the stack
-  * @param name Name of the field
-  * @return true on success, false on error
-  */
-  bool Get(const char *name);
-
-  /**
    * Opens a lua-table
    * @param name Name of the table inside loaded lua state
    * @return true on success, false on error
@@ -76,6 +69,13 @@ public:
   * @return the length of the table
   */
   unsigned short int Length();
+
+  /**
+  * Gets a field from an opened table and puts its value on the stack
+  * @param name Name of the field
+  * @return true on success, false on error
+  */
+  bool Get(const char *name);
 
   /**
   * Gets a field from an opened table
