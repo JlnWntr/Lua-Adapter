@@ -70,6 +70,15 @@ public:
   bool Call(const char *function_name, const unsigned short int argc,
             const int args[], int &result);
   /**
+   * Calls a lua-function
+   * @param name of the lua-function
+   * @param argc number of arguments passed to the lua-function
+   * @param args function-arguments
+   * @return true on success, false on error
+   */
+  bool Call(const char *function_name, const unsigned short int argc,
+            const int args[]);
+  /**
   * Calls a lua-function
   * @param function_name of the lua-function
   * @param string a string-argument
@@ -113,7 +122,7 @@ public:
   * @param result new value from the lua-function
   * @return true on success, false on error
   */
-    bool Call(const char *function_name, const int arg, int &result);
+  bool Call(const char *function_name, const int arg, int &result);
 
   /**
   * Calls a lua-function

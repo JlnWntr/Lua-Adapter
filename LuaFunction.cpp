@@ -29,6 +29,19 @@ bool LuaFunction::Call(const char *function_name, const unsigned short int argc,
   return true;
 }
 
+bool LuaFunction::Call(const char *function_name, const unsigned short int argc,
+                       const int args[]) {
+  if (!this->Lua) {
+    return false;
+  }
+  lua_getglobal(this->Lua, function_name);
+
+  for (unsigned char i = 0; i < argc; i++)
+    if (args + i)
+      lua_pushnumber(this->Lua, args[i]);
+  return this->Pcall(argc, 0, 0);
+}
+
 bool LuaFunction::Call(const char *function_name, const char *const string,
                        const size_t length) {
   if (!this->Lua) {
