@@ -28,6 +28,7 @@
 #include <string>
 
 #define LUA_PREFIX "Lua > "
+class LuaTable;
 
 class LuaAdapter {
 
@@ -121,17 +122,18 @@ public:
   bool Flush();
 
   /**
-  * After calling debug(),
+  * After calling this function,
   * lua-adapter will print out debug-information for each following
-  * function-call.
+  * Lua-Adapter function call.
+  * @param on true to activate debug-mode
   */
-  void Debug() { this->print = true; }
-  /**
-  * Set debug output on or off
-  * @param mode if mode==true, see debug()
-  */
+  void Debug(bool on=true) { this->debug = on; }
 
-  bool IsDebugging() const { return this->print; }
+  /**
+  * Return the current debugging-state
+  * @return true if debug-mode is activated, false if not
+  */
+  bool GetDebug()const{return this->debug;}
 
   /**
   * Pops i entries from Lua's internal stack
@@ -151,6 +153,11 @@ public:
   */
   int GetType() const { return lua_type(this->Lua, 0); }
 
+  /**
+  * Returns the current lua_State which is used in this adapter
+  * This is necessary, because you need this state for LuaFunctions or LuaTables!
+  * @return the current lua_State
+  */
   lua_State *const GetLuaState() const { return this->Lua; }
 
   /**
@@ -161,7 +168,7 @@ public:
 
 private:
   lua_State *Lua;
-  bool print;
+  bool debug;
   bool single;
 
   /**

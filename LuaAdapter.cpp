@@ -26,12 +26,12 @@
 #endif
 
 LuaAdapter::LuaAdapter(lua_State *const lua)
-    : Lua{lua}, print{false}, single{(lua) ? false : true} {
+    : Lua{lua}, debug{false}, single{(lua) ? false : true} {
   this->Init();
 }
 
 LuaAdapter::LuaAdapter(const std::string &filename)
-    : Lua{nullptr}, print{false}, single{true} {
+    : Lua{nullptr}, debug{false}, single{true} {
   this->Load(filename);
 }
 
@@ -62,7 +62,7 @@ bool LuaAdapter::Load(const char *filename) {
 }
 
 bool LuaAdapter::Eval() {
-  if (this->print == false)
+  if (this->debug == false)
     return ((this->Lua) && (lua_pcall(this->Lua, 0, 0, 0) == 0));
 
   if (!this->Lua) {
@@ -104,7 +104,7 @@ bool LuaAdapter::Get(const char *name, int &result) {
     return false;
   }
   result = lua_tointeger(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << LUA_PREFIX << "get int '" << name << "' = '" << result
               << "' \n";
   lua_pop(this->Lua, 1);
@@ -120,7 +120,7 @@ bool LuaAdapter::Get(const char *name, std::string &result) {
     return false;
   }
   result = lua_tostring(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << LUA_PREFIX << "get string '" << name << "' = '" << result
               << "' \n";
   lua_pop(this->Lua, 1);
@@ -136,7 +136,7 @@ bool LuaAdapter::Get(const char *name, double &result) {
     return false;
   }
   result = lua_tonumber(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << LUA_PREFIX << "get double '" << name << "' = '" << result
               << "' \n";
   lua_pop(this->Lua, 1);
@@ -160,7 +160,7 @@ bool LuaAdapter::Get(const char *name, bool &result) {
     return false;
   }
   result = lua_toboolean(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << LUA_PREFIX << "get boolean '" << name << "' = '" << result
               << "' \n";
   lua_pop(this->Lua, 1);
@@ -180,7 +180,7 @@ bool LuaAdapter::Set(const char *name, const char *value) {
     return false;
   lua_pushstring(this->Lua, value);
   lua_setglobal(this->Lua, name);
-  if (this->print)
+  if (this->debug)
     std::cout << LUA_PREFIX << "set string '" << name << "' = '" << value
               << "' \n";
   return true;
@@ -192,7 +192,7 @@ bool LuaAdapter::Set(const char *name, int value) {
   }
   lua_pushnumber(this->Lua, value);
   lua_setglobal(this->Lua, name);
-  if (this->print)
+  if (this->debug)
     std::cout << LUA_PREFIX << "set int '" << name << "' = '" << value
               << "' \n";
   return true;
@@ -203,7 +203,7 @@ bool LuaAdapter::Set(const char *name, const double value) {
     return false;
   lua_pushnumber(this->Lua, value);
   lua_setglobal(this->Lua, name);
-  if (this->print)
+  if (this->debug)
     std::cout << LUA_PREFIX << "set double '" << name << "' = '" << value
               << "' \n";
   return true;
@@ -214,7 +214,7 @@ bool LuaAdapter::Set(const char *name, const bool value) {
     return false;
   lua_pushboolean(this->Lua, value);
   lua_setglobal(this->Lua, name);
-  if (this->print)
+  if (this->debug)
     std::cout << LUA_PREFIX << "set boolean '" << name << "' = '" << value
               << "' \n";
   return true;

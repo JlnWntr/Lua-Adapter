@@ -2,9 +2,9 @@
 #include "LuaTable.hpp"
 #endif
 LuaTable::LuaTable(LuaAdapter &lua)
-    : Lua{lua.GetLuaState()}, print{lua.IsDebugging()} {}
+    : Lua{lua.GetLuaState()}, debug{lua.GetDebug()} {}
 
-LuaTable::LuaTable(lua_State *const lua) : Lua{lua}, print{false} {}
+LuaTable::LuaTable(lua_State *const lua) : Lua{lua}, debug{false} {}
 
 LuaTable::~LuaTable() {}
 
@@ -25,7 +25,7 @@ bool LuaTable::Get(const char *name, std::string &result) {
     return false;
   }
   result = lua_tostring(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t" << LUA_PREFIX << "get string-field '" << name << "' = '"
               << result << "' \n";
   lua_pop(this->Lua, 1);
@@ -43,7 +43,7 @@ bool LuaTable::Open(const char *name) {
 
   if (lua_istable(this->Lua, -1)) {
 
-    if (this->print)
+    if (this->debug)
       std::cout << LUA_PREFIX << "open table '" << name << "' \n";
     return true;
   }
@@ -73,7 +73,7 @@ bool LuaTable::Get(const char *name, int &result) {
     return false;
   }
   result = lua_tointeger(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t" << LUA_PREFIX << "get int-field '" << name << "' = '"
               << result << "' \n";
   lua_pop(this->Lua, 1);
@@ -89,7 +89,7 @@ bool LuaTable::Get(unsigned short int i, int &result) {
     return false;
   }
   result = lua_tointeger(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t" << LUA_PREFIX << "get int-field " << i << " = '" << result
               << "' \n";
   lua_pop(this->Lua, 1);
@@ -105,7 +105,7 @@ bool LuaTable::Get(unsigned short int i, double &result) {
     return false;
   }
   result = lua_tonumber(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t" << LUA_PREFIX << "get double-field " << i << " = '"
               << result << "' \n";
   lua_pop(this->Lua, 1);
@@ -121,7 +121,7 @@ bool LuaTable::Get(unsigned short int i, float &result) {
     return false;
   }
   result = (float)lua_tonumber(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t" << LUA_PREFIX << "get float-field " << i << " = '"
               << result << "' \n";
   lua_pop(this->Lua, 1);
@@ -136,7 +136,7 @@ bool LuaTable::Get(unsigned short int i, std::string &result) {
     return false;
   }
   result = lua_tostring(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t" << LUA_PREFIX << "get string-field " << i << " = '"
               << result << "' \n";
   lua_pop(this->Lua, 1);
@@ -153,7 +153,7 @@ bool LuaTable::Get(unsigned short int j, unsigned short int i, double &result) {
   }
   if (lua_isnumber(this->Lua, -1))
     result = lua_tonumber(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t"
               << "\t" << LUA_PREFIX << "get nested double-field (" << j << "|"
               << i << ")' = '" << result << "' \n";
@@ -171,7 +171,7 @@ bool LuaTable::Get(unsigned short int j, unsigned short int i, float &result) {
   }
   if (lua_isnumber(this->Lua, -1))
     result = (float)lua_tonumber(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t"
               << "\t" << LUA_PREFIX << "get nested float-field (" << j << "|"
               << i << ")' = '" << result << "' \n";
@@ -189,7 +189,7 @@ bool LuaTable::Get(unsigned short int j, unsigned short int i, int &result) {
   }
   if (lua_isnumber(this->Lua, -1))
     result = lua_tointeger(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t"
               << "\t" << LUA_PREFIX << "get nested int-field (" << j << "|" << i
               << ")' = '" << result << "' \n";
@@ -208,7 +208,7 @@ bool LuaTable::Get(unsigned short int j, unsigned short int i,
   }
   if (lua_isstring(this->Lua, -1))
     result = lua_tostring(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t"
               << "\t" << LUA_PREFIX << "get nested string-field (" << j << "|"
               << i << ")' = '" << result << "' \n";
@@ -230,7 +230,7 @@ bool LuaTable::Get(unsigned short int k, unsigned short int j,
   }
   if (lua_isnumber(this->Lua, -1))
     result = lua_tointeger(this->Lua, -1);
-  if (this->print)
+  if (this->debug)
     std::cout << "\t"
               << "\t" << LUA_PREFIX << "get nested int-field (" << j << "|" << i
               << ")' = '" << result << "' \n";
@@ -250,7 +250,7 @@ bool LuaTable::OpenNested(const char *name) {
   if ((!this->Lua)) {
     return false;
   }
-  if (this->print)
+  if (this->debug)
     std::cout << "\t" << LUA_PREFIX << "opening nested table '" << name
               << "' ... ";
 
@@ -266,7 +266,7 @@ bool LuaTable::OpenNested(const char *name) {
   }
 
   if (lua_istable(this->Lua, -1)) {
-    if (this->print)
+    if (this->debug)
       std::cout << "ok! \n";
     return true;
   }

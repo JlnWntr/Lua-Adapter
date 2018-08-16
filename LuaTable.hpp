@@ -151,6 +151,6 @@ private:
   bool GetI(unsigned short int i);
 
   lua_State *Lua;
-  const bool print;
+  const bool debug;
 };
 #endif
