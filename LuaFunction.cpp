@@ -9,7 +9,7 @@ LuaFunction::LuaFunction(lua_State *const lua) : Lua{lua} {}
 LuaFunction::~LuaFunction() {}
 
 bool LuaFunction::Call(const char *function_name, const unsigned short int argc,
-                       const int args[], int &result) {
+                       const int args[], double &result) {
   if (!this->Lua) {
     return false;
   }
@@ -23,9 +23,19 @@ bool LuaFunction::Call(const char *function_name, const unsigned short int argc,
   }
 
   if (lua_isnumber(this->Lua, -1)) {
-    result = lua_tointeger(this->Lua, -1);
+    result = (double)lua_tonumber(this->Lua, -1);
   }
   lua_pop(this->Lua, 1);
+  return true;
+}
+
+bool LuaFunction::Call(const char *function_name, const unsigned short int argc,
+                       const int args[], int &result) {
+  double temp{};
+  if(this->Call(function_name, argc, args, temp) == false){
+    return false;
+  }
+  result = (int)temp;
   return true;
 }
 

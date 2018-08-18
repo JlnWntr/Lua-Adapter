@@ -69,6 +69,8 @@ public:
    */
   bool Call(const char *function_name, const unsigned short int argc,
             const int args[], int &result);
+  bool Call(const char *function_name, const unsigned short int argc,
+            const int args[], double &result);
   /**
    * Calls a lua-function
    * @param name of the lua-function
