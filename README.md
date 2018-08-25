@@ -11,7 +11,7 @@ Usage:
 
 Compile & test:
 
-      g++-8 LuaAdapter.hpp LuaFunction.hpp LuaTable.hpp test.cpp -std=c++17 -llua -ldl -Wall
+      g++-8 LuaAdapter.hpp LuaFunction.hpp LuaTable.hpp test.cpp -std=c++17 -llua -ldl -Wall -fconcepts
 
 
 Requirements:
