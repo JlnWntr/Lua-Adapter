@@ -24,6 +24,8 @@
 #ifndef LUA_TABLE_H
 #define LUA_TABLE_H
 
+#include <vector>
+
 #ifndef LUA_ADAPTER_H
 #include "LuaAdapter.hpp"
 #endif
@@ -35,56 +37,107 @@ public:
   *Default constructor
   *@param lua uses an existing lua_state
   */
-  LuaTable(LuaAdapter &lua);
-  LuaTable(lua_State *const lua = nullptr);
+  LuaTable(LuaAdapter &lua) : Lua{lua.GetLuaState()}, debug{lua.GetDebug()} {}
+
+  LuaTable(lua_State *const lua = nullptr) : Lua{lua}, debug{false} {}
+
+  /**
+    * Opens a lua-table
+    * @param name Name of the table inside loaded lua state
+    * @return true on success, false on error
+    */
+
+  bool Open(const std::string &name) { return this->Open(name.c_str()); }
+  bool Open(const char *name) {
+    if (!name)
+      return false;
+
+    if (lua_istable(this->Lua, -1)) {
+      if (this->debug)
+        std::cout << "\t" << LUA_PREFIX << "opening nested table '" << name
+                  << "' ... ";
+
+      lua_getfield(this->Lua, -1, name);
+
+      if (lua_isnil(this->Lua, -1)) {
+        lua_pop(this->Lua, 1);
+        return false;
+      }
+
+      if (lua_istable(this->Lua, -1)) {
+        if (this->debug)
+          std::cout << "ok! \n";
+        return true;
+      }
+      return false;
+    }
+
+    lua_getglobal(this->Lua, name); // void
+
+    if (lua_istable(this->Lua, -1)) {
+
+      if (this->debug)
+        std::cout << LUA_PREFIX << "open table '" << name << "' \n";
+      return true;
+    }
+
+    lua_pop(this->Lua, 1);
+    return false;
+  }
+
+  /**
+    * Get the length of the current (opened) table
+    * [tables with integer keys and without 'nil-holes']
+    * @return the length of the table
+    */
+  unsigned short int Length() {
+    unsigned short int result{0};
+    if ((!this->Lua)) {
+      return result;
+    }
+    if (lua_istable(this->Lua, -1) == false) {
+      return result;
+    }
+    lua_len(this->Lua, -1);
+    result = lua_tointeger(this->Lua, -1);
+    lua_pop(this->Lua, 1);
+    return result;
+  }
 
   /**
   * Destructor
   */
-  ~LuaTable();
+  ~LuaTable() {}
 
   /**
    * (Re-)Sets the lua state
    * @param lua lua_state
    * @return true on success, false on error
   */
-  bool SetLuaState(lua_State *const lua){
-    if(!lua)
+  bool SetLuaState(lua_State *const lua) {
+    if (!lua)
       return false;
     this->Lua = lua;
     return true;
   }
 
-  /**
-   * Opens a lua-table
-   * @param name Name of the table inside loaded lua state
-   * @return true on success, false on error
-   */
-  bool Open(const char *name);
-  bool Open(const std::string &name) { return this->Open(name.c_str()); }
+  template <typename R> bool Get(const char *name, R &r) {
 
-  /**
-  * Get the length of the current (opened) table
-  * [tables with integer keys and without 'nil-holes']
-  * @return the length of the table
-  */
-  unsigned short int Length();
+    if (!this->Lua || !name || !lua_istable(this->Lua, -1))
+      return false;
 
-  /**
-  * Gets a field from an opened table and puts its value on the stack
-  * @param name Name of the field
-  * @return true on success, false on error
-  */
-  bool Get(const char *name);
+    lua_getfield(this->Lua, -1, name);
 
-  /**
-  * Gets a field from an opened table
-  * @param name Name of the field
-  * @param result value of the field
-  * @return true on success, false on error
-  */
-  bool Get(const char *name, std::string &result);
-  bool Get(const char *name, int &result);
+    if (this->convert(r) == false) {
+      lua_pop(this->Lua, 1);
+      return false;
+    }
+    if (this->debug)
+      std::cout << "\t" << LUA_PREFIX << "got field '" << name << "' = '" << r
+                << "' \n";
+    lua_pop(this->Lua, 1);
+    return true;
+  }
 
   /**
   * Gets a field from an opened table
@@ -92,38 +145,55 @@ public:
   * @param result value of the field
   * @return true on success, false on error
   */
-  bool Get(unsigned short int i, int &result);
-  bool Get(unsigned short int i, double &result);
-  bool Get(unsigned short int i, float &result);
-  bool Get(unsigned short int i, std::string &result);
 
+  template <typename R> bool Get(unsigned short int i, R &r) {
+    if ((!this->Lua) || (!lua_istable(this->Lua, -1)) || (i < 1))
+      return false;
+
+    lua_rawgeti(this->Lua, -1, i);
+
+    if (this->convert(r) == false) {
+      lua_pop(this->Lua, 1);
+      return false;
+    }
+
+    if (this->debug)
+      std::cout << "\t" << LUA_PREFIX << "got " << i << "th field "
+                                                        " = '"
+                << r << "' \n";
+    lua_pop(this->Lua, 1);
+    return true;
+  }
   /**
-  * Gets a ("2D"-)field value from an opened table.
+  * Gets a ("n-D"-)field value from an opened table.
   * NOTE: DO NOT CALL openNestedTable(name) for this!
   * Example: identity ={
   *               {1, 0, 0},
   *               {0, 1, 0},
   *               {0, 0, 1},
   *           }
-  * @param j row
-  * @param i col
+  * @param
   * @param result value of the field
   * @return true on success, false on error
   */
-  bool Get(unsigned short int j, unsigned short int i, double &result);
-  bool Get(unsigned short int j, unsigned short int i, float &result);
-  bool Get(unsigned short int j, unsigned short int i, int &result);
-  bool Get(unsigned short int j, unsigned short int i, std::string &result);
-  /**
-  * Like above but gets a ("3D"-)field value.
-  * @param k row
-  * @param j col
-  * @param i inner table
-  * @param result value
-  * @return true on success, false on error
-  */
-  bool Get(unsigned short int k, unsigned short int j, unsigned short int i,
-           int &result);
+  template <typename R>
+  bool Get(const std::vector<unsigned short int> &m, R &r) {
+    if (!this->Lua)
+      return false;
+    for (auto &v : m)
+      if (lua_istable(this->Lua, -1))
+        lua_rawgeti(this->Lua, -1, v);
+
+    const bool Result{this->convert(r)};
+
+    if (this->debug && Result)
+      std::cout << "\t" << LUA_PREFIX << "got field "
+                                         " = '"
+                << r << "' \n";
+    while (lua_gettop(this->Lua) > 1)
+      lua_pop(this->Lua, 1);
+    return Result;
+  }
 
   /**
   *Closes a table
@@ -133,22 +203,26 @@ public:
   void Close() { lua_pop(this->Lua, 1); }
 
 private:
-  /**
-  * Opens a table(-field) inside a table
-  * @param name Name of the table inside the opened table
-  * @return true on success, false on error
-  */
-  bool OpenNested(const char *name);
-  bool OpenNested(const std::string &name) {
-    return this->OpenNested(name.c_str());
-  }
+  template <typename R> bool convert(R &r) {
+    if (lua_isnumber(this->Lua, -1) && !lua_isinteger(this->Lua, -1)) {
+      if
+        constexpr(std::is_same_v<double, R> || std::is_same_v<R, float>) r =
+            lua_tonumber(this->Lua, -1);
+    } else if (lua_isinteger(this->Lua, -1)) {
+      if
+        constexpr(std::is_same_v<R, int>) r = lua_tointeger(this->Lua, -1);
+    } else if (lua_isboolean(this->Lua, -1)) {
+      if
+        constexpr(std::is_same_v<R, bool>) r = lua_toboolean(this->Lua, -1);
+    } else if (lua_isstring(this->Lua, -1)) {
+      if
+        constexpr(std::is_same_v<R, std::string>) r =
+            lua_tostring(this->Lua, -1);
+    } else
+      return false;
 
-  /**
-  *Gets the i-th (nested) field from an opened table
-  *@param i the i-th field
-  *@return true on success, false on error
-  */
-  bool GetI(unsigned short int i);
+    return true;
+  }
 
   lua_State *Lua;
   const bool debug;
