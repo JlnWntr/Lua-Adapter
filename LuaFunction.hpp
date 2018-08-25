@@ -28,6 +28,7 @@
 #include "LuaAdapter.hpp"
 #endif
 
+static int LUA_ADAPTER_NULL{};
 typedef int (*Lua_callback_function)(lua_State *L);
 
 class LuaFunction {
@@ -37,126 +38,155 @@ public:
   *Default constructor
   *@param lua uses an existing lua_state
   */
-  LuaFunction(LuaAdapter &lua);
-  LuaFunction(lua_State *const lua = nullptr);
+  LuaFunction(LuaAdapter &lua) : Lua{lua.GetLuaState()} {}
 
-
+  LuaFunction(lua_State *const lua = nullptr) : Lua{lua} {}
 
   /**
   * Destructor
   */
-  ~LuaFunction();
+  ~LuaFunction() {}
 
   /**
-   * (Re-)Sets the lua state
-   * @param lua lua_state
+   * Calls a lua-function
+   * @param name of the lua-function
+   * @param c number of arguments passed to the lua-function
+   * @param a function-arguments
+   * @param result new value from the lua-function
    * @return true on success, false on error
-  */
-  bool SetLuaState(lua_State *const lua){
-    if(!lua)
+   */
+  template <typename A, typename R>
+  bool Call(const char *f, const unsigned short int c, const A *const a, R &r) {
+    if ((!this->Lua) || (!f) || (lua_getglobal(this->Lua, f) != LUA_TFUNCTION))
       return false;
-    this->Lua = lua;
+
+    for (unsigned char i = 0; i < c; i++) {
+      if (!(a + i))
+        break;
+      if
+        constexpr(std::is_same_v<double, A> || std::is_same_v<A, float>)
+            lua_pushnumber(this->Lua, a[i]);
+      else if
+        constexpr(
+            std::is_same_v<A, int>) {
+          lua_pushinteger(this->Lua, a[i]);
+        }
+      else if
+        constexpr(std::is_same_v<A, std::string>)
+            lua_pushlstring(this->Lua, a[i].c_str(), a[i].length());
+      else if
+        constexpr(std::is_same_v<A, bool>) lua_pushboolean(this->Lua, a[i]);
+    }
+    if (this->Pcall(c, 1, 0) == false)
+      return false;
+    if
+      constexpr(std::is_same_v<double, R> || std::is_same_v<R, float>) {
+        if (lua_isnumber(this->Lua, -1))
+          r = lua_tonumber(this->Lua, -1);
+      }
+    else if
+      constexpr(std::is_same_v<R, int>) {
+        if (lua_isinteger(this->Lua, -1))
+          r = lua_tointeger(this->Lua, -1);
+      }
+    else if
+      constexpr(std::is_same_v<R, bool>) {
+        if (lua_isboolean(this->Lua, -1))
+          r = lua_toboolean(this->Lua, -1);
+      }
+    else if
+      constexpr(std::is_same_v<R, std::string>) {
+        if (lua_isstring(this->Lua, -1))
+          r = lua_tostring(this->Lua, -1);
+      }
+    lua_pop(this->Lua, 1);
+    return true;
+  }
+
+  template <typename A>
+  bool Call(const char *f, const unsigned short int c, const A *const a) {
+    if ((!this->Lua) || (!f) || (lua_getglobal(this->Lua, f) != LUA_TFUNCTION))
+      return false;
+
+    for (unsigned char i = 0; i < c; i++) {
+      if (!(a + i))
+        break;
+      if
+        constexpr(std::is_same_v<double, A> || std::is_same_v<A, float>)
+            lua_pushnumber(this->Lua, a[i]);
+      else if
+        constexpr(std::is_same_v<A, int>) lua_pushinteger(this->Lua, a[i]);
+      else if
+        constexpr(std::is_same_v<A, std::string>)
+            lua_pushlstring(this->Lua, a[i].c_str(), a[i].length());
+      else if
+        constexpr(std::is_same_v<A, bool>) lua_pushboolean(this->Lua, a[i]);
+    }
+    return this->Pcall(c, 0, 0);
+  }
+
+  template <typename A, typename R>
+  bool Call(const char *f, const A a, R &r = LUA_ADAPTER_NULL) {
+    return this->Call(f, 1, (const A *)&a, r);
+  }
+
+  template <typename A> bool Call(const char *f, const A a) {
+    return this->Call(f, 1, (const A *)&a);
+  }
+
+  bool Call(const char *f) {
+    if ((!this->Lua) || (!f) || (lua_getglobal(this->Lua, f) != LUA_TFUNCTION))
+      return false;
+    return this->Pcall(0, 0, 0);
+  }
+
+  /**
+    * Makes a C-/C++-function-call available for lua
+    * (it's called pushFunction(), but you're not 'incrementing' the stack)
+    * @param function C-/C++-function
+    * @param f name of the function
+    * @return true on success, false on error
+    */
+  bool Push(Lua_callback_function function, const char *name) {
+    if (!this->Lua)
+      return false;
+    lua_pushcfunction(this->Lua, function);
+    lua_setglobal(this->Lua, name);
     return true;
   }
 
   /**
-   * Calls a lua-function
-   * @param name of the lua-function
-   * @param argc number of arguments passed to the lua-function
-   * @param args function-arguments
-   * @param result new value from the lua-function
-   * @return true on success, false on error
+    * (Re-)Sets the lua state
+    * @param lua lua_state
+    * @return true on success, false on error
    */
-  bool Call(const char *function_name, const unsigned short int argc,
-            const int args[], int &result);
-  bool Call(const char *function_name, const unsigned short int argc,
-            const int args[], double &result);
-  /**
-   * Calls a lua-function
-   * @param name of the lua-function
-   * @param argc number of arguments passed to the lua-function
-   * @param args function-arguments
-   * @return true on success, false on error
-   */
-  bool Call(const char *function_name, const unsigned short int argc,
-            const int args[]);
-  /**
-  * Calls a lua-function
-  * @param function_name of the lua-function
-  * @param string a string-argument
-  * @param length of this string
-  * @return true on success, false on error
-  */
-  bool Call(const char *function_name, const char *const string,
-            const size_t length);
-
-  /**
-  * Calls a lua-function
-  * @param function_name of the lua-function
-  * @return true on success, false on error
-  */
-  bool Call(const char *function_name);
-
-  /**
-  * Calls a lua-function
-  * @param function_name of the lua-function
-  * @param string a string-argument
-  * @param length of this string
-  * @param result new value (string) from the lua-function
-  * @return true on success, false on error
-  */
-  bool Call(const char *function_name, const char *const string, size_t &length,
-            std::string &result);
-
-  /**
-  * Calls a lua-function
-  * @param name of the lua-function
-  * @param result new value from the lua-function
-  * @return true on success, false on error
-  */
-  bool Call(const char *function_name, double &result);
-  bool Call(const char *function_name, int &result);
-
-  /**
-  * Calls a lua-function
-  * @param name of the lua-function
-  * @param integer argument
-  * @param result new value from the lua-function
-  * @return true on success, false on error
-  */
-  bool Call(const char *function_name, const int arg, int &result);
-
-  /**
-  * Calls a lua-function
-  * @param name of the lua-function
-  * @param arg argument of the lua-function
-  * @param result new value (string) from the lua-function
-  * @return true on success, false on error
-  */
-  bool Call(const char *function_name, const std::string arg,
-            std::string &result);
-
-  /**
-  * Makes a C-/C++-function-call available for lua
-  * (it's called pushFunction(), but you're not 'incrementing' the stack)
-  * @param function C-/C++-function
-  * @param function_name name of the function
-  * @return true on success, false on error
-  */
-  bool Push(Lua_callback_function function, const char *function_name);
-
-
+  bool SetLuaState(lua_State *const lua) {
+    if (!lua)
+      return false;
+    this->Lua = lua;
+    return true;
+  }
 
 private:
   lua_State *Lua;
 
   /**
   * Calls lua's pcall and outputs errors.
-  * @param nargs number of args
+  * @param na number of a
   * @param nresults number of results
   * @param int msgh see https://www.lua.org/manual/5.3/manual.html#lua_pcall
   * @return true on success, false on error
   */
-  bool Pcall(int nargs, int nresults, int msgh);
+  bool Pcall(int na, int nresults, int msgh) {
+    const int call{lua_pcall(this->Lua, na, nresults, msgh)};
+    if (call == LUA_OK) {
+      return true;
+    }
+    std::cerr << LUA_PREFIX << "Error: pcall failed. Code: ";
+    std::cerr << call;
+    std::cerr << ", '" << lua_tostring(this->Lua, -1) << "'\n";
+    lua_pop(this->Lua, 1);
+    return false;
+  }
 };
 #endif
