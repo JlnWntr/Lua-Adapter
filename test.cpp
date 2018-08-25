@@ -36,7 +36,7 @@ static int test_function(lua_State *L);
 int main(int argc, char *argv[]) {
 
   LuaAdapter lua{"test.lua"};
-  // lua.Debug();
+  //lua.Debug();
 
   /**
    * Parameterize your application.
@@ -98,7 +98,8 @@ int main(int argc, char *argv[]) {
     for (unsigned char j = 1; j <= length; j++) {
       for (unsigned char i = 1; i <= length; i++) {
         int temp = 0;
-        luaTable.Get(j, i, temp); // matrix[j][i]
+        luaTable.Get((const std::vector<unsigned short int>){j, i},
+                     temp); // matrix[j][i]
         std::cout << temp << " ";
       }
       std::cout << "\n";
@@ -146,13 +147,14 @@ int main(int argc, char *argv[]) {
   // Check lua's internal stack
   std::cout << "\n";
   std::cout << "Lua stack top: " << lua.GetTop() << "\n"; // should be 0
-  lua.Close();// let's close ..
-  lua.Init();// and (re-)initialize for further tests..
+
+  lua.Close(); // let's close ..
+  lua.Init();  // and (re-)initialize for further tests..
   /** ------------------ ------------------------------------------- **/
 
   /**
-   * Test function calls
-   **/
+  * Test function calls
+  **/
   LuaFunction luaFunction{lua};
 
   // Define a C/C++-function that can be called from lua (see test.lua)
@@ -161,10 +163,29 @@ int main(int argc, char *argv[]) {
   // THEN load the script:
   lua.Load("test.lua");
 
-  // call a lua-function
-  luaFunction.Call("test");
+  // call lua-functions
 
-  // call another lua-function (see test.lua)
+  // one argument, no return value
+  luaFunction.Call("Print", (const std::string) "This is a string.");
+  luaFunction.Call("Print", 1);
+  luaFunction.Call("Print", 2.2);
+  luaFunction.Call("Print", true);
+
+  // null arguments
+  int Return_int{0};
+  luaFunction.Call("Random", 0, Return_int);
+  std::cout << "Random: " << Return_int << "\n";
+
+  std::string Return_string{};
+  luaFunction.Call("String", 0, Return_string);
+  std::cout << "String: " << Return_string << "\n";
+
+  // n=3 arguments
+  int array[] = {1, 2, 3};
+  luaFunction.Call("Return", 3, array, Return_int);
+  std::cout << "Return(1, 2, 3) = " << Return_int << "\n";
+
+  // n=2 arguments
   int test[] = {36, 24};
   int result{0};
   luaFunction.Call("gcd", 2, test, result);

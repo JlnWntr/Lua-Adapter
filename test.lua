@@ -38,11 +38,24 @@ function gcd(n, m)
     end
 end
 
-function test()
-    print("\n Lua: Test \n")
+function Print(t)
+    print("Lua: " .. tostring(t) .. "\n")
 end
 
--- Calling a C/C++-function
+function Return(a, b, c)
+    return a + b + c
+end
+
+function Random()
+    return 5
+end
+
+function String()
+    return "This is a string!"
+end
+
+
+-- Call C/C++-function
 if not (test_function==nil)  then
     print ("Lua: ".. 44 .. " * 2 = " .. test_function(44))
 end
