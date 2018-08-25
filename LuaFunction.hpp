@@ -60,11 +60,11 @@ public:
    * @return true on success, false on error
    */
   template <typename A, typename R>
-  bool Call(const char *f, const unsigned short int c, const A *const a, R &r) {
+  bool Call(const char *f, const auto c, const A *const a, R &r) {
     if ((!this->Lua) || (!f) || (lua_getglobal(this->Lua, f) != LUA_TFUNCTION))
       return false;
 
-    for (unsigned char i = 0; i < c; i++) {
+    for (auto i = 0; i < c; i++) {
       if (!(a + i))
         break;
       if
@@ -115,11 +115,11 @@ public:
    * @return true on success, false on error
    */
   template <typename A>
-  bool Call(const char *f, const unsigned short int c, const A *const a) {
+  bool Call(const char *f, const auto c, const A *const a) {
     if ((!this->Lua) || (!f) || (lua_getglobal(this->Lua, f) != LUA_TFUNCTION))
       return false;
 
-    for (unsigned char i = 0; i < c; i++) {
+    for (auto i = 0; i < c; i++) {
       if (!(a + i))
         break;
       if
