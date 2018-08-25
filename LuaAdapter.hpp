@@ -24,6 +24,7 @@
 #define LUA_ADAPTER_H
 
 #include <iostream>
+#include <string>
 #include <lua.hpp>
 
 #define LUA_PREFIX "Lua > "
