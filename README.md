@@ -11,9 +11,11 @@ Usage:
 
 Compile & test:
 
-      g++ LuaAdapter.cpp LuaFunction.cpp LuaTable.cpp test.cpp -std=c++0x -llua -ldl -Wall
+      g++-8 LuaAdapter.hpp LuaFunction.hpp LuaTable.hpp test.cpp -std=c++17 -llua -ldl -Wall
 
 
 Requirements:
-      [Download and install Lua](https://www.lua.org/download.html).
+
+- [Download and install Lua](https://www.lua.org/download.html).
+- g++-8 or higher
 
