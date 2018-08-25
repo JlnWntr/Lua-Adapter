@@ -25,7 +25,6 @@
 
 #include <iostream>
 #include <lua.hpp>
-#include <string>
 
 #define LUA_PREFIX "Lua > "
 class LuaTable;
@@ -39,18 +38,24 @@ public:
   * @param lua (re-)uses an existing lua_state. See example in test.cpp at
   * testCFunction()
   */
-  LuaAdapter(lua_State *const lua = nullptr);
+  LuaAdapter(lua_State *const lua = nullptr)
+      : Lua{lua}, debug{false}, single{(lua) ? false : true} {
+    this->Init();
+  }
 
   /**
   * This constructor inits lua and loads a .lua-file directly.
   * @param filename .lua-file to load
   */
-  LuaAdapter(const std::string &filename);
+  LuaAdapter(const std::string &filename)
+      : Lua{nullptr}, debug{false}, single{true} {
+    this->Load(filename);
+  }
 
   /**
   * Destructor
   */
-  ~LuaAdapter();
+  ~LuaAdapter() { this->Close(); }
 
   /**
   * Initialize Lua and all its libs
@@ -58,13 +63,40 @@ public:
   * LuaAdapter calls this internally single-handed.
   * @return true on success, false on error
   */
-  bool Init();
+  bool Init() {
+    if (this->Lua) {
+      return true;
+    }
+    this->Lua = luaL_newstate();
+    if (!this->Lua) {
+      return false;
+    }
+    luaL_openlibs(this->Lua);
+    return true;
+  }
 
   /**
   * Calls lua_pcall(Lua, 0, 0, 0)
   * @return true on success, false on error
   */
-  bool Eval();
+  bool Eval() {
+    if (this->debug == false)
+      return ((this->Lua) && (lua_pcall(this->Lua, 0, 0, 0) == 0));
+
+    if (!this->Lua) {
+      std::cerr << LUA_PREFIX
+                << "Error: Lua-state invalid. Call init() first!\n";
+      return false;
+    }
+    const int pcall{lua_pcall(this->Lua, 0, 0, 0)};
+    if (pcall == 0)
+      return true;
+    std::cerr << LUA_PREFIX << "Error: pcall failed. Code: ";
+    std::cerr << pcall;
+    std::cerr << ", '" << lua_tostring(this->Lua, -1) << "'\n";
+    this->Pop();
+    return false;
+  }
 
   /**
   * Loads a *.lua-sourcefile
@@ -72,8 +104,24 @@ public:
   * @param filename lua-file to load
   * @return true on success, false on error
   */
-  bool Load(const char *filename);
-  bool Load(const std::string &filename);
+
+  bool Load(const char *filename) {
+    this->Init();
+
+    if ((luaL_loadfile(this->Lua, filename) == 0) && this->Eval()) {
+      return true;
+    }
+    std::cerr << LUA_PREFIX << "Error in Lua-file '";
+    std::cerr << filename << "': ";
+    std::cerr << lua_tostring(this->Lua, -1);
+    std::cerr << "\n";
+
+    return false;
+  }
+
+  bool Load(const std::string &filename) {
+    return this->Load(filename.c_str());
+  }
 
   /**
   * Gets the value of a variable.
@@ -81,11 +129,42 @@ public:
   * @param result value is saved in this variable
   * @return true on success, false on error
   */
-  bool Get(const char *name, int &result);
-  bool Get(const char *name, std::string &result);
-  bool Get(const char *name, double &result);
-  bool Get(const char *name, float &result);
-  bool Get(const char *name, bool &result);
+  template <typename R> bool Get(const char *name, R &r) {
+
+    if (!this->Lua || !name)
+      return false;
+
+    switch (lua_getglobal(this->Lua, name)) {
+
+    case LUA_TNUMBER:
+
+      if (lua_isinteger(this->Lua, -1)) {
+        if
+          constexpr(std::is_same_v<R, int>) r = lua_tointeger(this->Lua, -1);
+      } else if
+        constexpr(std::is_same_v<double, R> || std::is_same_v<R, float>) r =
+            lua_tonumber(this->Lua, -1);
+      break;
+    case LUA_TBOOLEAN:
+      if
+        constexpr(std::is_same_v<R, bool>) r = lua_toboolean(this->Lua, -1);
+      break;
+    case LUA_TSTRING:
+
+      if
+        constexpr(std::is_same_v<R, std::string>) r =
+            lua_tostring(this->Lua, -1);
+
+      break;
+    default:
+      return false;
+      break;
+    }
+    if (this->debug)
+      std::cout << LUA_PREFIX << "got '" << name << "' = '" << r << "' \n";
+    lua_pop(this->Lua, 1);
+    return true;
+  }
 
   /**
   * Sets the value of global lua-var.
@@ -93,11 +172,22 @@ public:
   * @param value the var's value
   * @return true on success, false on error
   */
-  bool Set(const char *name, const char *value);
-  bool Set(const char *name, int value);
-  bool Set(const char *name, const double value);
-  bool Set(const char *name, const float value);
-  bool Set(const char *name, const bool value);
+
+  template <typename A> bool Set(const char *name, const A a) {
+
+    if (!this->Lua || !name)
+      return false;
+
+    if (this->Push(a) == true) {
+
+      lua_setglobal(this->Lua, name);
+
+      if (this->debug)
+        std::cout << LUA_PREFIX << "set '" << name << "' = '" << a << "' \n";
+      return true;
+    }
+    return false;
+  }
 
   /**
       * Execute any string
@@ -111,15 +201,39 @@ public:
   * @param string string to push
   * @return true on success, false on error
   */
-  bool Push(double number);
-  bool Push(const char *string);
-  bool Push(const std::string &string) { return this->Push(string.c_str()); }
+  template <typename A> bool Push(A a) {
+    if (!this->Lua)
+      return false;
+
+    if
+      constexpr(std::is_same_v<A, int>) lua_pushinteger(this->Lua, a);
+
+    else if
+      constexpr(std::is_same_v<A, float> || std::is_same_v<A, double>)
+          lua_pushnumber(this->Lua, a);
+
+    else if
+      constexpr(std::is_same_v<A, bool>) lua_pushboolean(this->Lua, a);
+
+    else if
+      constexpr(std::is_same_v<A, std::string>)
+          lua_pushlstring(this->Lua, a.c_str(), a.length());
+    else
+      return false;
+    return true;
+  }
 
   /**
   * Resets Lua's internal stack
   * @return true on success, false on error
   */
-  bool Flush();
+  bool Flush() {
+    if ((!this->Lua))
+      return false;
+
+    lua_settop(this->Lua, 0);
+    return true;
+  }
 
   /**
   * After calling this function,
@@ -127,13 +241,13 @@ public:
   * Lua-Adapter function call.
   * @param on true to activate debug-mode
   */
-  void Debug(bool on=true) { this->debug = on; }
+  void Debug(bool on = true) { this->debug = on; }
 
   /**
   * Return the current debugging-state
   * @return true if debug-mode is activated, false if not
   */
-  bool GetDebug()const{return this->debug;}
+  bool GetDebug() const { return this->debug; }
 
   /**
   * Pops i entries from Lua's internal stack
@@ -155,7 +269,8 @@ public:
 
   /**
   * Returns the current lua_State which is used in this adapter
-  * This is necessary, because you need this state for LuaFunctions or LuaTables!
+  * This is necessary, because you need this state for LuaFunctions or
+  * LuaTables!
   * @return the current lua_State
   */
   lua_State *const GetLuaState() const { return this->Lua; }
@@ -164,18 +279,18 @@ public:
   * "Closes" the loaded *.lua-sourcefile
   * This function is called by the destructor of this class!
   * */
-  void Close();
+  void Close() {
+    if ((!this->Lua) || (!this->single))
+      return;
+    // this->Flush();
+    lua_close(this->Lua);
+
+    this->Lua = nullptr;
+  }
 
 private:
   lua_State *Lua;
   bool debug;
   bool single;
-
-  /**
-  * Gets the value of a globally loaded lua-variable
-  * @param name Name of the vairable
-  * @return true on success, false on error
-  */
-  bool GetGlobal(const char *name);
 };
 #endif
