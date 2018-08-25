@@ -35,11 +35,15 @@ class LuaFunction {
 
 public:
   /**
-  *Default constructor
+  *Constructor
   *@param lua uses an existing lua_state
   */
   LuaFunction(LuaAdapter &lua) : Lua{lua.GetLuaState()} {}
 
+  /**
+  *Default constructor
+  *@param lua uses an existing lua_state
+  */
   LuaFunction(lua_State *const lua = nullptr) : Lua{lua} {}
 
   /**
@@ -49,10 +53,10 @@ public:
 
   /**
    * Calls a lua-function
-   * @param name of the lua-function
+   * @param f of the lua-function
    * @param c number of arguments passed to the lua-function
    * @param a function-arguments
-   * @param result new value from the lua-function
+   * @param r new value from the called lua-function
    * @return true on success, false on error
    */
   template <typename A, typename R>
@@ -103,6 +107,13 @@ public:
     return true;
   }
 
+ /**
+   * Calls a lua-function
+   * @param f of the lua-function
+   * @param c number of arguments passed to the lua-function
+   * @param a function-arguments
+   * @return true on success, false on error
+   */
   template <typename A>
   bool Call(const char *f, const unsigned short int c, const A *const a) {
     if ((!this->Lua) || (!f) || (lua_getglobal(this->Lua, f) != LUA_TFUNCTION))
@@ -125,15 +136,33 @@ public:
     return this->Pcall(c, 0, 0);
   }
 
+ /**
+   * Calls a lua-function
+   * @param f of the lua-function
+   * @param a function-argument
+   * @param r new value from the called lua-function
+   * @return true on success, false on error
+   */
   template <typename A, typename R>
   bool Call(const char *f, const A a, R &r = LUA_ADAPTER_NULL) {
     return this->Call(f, 1, (const A *)&a, r);
   }
 
+  /**
+   * Calls a lua-function
+   * @param f of the lua-function
+   * @param a function-argument
+   * @return true on success, false on error
+   */
   template <typename A> bool Call(const char *f, const A a) {
     return this->Call(f, 1, (const A *)&a);
   }
 
+  /**
+   * Calls a lua-function
+   * @param f of the lua-function
+   * @return true on success, false on error
+   */
   bool Call(const char *f) {
     if ((!this->Lua) || (!f) || (lua_getglobal(this->Lua, f) != LUA_TFUNCTION))
       return false;
@@ -144,7 +173,7 @@ public:
     * Makes a C-/C++-function-call available for lua
     * (it's called pushFunction(), but you're not 'incrementing' the stack)
     * @param function C-/C++-function
-    * @param f name of the function
+    * @param name name of the function
     * @return true on success, false on error
     */
   bool Push(Lua_callback_function function, const char *name) {

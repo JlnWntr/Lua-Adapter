@@ -34,9 +34,7 @@
 static int test_function(lua_State *L);
 
 int main(int argc, char *argv[]) {
-
   LuaAdapter lua{"test.lua"};
-  //lua.Debug();
 
   /**
    * Parameterize your application.

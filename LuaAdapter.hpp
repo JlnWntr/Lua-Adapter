@@ -35,9 +35,8 @@ class LuaAdapter {
 public:
   /**
   * Default constructor
-  * Hint: Calls init()!
-  * @param lua (re-)uses an existing lua_state. See example in test.cpp at
-  * testCFunction()
+  * @param lua (re-)uses an existing lua_state.
+  * (See for example testCFunction() in test.cpp)
   */
   LuaAdapter(lua_State *const lua = nullptr)
       : Lua{lua}, debug{false}, single{(lua) ? false : true} {
@@ -77,57 +76,43 @@ public:
   }
 
   /**
-  * Calls lua_pcall(Lua, 0, 0, 0)
-  * @return true on success, false on error
-  */
-  bool Eval() {
-    if (this->debug == false)
-      return ((this->Lua) && (lua_pcall(this->Lua, 0, 0, 0) == 0));
-
-    if (!this->Lua) {
-      std::cerr << LUA_PREFIX
-                << "Error: Lua-state invalid. Call init() first!\n";
-      return false;
-    }
-    const int pcall{lua_pcall(this->Lua, 0, 0, 0)};
-    if (pcall == 0)
-      return true;
-    std::cerr << LUA_PREFIX << "Error: pcall failed. Code: ";
-    std::cerr << pcall;
-    std::cerr << ", '" << lua_tostring(this->Lua, -1) << "'\n";
-    this->Pop();
-    return false;
-  }
-
-  /**
   * Loads a *.lua-sourcefile
   * Set your default (local) lua-vars before you call this function!
   * @param filename lua-file to load
   * @return true on success, false on error
   */
-
+  bool Load(const std::string &filename){return Load(filename.c_str());}
   bool Load(const char *filename) {
     this->Init();
-
-    if ((luaL_loadfile(this->Lua, filename) == 0) && this->Eval()) {
-      return true;
+    if (!this->Lua) {
+      if(this->debug)
+        std::cerr << LUA_PREFIX
+                << "Error: Lua-state invalid. Call init() first!\n";
+      return false;
     }
-    std::cerr << LUA_PREFIX << "Error in Lua-file '";
-    std::cerr << filename << "': ";
-    std::cerr << lua_tostring(this->Lua, -1);
-    std::cerr << "\n";
+    if (!(luaL_loadfile(this->Lua, filename) == 0)){
+      if(debug){
+         std::cerr << LUA_PREFIX << "Error. Could not load '";
+         std::cerr << filename << "'.\n";
+      }
+      return false;
+    }
+    const int pcall{lua_pcall(this->Lua, 0, 0, 0)};
+    if (pcall == 0)
+      return true;
 
+    if(debug){
+        std::cerr << LUA_PREFIX << "Error in Lua-file ";
+        std::cerr << lua_tostring(this->Lua, -1);
+        std::cerr << "\n";
+    }
     return false;
   }
 
-  bool Load(const std::string &filename) {
-    return this->Load(filename.c_str());
-  }
-
   /**
-  * Gets the value of a variable.
+  * Gets the value of a global variable.
   * @param name of the variable inside loaded lua state
-  * @param result value is saved in this variable
+  * @param r value is saved in this variable
   * @return true on success, false on error
   */
   template <typename R> bool Get(const char *name, R &r) {
@@ -136,27 +121,25 @@ public:
       return false;
 
     switch (lua_getglobal(this->Lua, name)) {
-
     case LUA_TNUMBER:
-
       if (lua_isinteger(this->Lua, -1)) {
         if
-          constexpr(std::is_same_v<R, int>) r = lua_tointeger(this->Lua, -1);
+          constexpr(std::is_same_v<R, int>)
+          r = lua_tointeger(this->Lua, -1);
       } else if
-        constexpr(std::is_same_v<double, R> || std::is_same_v<R, float>) r =
-            lua_tonumber(this->Lua, -1);
-      break;
+        constexpr(std::is_same_v<double, R> || std::is_same_v<R, float>)
+        r = lua_tonumber(this->Lua, -1);
+    break;
     case LUA_TBOOLEAN:
       if
-        constexpr(std::is_same_v<R, bool>) r = lua_toboolean(this->Lua, -1);
-      break;
+        constexpr(std::is_same_v<R, bool>)
+        r = lua_toboolean(this->Lua, -1);
+    break;
     case LUA_TSTRING:
-
       if
         constexpr(std::is_same_v<R, std::string>) r =
             lua_tostring(this->Lua, -1);
-
-      break;
+    break;
     default:
       return false;
       break;
@@ -168,19 +151,16 @@ public:
   }
 
   /**
-  * Sets the value of global lua-var.
+  * Sets the value of a global lua-variable.
   * @param name of the variable
-  * @param value the var's value
+  * @param a the var's value
   * @return true on success, false on error
   */
-
   template <typename A> bool Set(const char *name, const A a) {
-
     if (!this->Lua || !name)
       return false;
 
     if (this->Push(a) == true) {
-
       lua_setglobal(this->Lua, name);
 
       if (this->debug)
@@ -191,34 +171,34 @@ public:
   }
 
   /**
-      * Execute any string
+  * Execute any string
   * @param string to execute, for example "test = io.read()"
-      */
-  bool DoString(const char *string) { return luaL_dostring(this->Lua, string); }
+  * @return true on success, false on error
+  */
+  bool DoString(const char *string) {
+      return luaL_dostring(this->Lua, string);
+  }
 
   /**
-  * Push data on the lua-stack. (Mind the stack!)
-  * @param number number to push
-  * @param string string to push
+  * Push data on the lua-stack.
+  * @param a variable to push  * @param
   * @return true on success, false on error
   */
   template <typename A> bool Push(A a) {
     if (!this->Lua)
       return false;
-
     if
-      constexpr(std::is_same_v<A, int>) lua_pushinteger(this->Lua, a);
-
+      constexpr(std::is_same_v<A, int>)
+      lua_pushinteger(this->Lua, a);
     else if
       constexpr(std::is_same_v<A, float> || std::is_same_v<A, double>)
-          lua_pushnumber(this->Lua, a);
-
+      lua_pushnumber(this->Lua, a);
     else if
-      constexpr(std::is_same_v<A, bool>) lua_pushboolean(this->Lua, a);
-
+      constexpr(std::is_same_v<A, bool>)
+      lua_pushboolean(this->Lua, a);
     else if
       constexpr(std::is_same_v<A, std::string>)
-          lua_pushlstring(this->Lua, a.c_str(), a.length());
+      lua_pushlstring(this->Lua, a.c_str(), a.length());
     else
       return false;
     return true;
@@ -283,9 +263,7 @@ public:
   void Close() {
     if ((!this->Lua) || (!this->single))
       return;
-    // this->Flush();
     lua_close(this->Lua);
-
     this->Lua = nullptr;
   }
 
