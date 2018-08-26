@@ -53,10 +53,10 @@ public:
 
   /**
    * Calls a lua-function
-   * @param f of the lua-function
-   * @param c number of arguments passed to the lua-function
-   * @param a function-arguments
-   * @param r new value from the called lua-function
+   * @param f name of the lua-function
+   * @param c number of arguments passed to the lua function
+   * @param a function arguments
+   * @param r new value returned from the called lua function
    * @return true on success, false on error
    */
   template <typename A, typename R>
@@ -109,9 +109,9 @@ public:
 
  /**
    * Calls a lua-function
-   * @param f of the lua-function
-   * @param c number of arguments passed to the lua-function
-   * @param a function-arguments
+   * @param f name of the lua-function
+   * @param c number of arguments passed to the lua function
+   * @param a function arguments
    * @return true on success, false on error
    */
   template <typename A>
@@ -138,9 +138,9 @@ public:
 
  /**
    * Calls a lua-function
-   * @param f of the lua-function
-   * @param a function-argument
-   * @param r new value from the called lua-function
+   * @param f name of the lua function
+   * @param a function argument
+   * @param r new value returned from the called lua function
    * @return true on success, false on error
    */
   template <typename A, typename R>
@@ -150,8 +150,8 @@ public:
 
   /**
    * Calls a lua-function
-   * @param f of the lua-function
-   * @param a function-argument
+   * @param f name of the lua-function
+   * @param a function argument
    * @return true on success, false on error
    */
   template <typename A> bool Call(const char *f, const A a) {
@@ -160,7 +160,7 @@ public:
 
   /**
    * Calls a lua-function
-   * @param f of the lua-function
+   * @param f name of the lua-function
    * @return true on success, false on error
    */
   bool Call(const char *f) {
@@ -170,10 +170,10 @@ public:
   }
 
   /**
-    * Makes a C-/C++-function-call available for lua
+    * Makes a C-/C++-function call available for lua
     * (it's called pushFunction(), but you're not 'incrementing' the stack)
     * @param function C-/C++-function
-    * @param name name of the function
+    * @param name of the function
     * @return true on success, false on error
     */
   bool Push(Lua_callback_function function, const char *name) {

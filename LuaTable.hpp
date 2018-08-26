@@ -46,7 +46,7 @@ public:
   LuaTable(lua_State *const lua = nullptr) : Lua{lua}, debug{false} {}
 
   /**
-    * Opens a lua-table
+    * Opens a lua table
     * @param name Name of the table inside loaded lua state
     * @return true on success, false on error
     */
@@ -89,7 +89,7 @@ public:
 
   /**
     * Get the length of the current (opened) table
-    * [tables with integer keys and without 'nil-holes']
+    * (tables with integer keys and without 'nil-holes')
     * @return the length of the table
     */
   unsigned short int Length() {
@@ -127,7 +127,7 @@ public:
   * Gets a field from an opened table
   * @param name of the field
   * @param r value of the field
-  * @retur true on success, false on error
+  * @return true on success, false on error
   */
   template <typename R> bool Get(const char *name, R &r) {
     if (!this->Lua || !name || !lua_istable(this->Lua, -1))
@@ -150,9 +150,8 @@ public:
   * Gets a field from an opened table
   * @param i i-th field (starting at 1)
   * @param r value of the field
-  * @retur true on success, false on error
+  * @return true on success, false on error
   */
-
   template <typename R> bool Get(unsigned short int i, R &r) {
     if ((!this->Lua) || (!lua_istable(this->Lua, -1)) || (i < 1))
       return false;
@@ -172,7 +171,7 @@ public:
     return true;
   }
   /**
-  * Gets a ("n-D"-)field value from an opened table.
+  * Gets a field value from an opened n-dimensional table.
   * Example: lua_identity ={
   *               {1, 0, 0},
   *               {0, 1, 0},
@@ -203,8 +202,7 @@ public:
 
   /**
   *Closes a table
-  *Call this function after every opening (and use) of a table!
-  *(Prevents "stack-smashing".)
+  *(This is important to prevents "stack-smashing".)
   */
   void Close() { lua_pop(this->Lua, 1); }
 

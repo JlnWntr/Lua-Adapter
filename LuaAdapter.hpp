@@ -35,6 +35,7 @@ class LuaAdapter {
 public:
   /**
   * Default constructor
+  * (Calls Init().)
   * @param lua (re-)uses an existing lua_state.
   * (See for example testCFunction() in test.cpp)
   */
@@ -59,8 +60,9 @@ public:
 
   /**
   * Initialize Lua and all its libs
-  * Does NOT load any lua-sourcefile
-  * LuaAdapter calls this internally single-handed.
+  * Does NOT load any lua sourcefile  *
+  * LuaAdapter calls this internally when the constructor is called
+  * with a lua file-argument
   * @return true on success, false on error
   */
   bool Init() {
@@ -76,9 +78,8 @@ public:
   }
 
   /**
-  * Loads a *.lua-sourcefile
-  * Set your default (local) lua-vars before you call this function!
-  * @param filename lua-file to load
+  * Loads a *.lua-sourcefile  *
+  * @param filename lua file to load
   * @return true on success, false on error
   */
   bool Load(const std::string &filename){return Load(filename.c_str());}
@@ -180,8 +181,8 @@ public:
   }
 
   /**
-  * Push data on the lua-stack.
-  * @param a variable to push  * @param
+  * Push data on the lua stack.
+  * @param a variable to push
   * @return true on success, false on error
   */
   template <typename A> bool Push(A a) {
@@ -218,8 +219,8 @@ public:
 
   /**
   * After calling this function,
-  * lua-adapter will print out debug-information for each following
-  * Lua-Adapter function call.
+  * lua-adapter will print out debug-information
+  * for each function call.
   * @param on true to activate debug-mode
   */
   void Debug(bool on = true) { this->debug = on; }
@@ -243,15 +244,18 @@ public:
   int GetTop() const { return lua_gettop(this->Lua); }
 
   /**
-  * Gets the value-type of the current stack position
+  * Gets the value type of the current stack position
+  * (LUA_TNIL (0), LUA_TNUMBER, LUA_TBOOLEAN, LUA_TSTRING, LUA_TTABLE,
+  *  LUA_TFUNCTION, LUA_TUSERDATA, LUA_TTHREAD, and LUA_TLIGHTUSERDATA.)
+  * [https://www.lua.org/manual/5.3/manual.html#lua_type]
   * @return the type
   */
   int GetType() const { return lua_type(this->Lua, 0); }
 
   /**
   * Returns the current lua_State which is used in this adapter
-  * This is necessary, because you need this state for LuaFunctions or
-  * LuaTables!
+  * This is necessary,
+  * because you need this state for LuaFunctions or  LuaTables.
   * @return the current lua_State
   */
   lua_State *const GetLuaState() const { return this->Lua; }
