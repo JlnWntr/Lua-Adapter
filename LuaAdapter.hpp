@@ -60,7 +60,7 @@ public:
 
   /**
   * Initialize Lua and all its libs
-  * Does NOT load any lua sourcefile  *
+  * Does NOT load any lua sourcefile
   * LuaAdapter calls this internally when the constructor is called
   * with a lua file-argument
   * @return true on success, false on error
