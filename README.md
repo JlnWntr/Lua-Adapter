@@ -13,3 +13,7 @@ Requirements:
 - [Download and install Lua](https://www.lua.org/download.html).
 - g++-8 or higher
 
+If `apt-get install g++-8` does not work on your Debian, try 
+
+    add-apt-repository ppa:ubuntu-toolchain-r/test && sudo apt-get update 
+first.
