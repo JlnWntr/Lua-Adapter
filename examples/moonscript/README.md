@@ -1,6 +1,6 @@
 # C++ ⇆ Moonscript
 
-You can even run and use [Moonscript](https://github.com/leafo/moonscript) on the fly in your C++ application using LuaAdapter.
+You can even run and use [Moonscript](http://moonscript.org/) on the fly in your C++ application using LuaAdapter.
 
 ### Example
 
