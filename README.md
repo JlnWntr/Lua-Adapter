@@ -1,5 +1,5 @@
 # Lua-Adapter
-Use this lightweight wrapper- / adapter-class as an interface between Lua and C++.
+Use this lightweight wrapper- / adapter-class as an interface between Lua and C++ or even [MoonScript and C++](https://github.com/JlnWntr/Lua-Adapter/tree/master/examples/moonscript).
 
 ## Usage
 
