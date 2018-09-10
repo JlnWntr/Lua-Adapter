@@ -1,2 +1,5 @@
-print "hi!"
-export moon_func = (x) -> x + 2
+print "Hello!"
+
+double = (x) -> x * 2
+
+export width = double(400)
