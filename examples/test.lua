@@ -50,6 +50,10 @@ function Random()
     return 5
 end
 
+function Inc(x)
+    return x+1
+end
+
 function String()
     return "This is a string!"
 end
