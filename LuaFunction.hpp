@@ -106,6 +106,10 @@ public:
     lua_pop(this->Lua, 1);
     return true;
   }
+  template <typename A, typename R>
+  bool Call(const std::string f, const auto c, const A *const a, R &r) {
+      return this->Call(f.c_str(), c, a, r);
+  }
 
  /**
    * Calls a lua-function
@@ -135,6 +139,10 @@ public:
     }
     return this->Pcall(c, 0, 0);
   }
+  template <typename A>
+  bool Call(const std::string f, const auto c, const A *const a) {
+      return this->Call(f.c_str(), c, a);
+  }
 
  /**
    * Calls a lua-function
@@ -147,6 +155,10 @@ public:
   bool Call(const char *f, const A a, R &r = LUA_ADAPTER_NULL) {
     return this->Call(f, 1, (const A *)&a, r);
   }
+  template <typename A, typename R>
+  bool Call(const std::string f, const A a, R &r = LUA_ADAPTER_NULL) {
+    return this->Call(f.c_str(), 1, (const A *)&a, r);
+  }
 
   /**
    * Calls a lua-function
@@ -156,6 +168,9 @@ public:
    */
   template <typename A> bool Call(const char *f, const A a) {
     return this->Call(f, 1, (const A *)&a);
+  }
+  template <typename A> bool Call(const std::string f, const A a) {
+    return this->Call(f.c_str(), 1, (const A *)&a);
   }
 
   /**
@@ -167,6 +182,9 @@ public:
     if ((!this->Lua) || (!f) || (lua_getglobal(this->Lua, f) != LUA_TFUNCTION))
       return false;
     return this->Pcall(0, 0, 0);
+  }
+  bool Call(const std::string f) {
+      return this->Call(f.c_str());
   }
 
   /**
@@ -182,6 +200,9 @@ public:
     lua_pushcfunction(this->Lua, function);
     lua_setglobal(this->Lua, name);
     return true;
+  }
+  bool Push(Lua_callback_function function, const std::string name) {
+    return Push(function, name.c_str());
   }
 
   /**
