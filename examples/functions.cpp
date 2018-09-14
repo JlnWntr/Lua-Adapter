@@ -36,16 +36,24 @@ int main() {
   // THEN load the script:
   lua.Load("test.lua");
 
+  // null arguments
+  int Return_int{0};
+  luaFunction.Call("Random", 0, Return_int);
+  std::cout << "Random: " << Return_int << "\n";
+
   // one argument, no return value
   luaFunction.Call("Print", (const std::string) "This is a string.");
   luaFunction.Call("Print", 1);
   luaFunction.Call("Print", 2.2);
   luaFunction.Call("Print", true);
 
-  // null arguments
-  int Return_int{0};
-  luaFunction.Call("Random", 0, Return_int);
-  std::cout << "Random: " << Return_int << "\n";
+  // one argument, one return value
+  const double double_arg {2.3};
+  double double_result{};
+  const std::string function{"Inc"};
+  luaFunction.Call(function, double_arg, double_result);
+  std::cout << "Incrementing a double: " << double_result << "\n";
+
 
   std::string Return_string{};
   luaFunction.Call("String", 0, Return_string);
