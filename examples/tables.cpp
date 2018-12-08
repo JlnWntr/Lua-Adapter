@@ -48,14 +48,13 @@ int main() {
   if (luaTable.Open("matrix")) {
 
     // Get the length of the table
-    const unsigned short int length{luaTable.Length()};
+    const unsigned short int length{(unsigned short int)luaTable.Length()};
     std::cout << "Table-length: " << length << "\n";
 
-    for (unsigned char j = 1; j <= length; j++) {
-      for (unsigned char i = 1; i <= length; i++) {
+    for (unsigned short int j = 1; j <= length; j++) {
+      for (unsigned short int  i = 1; i <= length; i++) {
         int temp = 0;
-        luaTable.Get((const std::vector<unsigned short int>){j, i},
-                     temp); // matrix[j][i]
+        luaTable.Get({j, i}, temp); // matrix[j][i]
         std::cout << temp << " ";
       }
       std::cout << "\n";
@@ -98,5 +97,7 @@ int main() {
 
     luaTable.Close(); // close "Strings"
   }
+  // Check lua's internal stack
+  std::cout << "stack top: " << lua.GetTop() << "\n"; // should be 0
   return 0;
 }

@@ -92,8 +92,8 @@ public:
     * (tables with integer keys and without 'nil-holes')
     * @return the length of the table
     */
-  unsigned short int Length() {
-    unsigned short int result{0};
+  int Length() {
+    int result{0};
     if ((!this->Lua)) {
       return result;
     }

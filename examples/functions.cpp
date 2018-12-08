@@ -54,17 +54,17 @@ int main() {
   luaFunction.Call(function, double_arg, double_result);
   std::cout << "Incrementing a double: " << double_result << "\n";
 
-
+  // zero arguments, one return value
   std::string Return_string{};
   luaFunction.Call("String", 0, Return_string);
   std::cout << "String: " << Return_string << "\n";
 
-  // n=3 arguments
+  // three arguments, one return value
   int array[] = {1, 2, 3};
   luaFunction.Call("Return", 3, array, Return_int);
   std::cout << "Return(1, 2, 3) = " << Return_int << "\n";
 
-  // n=2 arguments
+  // two arguments, one return value
   int test[] = {36, 24};
   int result{0};
   luaFunction.Call("gcd", 2, test, result);
@@ -72,6 +72,10 @@ int main() {
   std::cout << "\n";
 
   test_function(nullptr); // this is to ignore a compile-warning
+
+  // Check lua's internal stack
+  std::cout << "stack top: " << lua.GetTop() << "\n"; // should be 0
+
   std::cout << "Test ended!\n";
   return 0;
 }
