@@ -10,9 +10,13 @@ lua.Get("width", width);  // width=600
 » See more [examples](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples).
       
 ## Compilation
-In general:
+Just 
+ ```C
+ #include "LuaAdapter.hpp"
+```
+and compile your program
 ```bash
-g++-8 LuaAdapter.hpp your_program.cpp -std=c++17 -llua -ldl
+$ g++-8 your_program.cpp -std=c++17 -llua -ldl
 ```
 
 ## Requirements
