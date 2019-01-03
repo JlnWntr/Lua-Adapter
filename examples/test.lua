@@ -42,7 +42,7 @@ function Print(t)
     print("Lua: " .. tostring(t) .. "\n")
 end
 
-function Return(a, b, c)
+function Sum3(a, b, c)
     return a + b + c
 end
 

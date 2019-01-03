@@ -57,18 +57,23 @@ int main() {
   // zero arguments, one return value
   std::string Return_string{};
   luaFunction.Call("String", 0, Return_string);
-  std::cout << "String: " << Return_string << "\n";
+  std::cout << "String-function: " << Return_string << "\n";
 
   // three arguments, one return value
   int array[] = {1, 2, 3};
-  luaFunction.Call("Return", 3, array, Return_int);
-  std::cout << "Return(1, 2, 3) = " << Return_int << "\n";
+  luaFunction.Call("Sum3", 3, array, Return_int);
+  std::cout << "Sum(1, 2, 3) = " << Return_int << "\n";
+
+   // three arguments, NO return value
+  int test1[] = {3, 2, 1};
+  luaFunction.Call("Sum3", 3, test1, LUA_ADAPTER_NULL);
+  std::cout << "Called Sum3 without return-value.\n";
 
   // two arguments, one return value
-  int test[] = {36, 24};
+  int test2[] = {36, 24};
   int result{0};
-  luaFunction.Call("gcd", 2, test, result);
-  std::cout << "gcd: " << result << "\n";
+  luaFunction.Call("gcd", 2, test2, result);
+  std::cout << "gcd(36, 24) = " << result << "\n";
   std::cout << "\n";
 
   test_function(nullptr); // this is to ignore a compile-warning
