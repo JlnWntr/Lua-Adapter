@@ -26,6 +26,7 @@
 
 int main() {
   LuaAdapter lua{"test.lua"};
+  lua.Debug();
   LuaTable luaTable{lua};
 
   if (luaTable.Open("Table1")) {

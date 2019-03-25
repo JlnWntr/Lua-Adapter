@@ -28,10 +28,14 @@ static int test_function(lua_State *L);
 
 int main() {
   LuaAdapter lua{};
+  lua.Debug();
   LuaFunction luaFunction{lua};
 
   // Define a C/C++-function that can be called from lua (see test.lua)
-  luaFunction.Push(test_function, "test_function");
+  if(luaFunction.Push(test_function, "test_function")==false){
+    std::cout << "Could NOT push C-function! \n";
+    return 1;
+  }
 
   // THEN load the script:
   lua.Load("test.lua");
@@ -91,9 +95,8 @@ int main() {
 static int test_function(lua_State *L) {
   if (!L)
     return 0;
-  LuaAdapter lua{L};
   double number{lua_tonumber(L, 1)};
   number *= 2;
-  lua.Push(number);
+  lua_pushnumber(L, number);
   return 1;
 }
