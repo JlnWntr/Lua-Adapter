@@ -49,13 +49,13 @@ public:
   LuaTable(const LuaTable&) = delete;
 
   /**
-    * Opens a lua table
-    * @param name Name of the table inside loaded lua state
+    * Opens a Lua-table
+    * @param name Name of the table inside loaded Lua-state
     * @return true on success, false on error
     */
   bool Open(const std::string &name) { return this->Open(name.c_str()); }
   bool Open(const char *name) {
-    if((!this->Lua.get()) || (!this->Lua.get()->Lua()) || (!name))
+    if((!this->Lua.get()) || (!this->Lua.get()->Lua()) || !name)
       return false;
 
     if (lua_istable(this->Lua.get()->Lua(), -1)) {
@@ -115,17 +115,6 @@ public:
   */
   ~LuaTable(){}
 
-  /**
-   * (Re-)Sets the lua state
-   * @param lua lua_state
-   * @return true on success, false on error
-
-  bool SetLuaState(lua_State *const lua) {
-    if (!lua)
-      return false;
-    this->Lua = lua;
-    return true;
-  } */
 
 /**
   * Gets a field from an opened table

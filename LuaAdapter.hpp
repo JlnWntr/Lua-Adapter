@@ -77,8 +77,8 @@ public:
     :Lua{lua.GetLuaState()}{}
 
   /**
-  * This constructor inits Lua and loads a .lua-file.
-  * @param filename .lua-file to load
+  * This constructor inits Lua and loads a .Lua-file.
+  * @param filename .Lua-file to load
   */
   LuaAdapter(const std::string &filename)
       : Lua{std::make_shared<LuaState>()}{
@@ -91,7 +91,7 @@ public:
   ~LuaAdapter() {}
 
   /**
-  * Loads a *.lua-sourcefile  *
+  * Loads a *.Lua-sourcefile  *
   * @param filename lua file to load
   * @return true on success, false on error
   */
@@ -129,7 +129,7 @@ public:
     ||  (luaL_loadbuffer(this->Lua.get()->Lua(), bytecode, length, nullptr) != 0)
     ){
 #ifdef LUA_ADAPTER_DEBUG
-         std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load lua-bytecode'";
+         std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load Lua-bytecode'";
          std::cerr << std::endl;
 #endif
       return false;
@@ -146,7 +146,7 @@ public:
 
   /**
   * Gets the value of a global variable.
-  * @param name of the variable inside loaded lua state
+  * @param name of the variable inside loaded Lua-state
   * @param r value is saved in this variable
   * @return true on success, false on error
   */
@@ -187,7 +187,7 @@ public:
   }
 
   /**
-  * Sets the value of a global lua-variable.
+  * Sets the value of a global Lua-variable.
   * @param name of the variable
   * @param a the var's value
   * @return true on success, false on error

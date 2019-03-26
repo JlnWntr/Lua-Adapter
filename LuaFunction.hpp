@@ -55,11 +55,11 @@ public:
   ~LuaFunction() {}
 
   /**
-   * Calls a lua-function
-   * @param f name of the lua-function
-   * @param c number of arguments passed to the lua function
+   * Calls a Lua-function
+   * @param f name of the Lua-function
+   * @param c number of arguments passed to the Lua-function
    * @param a function arguments
-   * @param r new value returned from the called lua function
+   * @param r new value returned from the called Lua-function
    * @return true on success, false on error
    */
   template <typename A, typename R>
@@ -118,9 +118,9 @@ public:
   }
 
  /**
-   * Calls a lua-function
-   * @param f name of the lua-function
-   * @param c number of arguments passed to the lua function
+   * Calls a Lua-function
+   * @param f name of the Lua-function
+   * @param c number of arguments passed to the Lua-function
    * @param a function arguments
    * @return true on success, false on error
    */
@@ -154,10 +154,10 @@ public:
   }
 
  /**
-   * Calls a lua-function
-   * @param f name of the lua function
+   * Calls a Lua-function
+   * @param f name of the Lua-function
    * @param a function argument
-   * @param r new value returned from the called lua function
+   * @param r new value returned from the called Lua-function
    * @return true on success, false on error
    */
   template <typename A, typename R>
@@ -170,8 +170,8 @@ public:
   }
 
   /**
-   * Calls a lua-function
-   * @param f name of the lua-function
+   * Calls a Lua-function
+   * @param f name of the Lua-function
    * @param a function argument
    * @return true on success, false on error
    */
@@ -183,8 +183,8 @@ public:
   }
 
   /**
-   * Calls a lua-function
-   * @param f name of the lua-function
+   * Calls a Lua-function
+   * @param f name of the Lua-function
    * @return true on success, false on error
    */
   bool Call(const char *f) {
@@ -201,7 +201,7 @@ public:
 
   /**
     * Makes a C-/C++-function available for Lua
-    * (it's called pushFunction(), but you're not 'incrementing' the stack)
+    * (It's called pushFunction(), but you're not 'incrementing' the stack)
     * @param function C-/C++-function
     * @param name of the function
     * @return true on success, false on error
@@ -209,6 +209,7 @@ public:
   bool Push(Lua_callback_function function, const char *name) {
     if( (!this->Lua.get())
     ||  (!this->Lua.get()->Lua())
+    ||  (!name)
     )   return false;
     lua_pushcfunction(this->Lua.get()->Lua(), function);
     lua_setglobal(this->Lua.get()->Lua(), name);
@@ -218,18 +219,6 @@ public:
     return Push(function, name.c_str());
   }
 
-  /**
-    * (Re-)Sets the lua state
-    * @param lua lua_state
-    * @return true on success, false on error
-
-  bool SetLuaState(lua_State *const lua) {
-    if (!lua)
-      return false;
-    this->Lua = lua;
-    return true;
-  }
- */
 private:
   std::shared_ptr<LuaState> Lua;
 
