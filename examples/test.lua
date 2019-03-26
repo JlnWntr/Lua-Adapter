@@ -39,7 +39,7 @@ function gcd(n, m)
 end
 
 function Print(t)
-    print("Lua: " .. tostring(t) .. "\n")
+    print("Lua: " .. tostring(t))
 end
 
 function Sum3(a, b, c)
@@ -61,5 +61,5 @@ end
 
 -- Call C/C++-function
 if not (test_function==nil)  then
-    print ("Lua: ".. 44 .. " * 2 = " .. test_function(44))
+   print ("Lua: ".. 44 .. " * 2 = " .. test_function(44))
 end

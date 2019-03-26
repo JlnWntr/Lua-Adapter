@@ -1,25 +1,70 @@
+# Examples
 Have a look at these examples to learn how to use Lua-Adapter.
 
 
- * General usage
-        
-        #include "../LuaAdapter.hpp"
-   *compile*:  
-   
-        $ g++-8 test.cpp -std=c++17 -llua -ldl -Wall
+## General usage example
 
- * Tables
- 
-        #include "../LuaTable.hpp"
-   *compile*:   
-   
-        $ g++-8 tables.cpp -std=c++17 -llua -ldl -Wall
+```C++
+#include "../LuaAdapter.hpp"
 
- * Functions
- 
-        #include "../LuaFunction.hpp"
-   *compile*:  
-   
-        $ g++-8 functions.cpp -std=c++17 -llua -ldl -Wall -fconcepts
+int main(){
+  LuaAdapter lua{"test.lua"};
 
+  int width {0};
+  lua.Get("width", width);  // width=600
+
+  return 0;
+}
+```
+
+```bash
+ $ g++-8 general_example.cpp -std=c++17 -llua -ldl -Wall
+```
+
+See [test.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/test.cpp) for *more* examples.
+
+## Table example
+
+```C++
+#include "../LuaTable.hpp"
+
+int main(){
+  LuaAdapter lua{"test.lua"};
+  LuaTable table{lua};
+
+  if (table.Open("Table1")) {
+    int ID {0};
+    table.Get("ID", ID);
+  }
+
+  return 0;
+}
+```
+
+```bash
+ $ g++-8 table_example.cpp -std=c++17 -llua -ldl -Wall
+```
+Please see [tables.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/tables.cpp) for *more* examples.
+
+## C++-function example
+
+```C++
+#include "../LuaFunction.hpp"
+
+int main(){
+  LuaAdapter lua{"test.lua"};
+  LuaFunction function{lua};
+
+  function.Call("Print", (std::string)"Hello!");
+
+  return 0;
+}
+```
+
+```bash
+ $ g++-8 function_example.cpp -std=c++17 -llua -ldl -Wall -fconcepts
+```
+See [functions.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/functions.cpp) for even *more* examples.
+
+## Contact
 If you need help or if you have questions, send me an e-mail to jlnwntr@gmail.com
