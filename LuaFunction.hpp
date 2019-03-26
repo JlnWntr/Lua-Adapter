@@ -248,9 +248,11 @@ private:
     if (call == LUA_OK) {
       return true;
     }
-    std::cerr << LUA_PREFIX << "Error: pcall failed. Code: ";
+#ifdef LUA_ADAPTER_DEBUG
+    std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. Code: ";
     std::cerr << call;
     std::cerr << ", '" << lua_tostring(this->Lua.get()->Lua(), -1) << "'\n";
+#endif
     lua_pop(this->Lua.get()->Lua(), 1);
     return false;
   }

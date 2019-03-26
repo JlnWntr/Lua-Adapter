@@ -20,15 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+/* #define LUA_ADAPTER_DEBUG */
+
 #ifndef LUA_FUNCTION_H
   #include "../LuaFunction.hpp"
+#endif
+#ifndef LUA_ADAPTER_DEBUG
+#include <iostream>
 #endif
 
 static int test_function(lua_State *L);
 
 int main() {
   LuaAdapter lua{};
-  lua.Debug();
   LuaFunction luaFunction{lua};
 
   // Define a C/C++-function that can be called from lua (see test.lua)
@@ -43,7 +48,7 @@ int main() {
   // null arguments
   int Return_int{0};
   luaFunction.Call("Random", 0, Return_int);
-  std::cout << "Random: " << Return_int << "\n";
+  std::cout << "Random: " << Return_int << std::endl;
 
   // one argument, no return value
   luaFunction.Call("Print", (const std::string) "This is a string.");
@@ -56,17 +61,17 @@ int main() {
   double double_result{};
   const std::string function{"Inc"};
   luaFunction.Call(function, double_arg, double_result);
-  std::cout << "Incrementing a double: " << double_result << "\n";
+  std::cout << "Incrementing a double: " << double_result << std::endl;
 
   // zero arguments, one return value
   std::string Return_string{};
   luaFunction.Call("String", 0, Return_string);
-  std::cout << "String-function: " << Return_string << "\n";
+  std::cout << "String-function: " << Return_string << std::endl;
 
   // three arguments, one return value
   int array[] = {1, 2, 3};
   luaFunction.Call("Sum3", 3, array, Return_int);
-  std::cout << "Sum(1, 2, 3) = " << Return_int << "\n";
+  std::cout << "Sum(1, 2, 3) = " << Return_int << std::endl;
 
    // three arguments, NO return value
   int test1[] = {3, 2, 1};
@@ -77,13 +82,13 @@ int main() {
   int test2[] = {36, 24};
   int result{0};
   luaFunction.Call("gcd", 2, test2, result);
-  std::cout << "gcd(36, 24) = " << result << "\n";
-  std::cout << "\n";
+  std::cout << "gcd(36, 24) = " << result << std::endl;
+  std::cout << std::endl;
 
   test_function(nullptr); // this is to ignore a compile-warning
 
   // Check lua's internal stack
-  std::cout << "stack top: " << lua.GetTop() << "\n"; // should be 0
+  std::cout << "stack top: " << lua.GetTop() << std::endl; // should be 0
 
   std::cout << "Test ended!\n";
   return 0;

@@ -24,6 +24,9 @@
 #ifndef LUA_ADAPTER_H
   #include "../LuaAdapter.hpp"
 #endif
+#ifndef LUA_ADAPTER_DEBUG
+#include <iostream>
+#endif
 
 int main() {
   LuaAdapter lua{"test.lua"};
@@ -31,30 +34,30 @@ int main() {
   // get height
   int height{0};
   lua.Get("height", height);
-  std::cout << "height: " << height << "\n";
+  std::cout << "height: " << height << std::endl;
 
   // get an int
   int width{0};
   lua.Get("width", width);
-  std::cout << "width: " << width << "\n";
+  std::cout << "width: " << width << std::endl;
 
   // get double
   double number{0};
   lua.Get("number", number);
-  std::cout << "Number: " << number << "\n";
+  std::cout << "Number: " << number << std::endl;
 
   // get string
   std::string title{"empty"};
   lua.Get("title", title);
-  std::cout << "title: " << title << "\n";
+  std::cout << "title: " << title << std::endl;
 
   // get boolean
   bool boolean{false};
   lua.Get("fullscreen", boolean);
-  std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
+  std::cout << "fullscreen: " << (boolean ? "true" : "false") << std::endl;
 
   // Check lua's internal stack
-  std::cout << "stack top: " << lua.GetTop() << "\n"; // should be 0
+  std::cout << "stack top: " << lua.GetTop() << std::endl; // should be 0
 
   return 0;
 }

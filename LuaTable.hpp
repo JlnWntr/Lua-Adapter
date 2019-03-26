@@ -37,15 +37,15 @@ public:
   * Default constructor
   */
   LuaTable()
-  :Lua{nullptr}, debug{false} {}
+  :Lua{nullptr}{}
 
   /**
   * Constructor
   * @param lua uses an existing LuaState
   */
   LuaTable(lua_State *const lua)
-  :Lua{std::make_shared<LuaState>(lua)}, debug{false} {}
-  LuaTable(LuaAdapter &lua) : Lua{lua.GetLuaState()}, debug{lua.GetDebug()} {}
+  :Lua{std::make_shared<LuaState>(lua)} {}
+  LuaTable(LuaAdapter &lua) : Lua{lua.GetLuaState()}{}
   LuaTable(const LuaTable&) = delete;
 
   /**
@@ -59,9 +59,10 @@ public:
       return false;
 
     if (lua_istable(this->Lua.get()->Lua(), -1)) {
-      if (this->debug)
-        std::cout << "\t" << LUA_PREFIX << "opening nested table '" << name
+#ifdef LUA_ADAPTER_DEBUG
+        std::cout << "\t" << LUA_ADAPTER_PREFIX << "opening nested table '" << name
                   << "' ... ";
+#endif
       lua_getfield(this->Lua.get()->Lua(), -1, name);
 
       if (lua_isnil(this->Lua.get()->Lua(), -1)) {
@@ -70,8 +71,9 @@ public:
       }
 
       if (lua_istable(this->Lua.get()->Lua(), -1)) {
-        if (this->debug)
-          std::cout << "ok! \n";
+#ifdef LUA_ADAPTER_DEBUG
+          std::cout << "ok!" << std::endl;
+#endif
         return true;
       }
       return false;
@@ -79,8 +81,9 @@ public:
     lua_getglobal(this->Lua.get()->Lua(), name); // void
 
     if (lua_istable(this->Lua.get()->Lua(), -1)) {
-      if (this->debug)
-        std::cout << LUA_PREFIX << "open table '" << name << "' \n";
+#ifdef LUA_ADAPTER_DEBUG
+        std::cout << LUA_ADAPTER_PREFIX << "open table '" << name << "'" << std::endl;
+#endif
       return true;
     }
 
@@ -143,9 +146,10 @@ public:
       lua_pop(this->Lua.get()->Lua(), 1);
       return false;
     }
-    if (this->debug)
-      std::cout << "\t" << LUA_PREFIX << "got field '" << name << "' = '" << r
-                << "' \n";
+#ifdef LUA_ADAPTER_DEBUG
+    std::cout << "\t" << LUA_ADAPTER_PREFIX << "got field '" << name << "' = '" << r
+                << "'" << std::endl;
+#endif
     lua_pop(this->Lua.get()->Lua(), 1);
     return true;
   }
@@ -168,10 +172,9 @@ public:
       return false;
     }
 
-    if (this->debug)
-      std::cout << "\t" << LUA_PREFIX << "got " << i << "th field "
-                                                        " = '"
-                << r << "' \n";
+#ifdef LUA_ADAPTER_DEBUG
+    std::cout << "\t" << LUA_ADAPTER_PREFIX << "got " << i << "th field  = '" << r << "'" << std::endl;
+#endif
     lua_pop(this->Lua.get()->Lua(), 1);
     return true;
   }
@@ -196,11 +199,12 @@ public:
         lua_rawgeti(this->Lua.get()->Lua(), -1, v);
 
     const bool Result{this->convert(r)};
-
-    if (this->debug && Result)
-      std::cout << "\t" << LUA_PREFIX << "got field "
+#ifdef LUA_ADAPTER_DEBUG
+    if(Result)
+      std::cout << "\t" << LUA_ADAPTER_PREFIX << "got field "
                                          " = '"
-                << r << "' \n";
+                << r << "'" << std::endl;
+#endif
     while (lua_gettop(this->Lua.get()->Lua()) > 1)
       lua_pop(this->Lua.get()->Lua(), 1);
     return Result;
@@ -240,8 +244,6 @@ private:
 
     return true;
   }
-
   std::shared_ptr<LuaState> Lua;
-  const bool debug;
 };
 #endif

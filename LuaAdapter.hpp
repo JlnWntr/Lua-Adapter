@@ -23,12 +23,17 @@
 #ifndef LUA_ADAPTER_H
 #define LUA_ADAPTER_H
 
+#ifdef LUA_ADAPTER_DEBUG
 #include <iostream>
+#define LUA_ADAPTER_PREFIX "Lua > "
+#warning Debug-information will be displayed during execution!
+#endif
+
 #include <string>
 #include <memory>
 #include <lua.hpp>
 
-#define LUA_PREFIX "Lua > "
+
 class LuaTable;
 
 class LuaState {
@@ -57,7 +62,7 @@ public:
   * Default-Constructor
   */
   LuaAdapter()
-    :Lua{std::make_shared<LuaState>()}, debug{false}{}
+    :Lua{std::make_shared<LuaState>()}{}
 
   /**
     * Constructor
@@ -65,19 +70,18 @@ public:
     * (See for example testCFunction() in test.cpp)
   */
   LuaAdapter(lua_State *const lua)
-    :Lua{std::make_shared<LuaState>(lua)}, debug{false}{}
+    :Lua{std::make_shared<LuaState>(lua)}{}
   LuaAdapter(LuaAdapter &lua)
-    :Lua{lua.GetLuaState()}, debug{lua.GetDebug()}{}
+    :Lua{lua.GetLuaState()}{}
   LuaAdapter(const LuaAdapter& lua)
-    :Lua{lua.GetLuaState()}, debug{lua.GetDebug()}{}
+    :Lua{lua.GetLuaState()}{}
 
   /**
   * This constructor inits Lua and loads a .lua-file.
   * @param filename .lua-file to load
   */
   LuaAdapter(const std::string &filename)
-      : Lua{std::make_shared<LuaState>()}
-      , debug{false} {
+      : Lua{std::make_shared<LuaState>()}{
     this->Load(filename);
   }
 
@@ -97,18 +101,18 @@ public:
     ||  (!this->Lua.get()->Lua())
     ||  (luaL_loadfile(this->Lua.get()->Lua(), filename) != 0)
     ){
-      if(debug){
-         std::cerr << LUA_PREFIX << "Error. Could not load '";
+#ifdef LUA_ADAPTER_DEBUG
+         std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
          std::cerr << filename << "'" << std::endl;
-      }
+#endif
       return false;
     }
     if(lua_pcall(this->Lua.get()->Lua(), 0, 0, 0) == 0) return true;
-    if(debug){
-        std::cerr << LUA_PREFIX << "Error in Lua-file ";
+#ifdef LUA_ADAPTER_DEBUG
+        std::cerr << LUA_ADAPTER_PREFIX << "Error in Lua-file ";
         std::cerr << lua_tostring(this->Lua.get()->Lua(), -1);
         std::cerr << std::endl;
-    }
+#endif
     return false;
   }
 
@@ -124,18 +128,18 @@ public:
     ||  (!this->Lua.get()->Lua())
     ||  (luaL_loadbuffer(this->Lua.get()->Lua(), bytecode, length, nullptr) != 0)
     ){
-      if(debug){
-         std::cerr << LUA_PREFIX << "Error. Could not load lua-bytecode'";
+#ifdef LUA_ADAPTER_DEBUG
+         std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load lua-bytecode'";
          std::cerr << std::endl;
-      }
+#endif
       return false;
     }
     if(lua_pcall(this->Lua.get()->Lua(), 0, 0, 0) == 0) return true;
-    if(debug){
-        std::cerr << LUA_PREFIX << "Error in Lua-file ";
+#ifdef LUA_ADAPTER_DEBUG
+        std::cerr << LUA_ADAPTER_PREFIX << "Error in Lua-file ";
         std::cerr << lua_tostring(this->Lua.get()->Lua(), -1);
         std::cerr << std::endl;
-    }
+#endif
     return false;
   }
 
@@ -175,8 +179,9 @@ public:
       return false;
       break;
     }
-    if (this->debug)
-      std::cout << LUA_PREFIX << "got '" << name << "' = '" << r << "'" << std::endl;
+#ifdef LUA_ADAPTER_DEBUG
+    std::cout << LUA_ADAPTER_PREFIX << "got '" << name << "' = '" << r << "'" << std::endl;
+#endif
     lua_pop(this->Lua.get()->Lua(), 1);
     return true;
   }
@@ -196,8 +201,9 @@ public:
     if (this->Push(a) == true) {
       lua_setglobal(this->Lua.get()->Lua(), name);
 
-      if (this->debug)
-        std::cout << LUA_PREFIX << "set '" << name << "' = '" << a << "'" << std::endl;
+#ifdef LUA_ADAPTER_DEBUG
+      std::cout << LUA_ADAPTER_PREFIX << "set '" << name << "' = '" << a << "'" << std::endl;
+#endif
       return true;
     }
     return false;
@@ -255,24 +261,10 @@ public:
   }
 
   /**
-  * After calling this function,
-  * lua-adapter will print out debug-information
-  * for each function call.
-  * @param on true to activate debug-mode
-  */
-  void Debug(bool on = true) { this->debug = on; }
-
-  /**
-  * Return the current debugging-state
-  * @return true if debug-mode is activated, false if not
-  */
-  bool GetDebug() const { return this->debug; }
-
-  /**
   * Pops i entries from Lua's internal stack
   * @param i number of entries
   */
-  void Pop(signed short int i = 1) {
+  void Pop(int i = 1) {
     if( (this->Lua.get())
     &&  (this->Lua.get()->Lua())
     )   lua_pop(this->Lua.get()->Lua(), i);
@@ -313,6 +305,5 @@ public:
 
 private:
   std::shared_ptr<LuaState> Lua;
-  bool debug;
 };
 #endif
