@@ -18,9 +18,10 @@ int main(){
 $ g++-8 the_program_above.cpp -std=c++17 -llua -ldl
 ```
 
-» See more [examples](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples).
+Please see more [examples](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples).
 
 ## Lua without Lua
-Run Lua-code (embedded in your C++-code) on maschines where Lua is *not* even available!
+Run Lua-code (embedded in your C++-code) on machines where Lua is *not* even available!
+
 [examples/static.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/static.cpp) shows you how to compile any Lua-code into your C++-application together with the Lua-interpreter.
 
