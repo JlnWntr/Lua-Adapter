@@ -91,15 +91,19 @@ public:
   ~LuaAdapter() {}
 
   /**
-  * Loads a *.Lua-sourcefile  *
-  * @param filename lua file to load
+  * Loads and interprets Lua-code.
+  * If length is given, then LuaAdapter will regard the given bytestring (code) as 'precompiled' Lua-code.*
+  * @param code Lua-Code
+  * @param length amounts of bytes
   * @return true on success, false on error
   */
   bool Load(const std::string &filename){return Load(filename.c_str());}
-  bool Load(const char *filename) {
+  bool Load(const char *code, const size_t length=0) {
     if( (!this->Lua.get())
     ||  (!this->Lua.get()->Lua())
-    ||  (luaL_loadfile(this->Lua.get()->Lua(), filename) != 0)
+    ||  (!code)
+    ||  ((length==0) && (luaL_loadfile(this->Lua.get()->Lua(), code) != 0))
+    ||  ((length!=0) && (luaL_loadbuffer(this->Lua.get()->Lua(), code, length, nullptr) != 0))
     ){
 #ifdef LUA_ADAPTER_DEBUG
          std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
@@ -115,34 +119,6 @@ public:
 #endif
     return false;
   }
-
-
-  /**
-  * Loads 'precompiled' Lua-Code *
-  * @param bytecode Lua-Code
-  * @param amounts of bytes
-  * @return true on success, false on error
-  */
-  bool Load(const char *bytecode, const size_t length) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
-    ||  (luaL_loadbuffer(this->Lua.get()->Lua(), bytecode, length, nullptr) != 0)
-    ){
-#ifdef LUA_ADAPTER_DEBUG
-         std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load Lua-bytecode'";
-         std::cerr << std::endl;
-#endif
-      return false;
-    }
-    if(lua_pcall(this->Lua.get()->Lua(), 0, 0, 0) == 0) return true;
-#ifdef LUA_ADAPTER_DEBUG
-        std::cerr << LUA_ADAPTER_PREFIX << "Error in Lua-file ";
-        std::cerr << lua_tostring(this->Lua.get()->Lua(), -1);
-        std::cerr << std::endl;
-#endif
-    return false;
-  }
-
 
   /**
   * Gets the value of a global variable.
