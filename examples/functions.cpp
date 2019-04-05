@@ -37,7 +37,7 @@ int main() {
   LuaFunction luaFunction{lua};
 
   // Define a C/C++-function that can be called from lua (see test.lua)
-  if(luaFunction.Push(test_function, "test_function")==false){
+  if(luaFunction.Push(test_function, "test_function") == false){
     std::cout << "Could NOT push C-function! \n";
     return 1;
   }
@@ -98,7 +98,7 @@ int main() {
  * This C++-function can be called from Lua
  */
 static int test_function(lua_State *L) {
-  if (!L)
+  if (not L)
     return 0;
   double number{lua_tonumber(L, 1)};
   number *= 2;

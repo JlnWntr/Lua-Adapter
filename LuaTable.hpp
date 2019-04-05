@@ -55,7 +55,7 @@ public:
     */
   bool Open(const std::string &name) { return this->Open(name.c_str()); }
   bool Open(const char *name) {
-    if((!this->Lua.get()) || (!this->Lua.get()->Lua()) || !name)
+    if( (not this->Lua.get() or not this->Lua.get()->Lua()) or not name)
       return false;
 
     if (lua_istable(this->Lua.get()->Lua(), -1)) {
@@ -98,12 +98,11 @@ public:
     */
   int Length() {
     int result{0};
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
-    ||  (lua_istable(this->Lua.get()->Lua(), -1) == false)
-    ){
-      return result;
-    }
+    if(not this->Lua.get()
+    or not this->Lua.get()->Lua()
+    or not lua_istable(this->Lua.get()->Lua(), -1)
+    ) return result;
+
     lua_len(this->Lua.get()->Lua(), -1);
     result = lua_tointeger(this->Lua.get()->Lua(), -1);
     lua_pop(this->Lua.get()->Lua(), 1);
@@ -123,10 +122,10 @@ public:
   * @return true on success, false on error
   */
   template <typename R> bool Get(const char *name, R &r) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
-    ||  !name
-    ||  !lua_istable(this->Lua.get()->Lua(), -1)
+    if(not this->Lua.get()
+    or not this->Lua.get()->Lua()
+    or not name
+    or not lua_istable(this->Lua.get()->Lua(), -1)
     )   return false;
 
     lua_getfield(this->Lua.get()->Lua(), -1, name);
@@ -150,9 +149,10 @@ public:
   * @return true on success, false on error
   */
   template <typename R> bool Get(unsigned short int i, R &r) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
-    ||  (!lua_istable(this->Lua.get()->Lua(), -1)) || (i < 1)
+    if(not this->Lua.get()
+    or not this->Lua.get()->Lua()
+    or not lua_istable(this->Lua.get()->Lua(), -1)
+    or (i < 1)
     )   return false;
     lua_rawgeti(this->Lua.get()->Lua(), -1, i);
 
@@ -180,9 +180,9 @@ public:
   */
   template <typename R>
   bool Get(const std::vector<unsigned short int> &m, R &r) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
-    )   return false;
+    if(not this->Lua.get()
+    or not this->Lua.get()->Lua()
+    )  return false;
     for (auto &v : m)
       if (lua_istable(this->Lua.get()->Lua(), -1))
         lua_rawgeti(this->Lua.get()->Lua(), -1, v);
@@ -204,19 +204,19 @@ public:
   *(This is important to prevents "stack-smashing".)
   */
   void Close() {
-    if( (this->Lua.get())
-    &&  (this->Lua.get()->Lua())
+    if( this->Lua.get()
+    and this->Lua.get()->Lua()
     )   lua_pop(this->Lua.get()->Lua(), 1);
   }
 
 private:
   template <typename R> bool convert(R &r) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
+    if(not this->Lua.get()
+    or not this->Lua.get()->Lua()
     )   return false;
-    if (lua_isnumber(this->Lua.get()->Lua(), -1) && !lua_isinteger(this->Lua.get()->Lua(), -1)) {
+    if (lua_isnumber(this->Lua.get()->Lua(), -1) and !lua_isinteger(this->Lua.get()->Lua(), -1)) {
       if
-        constexpr(std::is_same_v<double, R> || std::is_same_v<R, float>) r =
+        constexpr(std::is_same_v<double, R> or std::is_same_v<R, float>) r =
             lua_tonumber(this->Lua.get()->Lua(), -1);
     } else if (lua_isinteger(this->Lua.get()->Lua(), -1)) {
       if
@@ -230,7 +230,6 @@ private:
             lua_tostring(this->Lua.get()->Lua(), -1);
     } else
       return false;
-
     return true;
   }
   std::shared_ptr<LuaState> Lua;

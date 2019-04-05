@@ -99,11 +99,13 @@ public:
   */
   bool Load(const std::string &filename){return Load(filename.c_str());}
   bool Load(const char *code, const size_t length=0) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
-    ||  (!code)
-    ||  ((length==0) && (luaL_loadfile(this->Lua.get()->Lua(), code) != 0))
-    ||  ((length!=0) && (luaL_loadbuffer(this->Lua.get()->Lua(), code, length, nullptr) != 0))
+    if( not this->Lua.get()
+    or  not this->Lua.get()->Lua()
+    or  not code
+    or  ((length==0) and (luaL_loadfile(this->Lua.get()->Lua(), code) != 0))
+    or  ( not (length==0)
+      and not(luaL_loadbuffer(this->Lua.get()->Lua(), code, length, nullptr) == 0)
+      )
     ){
 #ifdef LUA_ADAPTER_DEBUG
          std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
@@ -127,9 +129,9 @@ public:
   * @return true on success, false on error
   */
   template <typename R> bool Get(const char *name, R &r) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
-    ||  !name
+    if(not this->Lua.get()
+    or not this->Lua.get()->Lua()
+    or not name
     ) return false;
     switch (lua_getglobal(this->Lua.get()->Lua(), name)) {
     case LUA_TNUMBER:
@@ -138,7 +140,7 @@ public:
           constexpr(std::is_same_v<R, int>)
           r = lua_tointeger(this->Lua.get()->Lua(), -1);
       } else if
-        constexpr(std::is_same_v<double, R> || std::is_same_v<R, float>)
+        constexpr(std::is_same_v<double, R> or std::is_same_v<R, float>)
         r = lua_tonumber(this->Lua.get()->Lua(), -1);
     break;
     case LUA_TBOOLEAN:
@@ -169,9 +171,9 @@ public:
   * @return true on success, false on error
   */
   template <typename A> bool Set(const char *name, const A a) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
-    ||  !name
+    if( not this->Lua.get()
+    or  not this->Lua.get()->Lua()
+    or  not name
     )   return false;
 
     if (this->Push(a) == true) {
@@ -191,8 +193,8 @@ public:
   * @return true on success, false on error
   */
   bool DoString(const char *string) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
+    if( not this->Lua.get()
+    or  not this->Lua.get()->Lua()
     )   return false;
       return luaL_dostring(this->Lua.get()->Lua(), string);
   }
@@ -203,14 +205,14 @@ public:
   * @return true on success, false on error
   */
   template <typename A> bool Push(A a) {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
+    if( not this->Lua.get()
+    or  not this->Lua.get()->Lua()
     )   return false;
     if
       constexpr(std::is_same_v<A, int>)
       lua_pushinteger(this->Lua.get()->Lua(), a);
     else if
-      constexpr(std::is_same_v<A, float> || std::is_same_v<A, double>)
+      constexpr(std::is_same_v<A, float> or std::is_same_v<A, double>)
       lua_pushnumber(this->Lua.get()->Lua(), a);
     else if
       constexpr(std::is_same_v<A, bool>)
@@ -228,8 +230,8 @@ public:
   * @return true on success, false on error
   */
   bool Flush() {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
+    if( not this->Lua.get()
+    or  not this->Lua.get()->Lua()
     )   return false;
 
     lua_settop(this->Lua.get()->Lua(), 0);
@@ -241,8 +243,8 @@ public:
   * @param i number of entries
   */
   void Pop(int i = 1) {
-    if( (this->Lua.get())
-    &&  (this->Lua.get()->Lua())
+    if( this->Lua.get()
+    and this->Lua.get()->Lua()
     )   lua_pop(this->Lua.get()->Lua(), i);
   }
 
@@ -252,7 +254,7 @@ public:
   */
   int GetTop() const {
     if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
+    or  (!this->Lua.get()->Lua())
     )   return false;
     return lua_gettop(this->Lua.get()->Lua()); }
 
@@ -264,8 +266,8 @@ public:
   * @return the type
   */
   int GetType() const {
-    if( (!this->Lua.get())
-    ||  (!this->Lua.get()->Lua())
+    if( not this->Lua.get()
+    or  not this->Lua.get()->Lua()
     )   return false;
     return lua_type(this->Lua.get()->Lua(), 0);
   }
