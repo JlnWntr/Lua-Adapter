@@ -109,7 +109,7 @@ public:
     ){
 #ifdef LUA_ADAPTER_DEBUG
          std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
-         std::cerr << filename << "'" << std::endl;
+         std::cerr << code << "'" << std::endl;
 #endif
       return false;
     }
