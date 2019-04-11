@@ -46,10 +46,13 @@ int main(){
 ```
 Please see [tables.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/tables.cpp) for *more* examples.
 
-## C++-function example
+## Function example
 
 ```C++
 #include "../LuaFunction.hpp"
+
+/* This C++-function can be called from Lua. (See test.lua) */
+static int test_function(lua_State *L);
 
 int main(){
   LuaAdapter lua{"test.lua"};
