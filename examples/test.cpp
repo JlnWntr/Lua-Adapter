@@ -51,6 +51,12 @@ int main() {
   lua.Get("title", title);
   std::cout << "title: " << title << std::endl;
 
+  // set string
+  if(lua.Set("title", (std::string)"another title") == false)
+    return 1;
+  lua.Get("title", title);
+  std::cout << "title: " << title << std::endl;
+
   // get boolean
   bool boolean{false};
   lua.Get("fullscreen", boolean);

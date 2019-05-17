@@ -61,5 +61,5 @@ end
 
 -- Call C/C++-function
 if not (test_function==nil)  then
-   print ("Lua: ".. 44 .. " * 2 = " .. test_function(44))
+   print ("Lua: ".. 44 .. " * 2 = " .. test_function(44) .. " (C-function 'test_function' was called.)")
 end
