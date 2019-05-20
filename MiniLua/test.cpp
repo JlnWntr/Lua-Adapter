@@ -26,9 +26,15 @@
 #endif
 #include <iostream>
 
+static int test_function(lua_State *L);
+
 int main(int argc, char *argv[]) {
 
-  MiniLua lua{"test.lua"};
+  MiniLua lua{};
+
+  lua.Push(test_function, "test_function");
+
+  lua.Load("test.lua");
 
   // get int
   int width{0};
@@ -55,5 +61,29 @@ int main(int argc, char *argv[]) {
   if(lua.Get("fullscreen", boolean))
     std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
 
+  // three function arguments
+  int result{0};
+  int args[] = {1,2,3};
+  if (lua.Call("Sum", 3, args, result))
+    std::cout << "1+2+3 = " << result << "\n";
+
+  // null function arguments, no return value
+  lua.Call("Print_string");
+
+  // one argument, no return value
+  lua.Call("Power", 2);
+
   return 0;
+}
+
+/**
+ * This C++-function can be called from Lua
+ */
+static int test_function(lua_State *L) {
+  if (not L)
+    return 0;
+  double number{lua_tonumber(L, 1)};
+  number *= 2;
+  lua_pushnumber(L, number);
+  return 1;
 }

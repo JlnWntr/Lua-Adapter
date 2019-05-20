@@ -26,14 +26,27 @@
 #include <lua.hpp>
 #include <string>
 
-class MiniLua {
+typedef int (*Lua_callback_function)(lua_State *L);
 
+class MiniLua {
 public:
   /**
-  * Default constructor
+  * Default constructor, opens lua libs
+  */
+  MiniLua();
+
+  /**
+  * This constructor open all the lua libs and a lua-file
   * @param filename .lua-file to load
   */
-  MiniLua(const std::string &filename = "");
+  MiniLua(const std::string &filename);
+
+  /**
+  * Loads (and runs) lua-file.
+  * @param filename .lua-file to load
+  * @return true on success, false on error
+  */
+  bool Load(const std::string &filename);
 
   /**
   * Gets the value of a lua-variable.
@@ -46,6 +59,27 @@ public:
   bool Get(const char *name, double &result);
   bool Get(const char *name, float &result);
   bool Get(const char *name, bool &result);
+
+  /**
+   * Calls a Lua-function
+   * @param f name of the Lua-function
+   * @param c number of arguments passed to the Lua-function
+   * @param a function arguments
+   * @param r new value returned from the called Lua-function
+   * @return true on success, false on error
+   */
+  bool Call(const char *f, const int c, const int *a, int &r);
+  bool Call(const char *f, const int a);
+  bool Call(const char *f);
+
+  /**
+   * Makes a C-/C++-function available for Lua
+   * (It's called pushFunction(), but you're not 'incrementing' the stack)
+   * @param function C-/C++-function
+   * @param name of the function
+   * @return true on success, false on error
+   */
+  bool Push(Lua_callback_function function, const char *name);
 
   /**
   * Closes lua state

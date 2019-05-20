@@ -28,11 +28,21 @@
 MiniLua::MiniLua(const std::string &filename) : Lua{nullptr} {
   this->Lua = luaL_newstate();
   luaL_openlibs(this->Lua);
+  this->Load(filename);
+}
 
+MiniLua::MiniLua() : Lua{nullptr} {
+  this->Lua = luaL_newstate();
+  luaL_openlibs(this->Lua);
+}
+
+bool MiniLua::Load(const std::string &filename){
   if (this->Lua && (filename.length() > 0)) {
     luaL_loadfile(this->Lua, filename.c_str());
-    lua_pcall(this->Lua, 0, 0, 0);
+    if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
+      return true;
   }
+  return false;
 }
 
 bool MiniLua::GetGlobal(const char *name) {
@@ -97,6 +107,51 @@ bool MiniLua::Get(const char *name, bool &result) {
   lua_pop(this->Lua, 1);
   return true;
 }
+
+bool MiniLua::Call(const char *f, const int c, const int *a, int &r) {
+    if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+      return false;
+    for (auto i = 0; i < c; i++)
+      if (a + i)
+        lua_pushinteger(this->Lua, a[i]);
+
+    if (lua_pcall(this->Lua, c, 1, 0) != LUA_OK) {
+      lua_pop(this->Lua, 1);
+      return false;
+    }
+    if (lua_isinteger(this->Lua, -1))
+      r = lua_tointeger(this->Lua, -1);
+    lua_pop(this->Lua, 1);
+    return true;
+}
+
+bool MiniLua::Call(const char *f, const int a) {
+    if( not this->Lua or not f or not a
+    or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+      return false;
+    lua_pushinteger(this->Lua, a);
+    if(lua_pcall(this->Lua, 1, 0, 0) == LUA_OK)
+      return true;
+    lua_pop(this->Lua, 1);
+    return false;
+}
+
+bool MiniLua::Call(const char *f) {
+    if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+      return false;
+    if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
+      return true;
+    lua_pop(this->Lua, 1);
+    return false;
+}
+
+bool MiniLua::Push(Lua_callback_function function, const char *name) {
+    if (not this->Lua or not name)
+      return false;
+    lua_pushcfunction(this->Lua, function);
+    lua_setglobal(this->Lua, name);
+    return true;
+  }
 
 void MiniLua::Close() {
   if (!this->Lua)
