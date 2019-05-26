@@ -121,6 +121,9 @@ bool MiniLua::Call(const char *f, const int c, const int *a, int &r) {
     }
     if (lua_isinteger(this->Lua, -1))
       r = lua_tointeger(this->Lua, -1);
+    else if ((lua_isboolean(this->Lua, -1))
+    and (lua_toboolean(this->Lua, -1)))
+      r = 1;
     lua_pop(this->Lua, 1);
     return true;
 }
