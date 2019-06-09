@@ -28,7 +28,7 @@
 
 static int test_function(lua_State *L);
 
-int main(int argc, char *argv[]) {
+int main() {
 
   MiniLua lua{};
 

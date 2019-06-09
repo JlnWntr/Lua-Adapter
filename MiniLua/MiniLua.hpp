@@ -27,6 +27,7 @@
 #include <string>
 
 typedef int (*Lua_callback_function)(lua_State *L);
+static int LUA_ADAPTER_NULL{};
 
 class MiniLua {
 public:
@@ -68,7 +69,7 @@ public:
    * @param r new value returned from the called Lua-function
    * @return true on success, false on error
    */
-  bool Call(const char *f, const int c, const int *a, int &r);
+  bool Call(const char *f, const int c, const int *a, int &r = LUA_ADAPTER_NULL);
   bool Call(const char *f, const int a);
   bool Call(const char *f);
 

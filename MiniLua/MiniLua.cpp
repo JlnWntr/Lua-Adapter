@@ -24,6 +24,10 @@
 #ifndef MINI_LUA_H
 #include "MiniLua.hpp"
 #endif
+#ifdef LUA_ADAPTER_DEBUG
+#include <iostream>
+#define LUA_ADAPTER_PREFIX "Lua > "
+#endif
 
 MiniLua::MiniLua(const std::string &filename) : Lua{nullptr} {
   this->Lua = luaL_newstate();
@@ -116,6 +120,10 @@ bool MiniLua::Call(const char *f, const int c, const int *a, int &r) {
         lua_pushinteger(this->Lua, a[i]);
 
     if (lua_pcall(this->Lua, c, 1, 0) != LUA_OK) {
+#ifdef LUA_ADAPTER_DEBUG
+      std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
+      std::cerr << lua_tostring(this->Lua, -1) << "'\n";
+#endif
       lua_pop(this->Lua, 1);
       return false;
     }
@@ -135,6 +143,10 @@ bool MiniLua::Call(const char *f, const int a) {
     lua_pushinteger(this->Lua, a);
     if(lua_pcall(this->Lua, 1, 0, 0) == LUA_OK)
       return true;
+#ifdef LUA_ADAPTER_DEBUG
+    std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
+    std::cerr << lua_tostring(this->Lua, -1) << "'\n";
+#endif
     lua_pop(this->Lua, 1);
     return false;
 }
@@ -144,6 +156,10 @@ bool MiniLua::Call(const char *f) {
       return false;
     if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
       return true;
+#ifdef LUA_ADAPTER_DEBUG
+    std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
+    std::cerr << lua_tostring(this->Lua, -1) << "'\n";
+#endif
     lua_pop(this->Lua, 1);
     return false;
 }
