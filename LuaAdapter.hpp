@@ -153,7 +153,7 @@ class LuaAdapter {
    * @return true on success, false on error
    */
   template <typename A>
-  bool Set(const char *name, const A a) {
+  bool Set(const char *name, const A &a) {
     if (not this->Lua.get() or not this->Lua.get()->Lua() or not name)
       return false;
 
