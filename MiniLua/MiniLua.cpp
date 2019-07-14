@@ -96,7 +96,7 @@ bool MiniLua::Get(const char *name, float &result) {
   double temp {};
   if (this->Get(name, temp) == false)
     return false;
-  result = (float){(float)temp};
+  result = {(float)temp};
   return true;
 }
 
