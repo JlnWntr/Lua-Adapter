@@ -206,7 +206,6 @@ class LuaAdapter {
    */
   bool Flush() {
     if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
-
     lua_settop(this->Lua.get()->Lua(), 0);
     return true;
   }
@@ -225,7 +224,7 @@ class LuaAdapter {
    * @return the stack position
    */
   int GetTop() const {
-    if ((!this->Lua.get()) or (!this->Lua.get()->Lua())) return false;
+    if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
     return lua_gettop(this->Lua.get()->Lua());
   }
 

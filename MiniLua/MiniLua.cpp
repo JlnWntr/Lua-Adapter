@@ -49,6 +49,15 @@ bool MiniLua::Load(const std::string &filename){
   return false;
 }
 
+bool MiniLua::Load(const char *bytecode, const size_t length){
+  if (this->Lua && bytecode) {
+    luaL_loadbuffer(this->Lua, bytecode, length, nullptr);
+    if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
+      return true;
+  }
+  return false;
+}
+
 bool MiniLua::GetGlobal(const char *name) {
   if ((!this->Lua) || (!name))
     return false;

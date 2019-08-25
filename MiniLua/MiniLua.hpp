@@ -48,6 +48,7 @@ public:
   * @return true on success, false on error
   */
   bool Load(const std::string &filename);
+  bool Load(const char *bytecode, const size_t length);
 
   /**
   * Gets the value of a lua-variable.
