@@ -24,6 +24,7 @@
 #ifndef LUA_FUNCTION_H
   #include "../../LuaFunction.hpp"
 #endif
+#include <iostream>
 
 int main() {
   const std::string moonscript {"hello.moon"};
@@ -38,6 +39,6 @@ int main() {
   int width{0};
   lua.Get("width", width);
 
-  std::cout << width << "\n";
+  std::cout << width << std::endl;
   return 0;
 }
