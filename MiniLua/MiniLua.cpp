@@ -46,6 +46,7 @@ bool MiniLua::Load(const std::string &filename){
     if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
       return true;
   }
+  std::cout << lua_tostring(this->Lua, -1) << std::endl;
   return false;
 }
 
@@ -131,7 +132,7 @@ bool MiniLua::Call(const char *f, const int c, const int *a, int &r) {
     if (lua_pcall(this->Lua, c, 1, 0) != LUA_OK) {
 #ifdef LUA_ADAPTER_DEBUG
       std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
-      std::cerr << lua_tostring(this->Lua, -1) << "'\n";
+      std::cerr << lua_tostring(this->Lua, -1) << "' "<< std::endl;
 #endif
       lua_pop(this->Lua, 1);
       return false;
