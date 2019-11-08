@@ -24,8 +24,8 @@
 #ifndef MINI_LUA_H
 #include "MiniLua.hpp"
 #endif
-#ifdef LUA_ADAPTER_DEBUG
 #include <iostream>
+#ifdef LUA_ADAPTER_DEBUG
 #define LUA_ADAPTER_PREFIX "Lua > "
 #endif
 
