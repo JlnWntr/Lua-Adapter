@@ -73,7 +73,7 @@ bool MiniLua::Get(const char *name, int &result) {
     lua_pop(this->Lua, 1);
     return false;
   }
-  result = lua_tointeger(this->Lua, -1);
+  result = (int)(lua_tointeger(this->Lua, -1));
   lua_pop(this->Lua, 1);
   return true;
 }
@@ -97,7 +97,7 @@ bool MiniLua::Get(const char *name, double &result) {
     lua_pop(this->Lua, 1);
     return false;
   }
-  result = lua_tonumber(this->Lua, -1);
+  result = (double)(lua_tonumber(this->Lua, -1));
   lua_pop(this->Lua, 1);
   return true;
 }
@@ -117,7 +117,7 @@ bool MiniLua::Get(const char *name, bool &result) {
     lua_pop(this->Lua, 1);
     return false;
   }
-  result = lua_toboolean(this->Lua, -1);
+  result = (bool)(lua_toboolean(this->Lua, -1));
   lua_pop(this->Lua, 1);
   return true;
 }
@@ -138,7 +138,7 @@ bool MiniLua::Call(const char *f, const int c, const int *a, int &r) {
       return false;
     }
     if (lua_isinteger(this->Lua, -1))
-      r = lua_tointeger(this->Lua, -1);
+      r = (int)(lua_tointeger(this->Lua, -1));
     else if ((lua_isboolean(this->Lua, -1))
     and (lua_toboolean(this->Lua, -1)))
       r = 1;
