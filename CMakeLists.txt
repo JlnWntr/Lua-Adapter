@@ -16,7 +16,7 @@ ExternalProject_Add(lua
 add_library(liblua STATIC IMPORTED)
 
 ExternalProject_Get_property(lua SOURCE_DIR)
-message("liblua will be found at \'${SOURCE_DIR}/src\'")
+message("liblua will be found at \"${SOURCE_DIR}/src\"")
 set(LIBLUA_DIR "${SOURCE_DIR}/src")
 
 # Project to test liblua
@@ -25,9 +25,12 @@ set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${LIBLUA_DIR}/liblua.a)
 
 add_executable(test_lua examples/test.cpp)
 target_link_libraries(test_lua liblua)
-
+target_include_directories(liblua INTERFACE ${LIBLUA_DIR})
 set_property(TARGET test_lua PROPERTY CXX_STANDARD 17)
 
 # Test
-add_test(NAME Run COMMAND "./test_lua")
+add_test(
+        NAME Run COMMAND
+        "./test_lua"
+        WORKING_DIRECTORY examples)
 ENABLE_TESTING()

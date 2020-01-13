@@ -30,8 +30,7 @@
 
 int main() {
   LuaAdapter lua{};
-  if( not lua.Load("test.lua")
-  and not lua.Load("examples/test.lua") ){ // ← when running 'test_lua' from root directory
+  if( not lua.Load("test.lua") ){ 
     std::cout << "Can not find file 'test.lua'." << std::endl;
     return 1;
   }
