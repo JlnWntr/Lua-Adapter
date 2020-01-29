@@ -14,13 +14,15 @@ int main(){
   return 0;
 }
 ```
+Please see more [examples](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples).
+
+## Build using g++
 ```bash
 $ g++-8 the_program_above.cpp -std=c++17 -llua -ldl
 ```
-Please see more [examples](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples).
 
 
-## CMake
+## Build using CMake
 
 ```bash
 $ cmake ./
