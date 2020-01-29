@@ -25,12 +25,13 @@ set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${LIBLUA_DIR}/liblua.a)
 
 add_executable(test_lua examples/test.cpp)
 target_link_libraries(test_lua liblua)
-target_include_directories(liblua INTERFACE ${LIBLUA_DIR})
+target_include_directories(test_lua PUBLIC ${LIBLUA_DIR})
 set_property(TARGET test_lua PROPERTY CXX_STANDARD 17)
+set_property(TARGET test_lua PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/examples")
 
 # Test
 add_test(
         NAME Run COMMAND
-        "./test_lua"
+        "./examples/test_lua"
         WORKING_DIRECTORY examples)
 ENABLE_TESTING()
