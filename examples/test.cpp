@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019 JlnWntr (jlnwntr@gmail.com)
+ * Copyright (c) 2015-2020 JlnWntr (jlnwntr@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@
 
 int main() {
   LuaAdapter lua{};
-  if( not lua.Load("test.lua") ){ 
+  if( not lua.Load("test.lua") ){
     std::cout << "Can not find file 'test.lua'." << std::endl;
     return 1;
   }

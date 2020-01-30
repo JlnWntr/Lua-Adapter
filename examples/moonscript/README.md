@@ -11,4 +11,3 @@ You can even run [Moonscript](http://moonscript.org/) on the fly in your C++ app
     git clone https://github.com/leafo/moonscript.git
     git clone https://github.com/pygy/LuLPeg.git
 
-That's all. *No* (additional) installation is required.
