@@ -87,6 +87,14 @@ public:
   * Closes lua state
   */
   void Close();
+  
+  /**
+   * Returns recent lua state
+   * @return lua_State
+   */
+  lua_State *const GetState() const {
+	return this->Lua;
+  }
 
   /**
   * Destructor

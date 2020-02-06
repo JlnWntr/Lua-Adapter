@@ -87,11 +87,14 @@ class LuaAdapter {
    */
   bool Load(const std::string &filename) { return Load(filename.c_str()); }
   bool Load(const char *code, const size_t length = 0) {
-    if (not this->Lua.get() or not this->Lua.get()->Lua() or not code or
-        ((length == 0) and
-         (luaL_loadfile(this->Lua.get()->Lua(), code) != 0)) or
-        (not(length == 0) and not(luaL_loadbuffer(this->Lua.get()->Lua(), code,
-                                                  length, nullptr) == 0))) {
+    if (not this->Lua.get() 
+    or  not this->Lua.get()->Lua() 
+    or  not code 
+    or  ( (length == 0) and
+          (luaL_loadfile(this->Lua.get()->Lua(), code) != 0)) 
+    or  ( not(length == 0) and
+          not(luaL_loadbuffer(this->Lua.get()->Lua(), code, length, nullptr) == 0))
+  ) {
 #ifdef LUA_ADAPTER_DEBUG
       std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
       std::cerr << code << "'" << std::endl;
@@ -115,8 +118,10 @@ class LuaAdapter {
    */
   template <typename R>
   bool Get(const char *name, R &r) {
-    if (not this->Lua.get() or not this->Lua.get()->Lua() or not name)
-      return false;
+    if (not this->Lua.get() 
+    or  not this->Lua.get()->Lua() 
+    or  not name) return false;
+    
     switch (lua_getglobal(this->Lua.get()->Lua(), name)) {
       case LUA_TNUMBER:
         if (lua_isinteger(this->Lua.get()->Lua(), -1)) {
@@ -154,7 +159,9 @@ class LuaAdapter {
    */
   template <typename A>
   bool Set(const char *name, const A &a) {
-    if (not this->Lua.get() or not this->Lua.get()->Lua() or not name)
+    if (not this->Lua.get() 
+    or  not this->Lua.get()->Lua() 
+    or  not name)
       return false;
 
     if (this->Push(a) == true) {
@@ -186,7 +193,8 @@ class LuaAdapter {
    */
   template <typename A>
   bool Push(A a) {
-    if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
+    if (not this->Lua.get() 
+    or  not this->Lua.get()->Lua()) return false;
     if constexpr (std::is_same_v<A, int>)
       lua_pushinteger(this->Lua.get()->Lua(), a);
     else if constexpr (std::is_same_v<A, float> or std::is_same_v<A, double>)
@@ -205,7 +213,8 @@ class LuaAdapter {
    * @return true on success, false on error
    */
   bool Flush() {
-    if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
+    if (not this->Lua.get() 
+    or  not this->Lua.get()->Lua()) return false;
     lua_settop(this->Lua.get()->Lua(), 0);
     return true;
   }
@@ -215,7 +224,8 @@ class LuaAdapter {
    * @param i number of entries
    */
   void Pop(int i = 1) {
-    if (this->Lua.get() and this->Lua.get()->Lua())
+    if (this->Lua.get() 
+    and this->Lua.get()->Lua())
       lua_pop(this->Lua.get()->Lua(), i);
   }
 
@@ -224,7 +234,8 @@ class LuaAdapter {
    * @return the stack position
    */
   int GetTop() const {
-    if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
+    if (not this->Lua.get() 
+    or  not this->Lua.get()->Lua()) return false;
     return lua_gettop(this->Lua.get()->Lua());
   }
 
@@ -236,7 +247,8 @@ class LuaAdapter {
    * @return the type
    */
   int GetType() const {
-    if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
+    if (not this->Lua.get() 
+    or  not this->Lua.get()->Lua()) return false;
     return lua_type(this->Lua.get()->Lua(), 0);
   }
 
