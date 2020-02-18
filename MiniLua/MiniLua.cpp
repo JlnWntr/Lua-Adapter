@@ -25,134 +25,152 @@
 #include "MiniLua.hpp"
 #endif
 #include <iostream>
+
 #ifdef LUA_ADAPTER_DEBUG
 #define LUA_ADAPTER_PREFIX "Lua > "
+static int lua_message_handler (lua_State *L) {
+    luaL_traceback(L, L, nullptr, 1);
+    return 1;
+}
 #endif
 
-MiniLua::MiniLua(const std::string &filename) : Lua{nullptr} {
-  this->Lua = luaL_newstate();
-  luaL_openlibs(this->Lua);
-  this->Load(filename);
+MiniLua::MiniLua(const std::string &filename) : MiniLua() {
+    this->Load(filename);
 }
 
-MiniLua::MiniLua() : Lua{nullptr} {
-  this->Lua = luaL_newstate();
-  luaL_openlibs(this->Lua);
+MiniLua::MiniLua(): Lua{nullptr} {
+    this->Lua = luaL_newstate();
+    luaL_openlibs(this->Lua);
 }
 
-bool MiniLua::Load(const std::string &filename){
-  if (this->Lua && (filename.length() > 0)) {
-    luaL_loadfile(this->Lua, filename.c_str());
-    if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
-      return true;
-  }
-  std::cout << lua_tostring(this->Lua, -1) << std::endl;
-  return false;
+bool MiniLua::Load(const std::string &filename) {
+    if (this->Lua && (filename.length() > 0)) {
+        if (luaL_loadfile(this->Lua, filename.c_str()) != 0){
+#ifdef LUA_ADAPTER_DEBUG
+            std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
+            std::cerr << filename << "'" << std::endl;
+            std::cerr << lua_tostring(this->Lua, -1) << std::endl;
+#endif
+            return false;
+        }
+#ifdef LUA_ADAPTER_DEBUG
+        const int base {lua_gettop(this->Lua) - 1};
+        lua_pushcfunction(this->Lua, lua_message_handler);
+        lua_insert(this->Lua, base);
+        const int result{lua_pcall(this->Lua, 0, 0, base)};
+        if (result != LUA_OK){
+            std::cerr << LUA_ADAPTER_PREFIX << "Error in Lua-file ";
+            std::cerr << lua_tostring(this->Lua, -1);
+            std::cerr << std::endl;
+        }
+        else
+            lua_pcall(this->Lua, 0, 0, 0);
+        lua_remove(this->Lua, base);
+#else
+        const int result{lua_pcall(this->Lua, 0, 0, 0)};
+#endif
+        if (result == LUA_OK){
+            return true;
+        }
+    }
+    return false;
 }
 
-bool MiniLua::Load(const char *bytecode, const size_t length){
-  if (this->Lua && bytecode) {
-    luaL_loadbuffer(this->Lua, bytecode, length, nullptr);
-    if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
-      return true;
-  }
-  return false;
-}
 
 bool MiniLua::GetGlobal(const char *name) {
-  if ((!this->Lua) || (!name))
-    return false;
-  lua_getglobal(this->Lua, name);
-  return true;
+    if ((!this->Lua) || (!name))
+        return false;
+    lua_getglobal(this->Lua, name);
+    return true;
 }
 
 bool MiniLua::Get(const char *name, int &result) {
-  if (this->GetGlobal(name) == false)
-    return false;
-  if (lua_isnumber(this->Lua, -1) == false) {
+    if (this->GetGlobal(name) == false)
+        return false;
+    if (lua_isnumber(this->Lua, -1) == false) {
+        lua_pop(this->Lua, 1);
+        return false;
+    }
+    result = (int)(lua_tointeger(this->Lua, -1));
     lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = (int)(lua_tointeger(this->Lua, -1));
-  lua_pop(this->Lua, 1);
-  return true;
+    return true;
 }
 
 bool MiniLua::Get(const char *name, std::string &result) {
-  if (this->GetGlobal(name) == false)
-    return false;
-  if (lua_type(this->Lua, -1) != LUA_TSTRING) {
+    if (this->GetGlobal(name) == false)
+        return false;
+    if (lua_type(this->Lua, -1) != LUA_TSTRING) {
+        lua_pop(this->Lua, 1);
+        return false;
+    }
+    result = lua_tostring(this->Lua, -1);
     lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = lua_tostring(this->Lua, -1);
-  lua_pop(this->Lua, 1);
-  return true;
+    return true;
 }
 
 bool MiniLua::Get(const char *name, double &result) {
-  if (this->GetGlobal(name) == false)
-    return false;
-  if (lua_isnumber(this->Lua, -1) == false) {
+    if (this->GetGlobal(name) == false)
+        return false;
+    if (lua_isnumber(this->Lua, -1) == false) {
+        lua_pop(this->Lua, 1);
+        return false;
+    }
+    result = (double)(lua_tonumber(this->Lua, -1));
     lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = (double)(lua_tonumber(this->Lua, -1));
-  lua_pop(this->Lua, 1);
-  return true;
+    return true;
 }
 
 bool MiniLua::Get(const char *name, float &result) {
-  double temp {};
-  if (this->Get(name, temp) == false)
-    return false;
-  result = float(temp);
-  return true;
+    double temp {};
+    if (this->Get(name, temp) == false)
+        return false;
+    result = float(temp);
+    return true;
 }
 
 bool MiniLua::Get(const char *name, bool &result) {
-  if (this->GetGlobal(name) == false)
-    return false;
-  if (lua_isboolean(this->Lua, -1) == false) {
+    if (this->GetGlobal(name) == false)
+        return false;
+    if (lua_isboolean(this->Lua, -1) == false) {
+        lua_pop(this->Lua, 1);
+        return false;
+    }
+    result = (bool)(lua_toboolean(this->Lua, -1));
     lua_pop(this->Lua, 1);
-    return false;
-  }
-  result = (bool)(lua_toboolean(this->Lua, -1));
-  lua_pop(this->Lua, 1);
-  return true;
+    return true;
 }
 
 bool MiniLua::Call(const char *f, const int c, const int *a, int &r) {
     if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
-      return false;
+        return false;
     for (auto i = 0; i < c; i++)
-      if (a + i)
-        lua_pushinteger(this->Lua, a[i]);
+        if (a + i)
+            lua_pushinteger(this->Lua, a[i]);
 
     if (lua_pcall(this->Lua, c, 1, 0) != LUA_OK) {
 #ifdef LUA_ADAPTER_DEBUG
-      std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
-      std::cerr << lua_tostring(this->Lua, -1) << "' "<< std::endl;
+        std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
+        std::cerr << lua_tostring(this->Lua, -1) << "' "<< std::endl;
 #endif
-      lua_pop(this->Lua, 1);
-      return false;
+        lua_pop(this->Lua, 1);
+        return false;
     }
     if (lua_isinteger(this->Lua, -1))
-      r = (int)(lua_tointeger(this->Lua, -1));
+        r = (int)(lua_tointeger(this->Lua, -1));
     else if ((lua_isboolean(this->Lua, -1))
-    and (lua_toboolean(this->Lua, -1)))
-      r = 1;
+             and (lua_toboolean(this->Lua, -1)))
+        r = 1;
     lua_pop(this->Lua, 1);
     return true;
 }
 
 bool MiniLua::Call(const char *f, const int a) {
     if( not this->Lua or not f or not a
-    or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
-      return false;
+            or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+        return false;
     lua_pushinteger(this->Lua, a);
     if(lua_pcall(this->Lua, 1, 0, 0) == LUA_OK)
-      return true;
+        return true;
 #ifdef LUA_ADAPTER_DEBUG
     std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
     std::cerr << lua_tostring(this->Lua, -1) << "'\n";
@@ -163,9 +181,9 @@ bool MiniLua::Call(const char *f, const int a) {
 
 bool MiniLua::Call(const char *f) {
     if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
-      return false;
+        return false;
     if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
-      return true;
+        return true;
 #ifdef LUA_ADAPTER_DEBUG
     std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
     std::cerr << lua_tostring(this->Lua, -1) << "'\n";
@@ -176,17 +194,19 @@ bool MiniLua::Call(const char *f) {
 
 bool MiniLua::Push(Lua_callback_function function, const char *name) {
     if (not this->Lua or not name)
-      return false;
+        return false;
     lua_pushcfunction(this->Lua, function);
     lua_setglobal(this->Lua, name);
     return true;
-  }
-
-void MiniLua::Close() {
-  if (!this->Lua)
-    return;
-  lua_close(this->Lua);
-  this->Lua = nullptr;
 }
 
-MiniLua::~MiniLua() { this->Close(); }
+void MiniLua::Close() {
+    if (!this->Lua)
+        return;
+    lua_close(this->Lua);
+    this->Lua = nullptr;
+}
+
+MiniLua::~MiniLua() {
+    this->Close();
+}

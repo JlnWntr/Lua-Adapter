@@ -31,85 +31,85 @@ static int LUA_ADAPTER_NULL{};
 
 class MiniLua {
 public:
-  /**
-  * Default constructor, opens lua libs
-  */
-  MiniLua();
+    /**
+    * Default constructor, opens lua libs
+    */
+    MiniLua();
 
-  /**
-  * This constructor open all the lua libs and a lua-file
-  * @param filename .lua-file to load
-  */
-  MiniLua(const std::string &filename);
+    /**
+    * This constructor open all the lua libs and a lua-file
+    * @param filename .lua-file to load
+    */
+    MiniLua(const std::string &filename);
 
-  /**
-  * Loads (and runs) lua-file.
-  * @param filename .lua-file to load
-  * @return true on success, false on error
-  */
-  bool Load(const std::string &filename);
-  bool Load(const char *bytecode, const size_t length);
+    /**
+    * Loads (and runs) lua-file.
+    * @param filename .lua-file to load
+    * @return true on success, false on error
+    */
+    bool Load(const std::string &filename);
+    bool Load(const char *bytecode, const size_t length);
 
-  /**
-  * Gets the value of a lua-variable.
-  * @param name of the variable inside loaded .lua-file
-  * @param result value is saved in this variable
-  * @return true on success, false on error
-  */
-  bool Get(const char *name, int &result);
-  bool Get(const char *name, std::string &result);
-  bool Get(const char *name, double &result);
-  bool Get(const char *name, float &result);
-  bool Get(const char *name, bool &result);
+    /**
+    * Gets the value of a lua-variable.
+    * @param name of the variable inside loaded .lua-file
+    * @param result value is saved in this variable
+    * @return true on success, false on error
+    */
+    bool Get(const char *name, int &result);
+    bool Get(const char *name, std::string &result);
+    bool Get(const char *name, double &result);
+    bool Get(const char *name, float &result);
+    bool Get(const char *name, bool &result);
 
-  /**
-   * Calls a Lua-function
-   * @param f name of the Lua-function
-   * @param c number of arguments passed to the Lua-function
-   * @param a function arguments
-   * @param r new value returned from the called Lua-function
-   * @return true on success, false on error
-   */
-  bool Call(const char *f, const int c, const int *a, int &r = LUA_ADAPTER_NULL);
-  bool Call(const char *f, const int a);
-  bool Call(const char *f);
+    /**
+     * Calls a Lua-function
+     * @param f name of the Lua-function
+     * @param c number of arguments passed to the Lua-function
+     * @param a function arguments
+     * @param r new value returned from the called Lua-function
+     * @return true on success, false on error
+     */
+    bool Call(const char *f, const int c, const int *a, int &r = LUA_ADAPTER_NULL);
+    bool Call(const char *f, const int a);
+    bool Call(const char *f);
 
-  /**
-   * Makes a C-/C++-function available for Lua
-   * (It's called pushFunction(), but you're not 'incrementing' the stack)
-   * @param function C-/C++-function
-   * @param name of the function
-   * @return true on success, false on error
-   */
-  bool Push(Lua_callback_function function, const char *name);
+    /**
+     * Makes a C-/C++-function available for Lua
+     * (It's called pushFunction(), but you're not 'incrementing' the stack)
+     * @param function C-/C++-function
+     * @param name of the function
+     * @return true on success, false on error
+     */
+    bool Push(Lua_callback_function function, const char *name);
 
-  /**
-  * Closes lua state
-  */
-  void Close();
-  
-  /**
-   * Returns recent lua state
-   * @return lua_State
-   */
-  lua_State *const GetState() const {
-	return this->Lua;
-  }
+    /**
+    * Closes lua state
+    */
+    void Close();
 
-  /**
-  * Destructor
-  * calls Close()
-  */
-  ~MiniLua();
+    /**
+     * Returns recent lua state
+     * @return lua_State
+     */
+    lua_State *const GetState() const {
+        return this->Lua;
+    }
+
+    /**
+    * Destructor
+    * calls Close()
+    */
+    ~MiniLua();
 
 private:
-  /**
-  * Gets the value of a globally loaded lua-variable
-  * @param name Name of the variable
-  * @return true on success, false on error
-  */
-  bool GetGlobal(const char *name);
+    /**
+    * Gets the value of a globally loaded lua-variable
+    * @param name Name of the variable
+    * @return true on success, false on error
+    */
+    bool GetGlobal(const char *name);
 
-  lua_State *Lua;
+    lua_State *Lua;
 };
 #endif

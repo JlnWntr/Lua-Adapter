@@ -30,60 +30,60 @@ static int test_function(lua_State *L);
 
 int main() {
 
-  MiniLua lua{};
+    MiniLua lua{};
 
-  lua.Push(test_function, "test_function");
+    lua.Push(test_function, "test_function");
 
-  lua.Load("test.lua");
+    lua.Load("test.lua");
 
-  // get int
-  int width{0};
-  lua.Get("width", width);
+    // get int
+    int width{0};
+    lua.Get("width", width);
     std::cout << "width: " << width << "\n";
 
-  // get double
-  double number{0};
-  if(lua.Get("number", number))
-    std::cout << "number: " << number << "\n";
+    // get double
+    double number{0};
+    if(lua.Get("number", number))
+        std::cout << "number: " << number << "\n";
 
-  // get float
-  float flt{0.0};
-  if(lua.Get("float", flt))
-    std::cout << "float: " << flt << "\n";
+    // get float
+    float flt{0.0};
+    if(lua.Get("float", flt))
+        std::cout << "float: " << flt << "\n";
 
-  // get string
-  std::string title{"empty"};
-  if(lua.Get("title", title))
-    std::cout << "title: " << title << "\n";
+    // get string
+    std::string title{"empty"};
+    if(lua.Get("title", title))
+        std::cout << "title: " << title << "\n";
 
-  // get boolean
-  bool boolean{false};
-  if(lua.Get("fullscreen", boolean))
-    std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
+    // get boolean
+    bool boolean{false};
+    if(lua.Get("fullscreen", boolean))
+        std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
 
-  // three function arguments
-  int result{0};
-  int args[] = {1,2,3};
-  if (lua.Call("Sum", 3, args, result))
-    std::cout << "1+2+3 = " << result << "\n";
+    // three function arguments
+    int result{0};
+    int args[] = {1,2,3};
+    if (lua.Call("Sum", 3, args, result))
+        std::cout << "1+2+3 = " << result << "\n";
 
-  // null function arguments, no return value
-  lua.Call("Print_string");
+    // null function arguments, no return value
+    lua.Call("Print_string");
 
-  // one argument, no return value
-  lua.Call("Power", 2);
+    // one argument, no return value
+    lua.Call("Power", 2);
 
-  return 0;
+    return 0;
 }
 
 /**
  * This C++-function can be called from Lua
  */
 static int test_function(lua_State *L) {
-  if (not L)
-    return 0;
-  double number{lua_tonumber(L, 1)};
-  number *= 2;
-  lua_pushnumber(L, number);
-  return 1;
+    if (not L)
+        return 0;
+    double number{lua_tonumber(L, 1)};
+    number *= 2;
+    lua_pushnumber(L, number);
+    return 1;
 }

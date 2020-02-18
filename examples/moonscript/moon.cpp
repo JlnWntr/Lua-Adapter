@@ -22,23 +22,23 @@
  */
 
 #ifndef LUA_FUNCTION_H
-  #include "../../LuaFunction.hpp"
+#include "../../LuaFunction.hpp"
 #endif
 #include <iostream>
 
 int main() {
-  const std::string moonscript {"hello.moon"};
+    const std::string moonscript {"hello.moon"};
 
-  LuaAdapter lua{"moon.lua"};
-  LuaFunction function {lua};
+    LuaAdapter lua{"moon.lua"};
+    LuaFunction function {lua};
 
-  // Run 'hello.moon'
-  function.Call("moonscript", moonscript);
+    // Run 'hello.moon'
+    function.Call("moonscript", moonscript);
 
-  // Test
-  int width{0};
-  lua.Get("width", width);
+    // Test
+    int width{0};
+    lua.Get("width", width);
 
-  std::cout << width << std::endl;
-  return 0;
+    std::cout << width << std::endl;
+    return 0;
 }

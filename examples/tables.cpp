@@ -24,86 +24,86 @@
 /* #define LUA_ADAPTER_DEBUG */
 
 #ifndef LUA_TABLE_H
-  #include "../LuaTable.hpp"
+#include "../LuaTable.hpp"
 #endif
 #ifndef LUA_ADAPTER_DEBUG
 #include <iostream>
 #endif
 
 int main() {
-  LuaAdapter lua{"test.lua"};
-  LuaTable luaTable{lua};
+    LuaAdapter lua{"test.lua"};
+    LuaTable luaTable{lua};
 
-  if (luaTable.Open("Table1")) {
-    int ID{0};
-    luaTable.Get("ID", ID);
-    std::cout << "ID: " << ID << std::endl;
+    if (luaTable.Open("Table1")) {
+        int ID{0};
+        luaTable.Get("ID", ID);
+        std::cout << "ID: " << ID << std::endl;
 
-    int Value{0};
-    luaTable.Get("Value", Value);
-    std::cout << "Value: " << Value << std::endl;
+        int Value{0};
+        luaTable.Get("Value", Value);
+        std::cout << "Value: " << Value << std::endl;
 
-    std::string Text{};
-    luaTable.Get("Text", Text);
-    std::cout << "Text: " << Text << std::endl;
+        std::string Text{};
+        luaTable.Get("Text", Text);
+        std::cout << "Text: " << Text << std::endl;
 
-    luaTable.Close(); // close "Table1"
-  }
-  std::cout << std::endl;
-
-  if (luaTable.Open("matrix")) {
-
-    // Get the length of the table
-    const unsigned short int length{(unsigned short int)luaTable.Length()};
-    std::cout << "Table-length: " << length << std::endl;
-
-    for (unsigned short int j = 1; j <= length; j++) {
-      for (unsigned short int  i = 1; i <= length; i++) {
-        int temp = 0;
-        luaTable.Get({j, i}, temp); // matrix[j][i]
-        std::cout << temp << " ";
-      }
-      std::cout << std::endl;
+        luaTable.Close(); // close "Table1"
     }
-    luaTable.Close(); // close table "matrix"
-  }
-  std::cout << std::endl;
+    std::cout << std::endl;
 
-  if (luaTable.Open("Table2")) {
-    int X{0};
-    luaTable.Get("X", X);
-    std::cout << "X: " << X << std::endl;
+    if (luaTable.Open("matrix")) {
 
-    int Y{0};
-    luaTable.Get("Y", Y);
-    std::cout << "Y: " << Y << std::endl;
+        // Get the length of the table
+        const unsigned short int length{(unsigned short int)luaTable.Length()};
+        std::cout << "Table-length: " << length << std::endl;
 
-    if (luaTable.Open("Test")) { // open 'nested' table "Test"
-      int A = 0;
-      luaTable.Get("A", A);
-      std::cout << "\t A: " << A << std::endl;
-      int B = 0;
-      luaTable.Get("B", B);
-      std::cout << "\t B: " << B << std::endl;
-
-      luaTable.Close(); // close nested table "Test"
+        for (unsigned short int j = 1; j <= length; j++) {
+            for (unsigned short int  i = 1; i <= length; i++) {
+                int temp = 0;
+                luaTable.Get({j, i}, temp); // matrix[j][i]
+                std::cout << temp << " ";
+            }
+            std::cout << std::endl;
+        }
+        luaTable.Close(); // close table "matrix"
     }
-    luaTable.Close(); // close "Table2"
-  }
+    std::cout << std::endl;
 
-  if (luaTable.Open("Strings")) {
-    std::string k, v;
+    if (luaTable.Open("Table2")) {
+        int X{0};
+        luaTable.Get("X", X);
+        std::cout << "X: " << X << std::endl;
 
-    // Get string-field by index
-    luaTable.Get(1, k);
-    luaTable.Get(2, v);
+        int Y{0};
+        luaTable.Get("Y", Y);
+        std::cout << "Y: " << Y << std::endl;
 
-    std::cout << "Key: " << k << std::endl;
-    std::cout << "Value: " << v << std::endl;
+        if (luaTable.Open("Test")) { // open 'nested' table "Test"
+            int A = 0;
+            luaTable.Get("A", A);
+            std::cout << "\t A: " << A << std::endl;
+            int B = 0;
+            luaTable.Get("B", B);
+            std::cout << "\t B: " << B << std::endl;
 
-    luaTable.Close(); // close "Strings"
-  }
-  // Check lua's internal stack
-  std::cout << "stack top: " << lua.GetTop() << std::endl; // should be 0
-  return 0;
+            luaTable.Close(); // close nested table "Test"
+        }
+        luaTable.Close(); // close "Table2"
+    }
+
+    if (luaTable.Open("Strings")) {
+        std::string k, v;
+
+        // Get string-field by index
+        luaTable.Get(1, k);
+        luaTable.Get(2, v);
+
+        std::cout << "Key: " << k << std::endl;
+        std::cout << "Value: " << v << std::endl;
+
+        luaTable.Close(); // close "Strings"
+    }
+    // Check lua's internal stack
+    std::cout << "stack top: " << lua.GetTop() << std::endl; // should be 0
+    return 0;
 }

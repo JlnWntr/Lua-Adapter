@@ -22,52 +22,54 @@
  */
 
 #ifndef LUA_ADAPTER_H
-  #include "../LuaAdapter.hpp"
+#include "../LuaAdapter.hpp"
 #endif
 #ifndef LUA_ADAPTER_DEBUG
 #include <iostream>
 #endif
 
 int main() {
-  LuaAdapter lua{};
-  if( not lua.Load("test.lua") ){
-    std::cout << "Can not find file 'test.lua'." << std::endl;
-    return 1;
-  }
+    LuaAdapter lua{};
+    if( not lua.Load("test.lua") ) {
+        #ifndef LUA_ADAPTER_DEBUG
+        std::cout << "Can not find file 'test.lua'." << std::endl;
+        #endif
+        return 1;
+    }
 
-  // get height
-  int height{0};
-  lua.Get("height", height);
-  std::cout << "height: " << height << std::endl;
+    // get height
+    int height{0};
+    lua.Get("height", height);
+    std::cout << "height: " << height << std::endl;
 
-  // get an int
-  int width{0};
-  lua.Get("width", width);
-  std::cout << "width: " << width << std::endl;
+    // get an int
+    int width{0};
+    lua.Get("width", width);
+    std::cout << "width: " << width << std::endl;
 
-  // get double
-  double number{0};
-  lua.Get("number", number);
-  std::cout << "Number: " << number << std::endl;
+    // get double
+    double number{0};
+    lua.Get("number", number);
+    std::cout << "Number: " << number << std::endl;
 
-  // get string
-  std::string title{"empty"};
-  lua.Get("title", title);
-  std::cout << "title: " << title << std::endl;
+    // get string
+    std::string title{"empty"};
+    lua.Get("title", title);
+    std::cout << "title: " << title << std::endl;
 
-  // set string
-  if(lua.Set("title", (std::string)"another title") == false)
-    return 1;
-  lua.Get("title", title);
-  std::cout << "title: " << title << std::endl;
+    // set string
+    if(lua.Set("title", (std::string)"another title") == false)
+        return 1;
+    lua.Get("title", title);
+    std::cout << "title: " << title << std::endl;
 
-  // get boolean
-  bool boolean{false};
-  lua.Get("fullscreen", boolean);
-  std::cout << "fullscreen: " << (boolean ? "true" : "false") << std::endl;
+    // get boolean
+    bool boolean{false};
+    lua.Get("fullscreen", boolean);
+    std::cout << "fullscreen: " << (boolean ? "true" : "false") << std::endl;
 
-  // Check lua's internal stack
-  std::cout << "stack top: " << lua.GetTop() << std::endl; // should be 0
+    // Check lua's internal stack
+    std::cout << "stack top: " << lua.GetTop() << std::endl; // should be 0
 
-  return 0;
+    return 0;
 }

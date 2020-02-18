@@ -8,12 +8,12 @@
 #include "test.h" // « generated via xxd (s. above)
 
 int main() {
-  LuaAdapter lua{};
-  LuaFunction f{lua};
+    LuaAdapter lua{};
+    LuaFunction f{lua};
 
-  lua.Load((const char *)luac_out, luac_out_len);
+    lua.Load((const char *)luac_out, luac_out_len);
 
-  f.Call("Print", (const std::string)"hello");
+    f.Call("Print", (const std::string)"hello");
 
-  return 0;
+    return 0;
 }

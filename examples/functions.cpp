@@ -24,7 +24,7 @@
 /* #define LUA_ADAPTER_DEBUG */
 
 #ifndef LUA_FUNCTION_H
-  #include "../LuaFunction.hpp"
+#include "../LuaFunction.hpp"
 #endif
 #ifndef LUA_ADAPTER_DEBUG
 #include <iostream>
@@ -33,75 +33,75 @@
 static int test_function(lua_State *L);
 
 int main() {
-  LuaAdapter lua{};
-  LuaFunction luaFunction{lua};
+    LuaAdapter lua{};
+    LuaFunction luaFunction{lua};
 
-  // Define a C/C++-function that can be called from lua (see test.lua)
-  if(luaFunction.Push(test_function, "test_function") == false){
-    std::cout << "Could NOT push C-function! \n";
-    return 1;
-  }
+    // Define a C/C++-function that can be called from lua (see test.lua)
+    if(luaFunction.Push(test_function, "test_function") == false) {
+        std::cout << "Could NOT push C-function! \n";
+        return 1;
+    }
 
-  // THEN load the script:
-  lua.Load("test.lua");
+    // THEN load the script:
+    lua.Load("test.lua");
 
-  // null arguments
-  int Return_int{0};
-  luaFunction.Call("Random", 0, Return_int);
-  std::cout << "Random: " << Return_int << std::endl;
+    // null arguments
+    int Return_int{0};
+    luaFunction.Call("Random", 0, Return_int);
+    std::cout << "Random: " << Return_int << std::endl;
 
-  // one argument, no return value
-  luaFunction.Call("Print", (const std::string) "This is a string.");
-  luaFunction.Call("Print", 1);
-  luaFunction.Call("Print", 2.2);
-  luaFunction.Call("Print", true);
+    // one argument, no return value
+    luaFunction.Call("Print", (const std::string) "This is a string.");
+    luaFunction.Call("Print", 1);
+    luaFunction.Call("Print", 2.2);
+    luaFunction.Call("Print", true);
 
-  // one argument, one return value
-  const double double_arg {2.3};
-  double double_result{};
-  const std::string function{"Inc"};
-  luaFunction.Call(function, double_arg, double_result);
-  std::cout << "Incrementing a double: " << double_result << std::endl;
+    // one argument, one return value
+    const double double_arg {2.3};
+    double double_result{};
+    const std::string function{"Inc"};
+    luaFunction.Call(function, double_arg, double_result);
+    std::cout << "Incrementing a double: " << double_result << std::endl;
 
-  // zero arguments, one return value
-  std::string Return_string{};
-  luaFunction.Call("String", 0, Return_string);
-  std::cout << "String-function: " << Return_string << std::endl;
+    // zero arguments, one return value
+    std::string Return_string{};
+    luaFunction.Call("String", 0, Return_string);
+    std::cout << "String-function: " << Return_string << std::endl;
 
-  // three arguments, one return value
-  int array[] = {1, 2, 3};
-  luaFunction.Call("Sum3", 3, array, Return_int);
-  std::cout << "Sum(1, 2, 3) = " << Return_int << std::endl;
+    // three arguments, one return value
+    int array[] = {1, 2, 3};
+    luaFunction.Call("Sum3", 3, array, Return_int);
+    std::cout << "Sum(1, 2, 3) = " << Return_int << std::endl;
 
-   // three arguments, NO return value
-  int test1[] = {3, 2, 1};
-  luaFunction.Call("Sum3", 3, test1, LUA_ADAPTER_NULL);
-  std::cout << "Called Sum3 without return-value.\n";
+    // three arguments, NO return value
+    int test1[] = {3, 2, 1};
+    luaFunction.Call("Sum3", 3, test1, LUA_ADAPTER_NULL);
+    std::cout << "Called Sum3 without return-value.\n";
 
-  // two arguments, one return value
-  int test2[] = {36, 24};
-  int result{0};
-  luaFunction.Call("gcd", 2, test2, result);
-  std::cout << "gcd(36, 24) = " << result << std::endl;
-  std::cout << std::endl;
+    // two arguments, one return value
+    int test2[] = {36, 24};
+    int result{0};
+    luaFunction.Call("gcd", 2, test2, result);
+    std::cout << "gcd(36, 24) = " << result << std::endl;
+    std::cout << std::endl;
 
-  test_function(nullptr); // this is to ignore a compile-warning
+    test_function(nullptr); // this is to ignore a compile-warning
 
-  // Check lua's internal stack
-  std::cout << "stack top: " << lua.GetTop() << std::endl; // should be 0
+    // Check lua's internal stack
+    std::cout << "stack top: " << lua.GetTop() << std::endl; // should be 0
 
-  std::cout << "Test ended!\n";
-  return 0;
+    std::cout << "Test ended!\n";
+    return 0;
 }
 
 /**
  * This C++-function can be called from Lua
  */
 static int test_function(lua_State *L) {
-  if (not L)
-    return 0;
-  double number{lua_tonumber(L, 1)};
-  number *= 2;
-  lua_pushnumber(L, number);
-  return 1;
+    if (not L)
+        return 0;
+    double number{lua_tonumber(L, 1)};
+    number *= 2;
+    lua_pushnumber(L, number);
+    return 1;
 }
