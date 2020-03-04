@@ -84,9 +84,17 @@ public:
     bool Push(Lua_callback_function function, const char *name);
 
     /**
-    * Closes lua state
+    * Closes the lua state
     */
     void Close();
+
+    /**
+     * Creates a new lua state, IF there is none.
+     * This should be handy, if you called Close() before and re-use this recent class-instance.
+     * You do NOT have to call this function for a newly constructed instance of MiniLua.
+     * @return true if an internal lua_State is available, false on error
+     */
+    bool New();
 
     /**
      * Returns recent lua state
@@ -95,6 +103,7 @@ public:
     lua_State *const GetState() const {
         return this->Lua;
     }
+
 
     /**
     * Destructor

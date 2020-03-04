@@ -39,46 +39,53 @@ MiniLua::MiniLua(const std::string &filename) : MiniLua() {
 }
 
 MiniLua::MiniLua(): Lua{nullptr} {
+   this->New();
+}
+
+bool MiniLua::New(){
+    if(this->Lua) return true;
     this->Lua = luaL_newstate();
+    if(not this->Lua) return false;
     luaL_openlibs(this->Lua);
+    return true;
 }
 
 bool MiniLua::Load(const std::string &filename) {
-    if (this->Lua && (filename.length() > 0)) {
-        if (luaL_loadfile(this->Lua, filename.c_str()) != 0){
+   //  std::cout << "!\n";
+    if (not this->New() or not (filename.length() > 0))
+        return false;
+    if (luaL_loadfile(this->Lua, filename.c_str()) != 0){
 #ifdef LUA_ADAPTER_DEBUG
-            std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
-            std::cerr << filename << "'" << std::endl;
-            std::cerr << lua_tostring(this->Lua, -1) << std::endl;
+        std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
+        std::cerr << filename << "'" << std::endl;
+        std::cerr << lua_tostring(this->Lua, -1) << std::endl;
 #endif
-            return false;
-        }
-#ifdef LUA_ADAPTER_DEBUG
-        const int base {lua_gettop(this->Lua) - 1};
-        lua_pushcfunction(this->Lua, lua_message_handler);
-        lua_insert(this->Lua, base);
-        const int result{lua_pcall(this->Lua, 0, 0, base)};
-        if (result != LUA_OK){
-            std::cerr << LUA_ADAPTER_PREFIX << "Error in Lua-file ";
-            std::cerr << lua_tostring(this->Lua, -1);
-            std::cerr << std::endl;
-        }
-        else
-            lua_pcall(this->Lua, 0, 0, 0);
-        lua_remove(this->Lua, base);
-#else
-        const int result{lua_pcall(this->Lua, 0, 0, 0)};
-#endif
-        if (result == LUA_OK){
-            return true;
-        }
+        return false;
     }
+#ifdef LUA_ADAPTER_DEBUG
+    const int base {lua_gettop(this->Lua) - 1};
+    lua_pushcfunction(this->Lua, lua_message_handler);
+    lua_insert(this->Lua, base);
+    const int result{lua_pcall(this->Lua, 0, 0, base)};
+    if (result != LUA_OK){
+        std::cerr << LUA_ADAPTER_PREFIX << "Error in Lua-file ";
+        std::cerr << lua_tostring(this->Lua, -1);
+        std::cerr << std::endl;
+    }
+    else
+        lua_pcall(this->Lua, 0, 0, 0);
+    lua_remove(this->Lua, base);
+#else
+    const int result{lua_pcall(this->Lua, 0, 0, 0)};
+#endif
+    if (result == LUA_OK)  return true;
+
     return false;
 }
 
 
 bool MiniLua::GetGlobal(const char *name) {
-    if ((!this->Lua) || (!name))
+    if ((not this->New()) or (not name))
         return false;
     lua_getglobal(this->Lua, name);
     return true;
@@ -141,7 +148,7 @@ bool MiniLua::Get(const char *name, bool &result) {
 }
 
 bool MiniLua::Call(const char *f, const int c, const int *a, int &r) {
-    if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+    if (not this->New() or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
         return false;
     for (auto i = 0; i < c; i++)
         if (a + i)
@@ -165,8 +172,8 @@ bool MiniLua::Call(const char *f, const int c, const int *a, int &r) {
 }
 
 bool MiniLua::Call(const char *f, const int a) {
-    if( not this->Lua or not f or not a
-            or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+    if(not this->New() or not f or not a
+    or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
         return false;
     lua_pushinteger(this->Lua, a);
     if(lua_pcall(this->Lua, 1, 0, 0) == LUA_OK)
@@ -180,7 +187,7 @@ bool MiniLua::Call(const char *f, const int a) {
 }
 
 bool MiniLua::Call(const char *f) {
-    if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+    if (not this->New() or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
         return false;
     if (lua_pcall(this->Lua, 0, 0, 0) == LUA_OK)
         return true;
@@ -193,7 +200,7 @@ bool MiniLua::Call(const char *f) {
 }
 
 bool MiniLua::Push(Lua_callback_function function, const char *name) {
-    if (not this->Lua or not name)
+    if (not this->New() or not name)
         return false;
     lua_pushcfunction(this->Lua, function);
     lua_setglobal(this->Lua, name);
@@ -201,8 +208,7 @@ bool MiniLua::Push(Lua_callback_function function, const char *name) {
 }
 
 void MiniLua::Close() {
-    if (!this->Lua)
-        return;
+    if (not this->Lua) return;
     lua_close(this->Lua);
     this->Lua = nullptr;
 }
