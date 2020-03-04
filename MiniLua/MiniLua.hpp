@@ -89,8 +89,8 @@ public:
     void Close();
 
     /**
-     * Creates a new lua state, IF there is none.
-     * This should be handy, if you called Close() before and re-use this recent class-instance.
+     * Close()s the old lua state and creates a new one.
+     * This should be handy, if you want to re-use a class-instance.
      * You do NOT have to call this function for a newly constructed instance of MiniLua.
      * @return true if an internal lua_State is available, false on error
      */
