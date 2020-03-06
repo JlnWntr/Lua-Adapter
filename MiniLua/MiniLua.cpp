@@ -88,6 +88,21 @@ bool MiniLua::Load(const std::string &filename) {
     return false;
 }
 
+bool MiniLua::Load(const char *bytecode, const size_t length){
+    if (not this->Lua or not bytecode)
+        return false;
+    if((luaL_loadbuffer(this->Lua, bytecode, length, nullptr) != LUA_OK)
+    or (lua_pcall(this->Lua, 0, 0, 0) != LUA_OK)
+    ){
+    #ifdef LUA_ADAPTER_DEBUG
+        std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not interpret lua-bytecode: ";
+        std::cerr << lua_tostring(this->Lua, -1) << std::endl;
+    #endif
+        return false;
+    }
+    return true;
+}
+
 
 bool MiniLua::GetGlobal(const char *name) {
     if ((not this->Lua) or (not name))

@@ -48,6 +48,13 @@ public:
     * @return true on success, false on error
     */
     bool Load(const std::string &filename);
+
+    /**
+    * Runs precompiled lua-bytecode.
+    * @param bytecode luac output
+    * @param length number of bytes
+    * @return true on success, false on error
+    */
     bool Load(const char *bytecode, const size_t length);
 
     /**
