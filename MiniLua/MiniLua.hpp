@@ -77,7 +77,8 @@ public:
      * @param r new value returned from the called Lua-function
      * @return true on success, false on error
      */
-    bool Call(const char *f, const int c, const int *a, int &r = LUA_ADAPTER_NULL);
+    bool Call(const char *f, const unsigned short int c, const int *a, int &r = LUA_ADAPTER_NULL);
+    bool Call(const char *f, const unsigned short int c, const float *a, float &r);
     bool Call(const char *f, const int a);
     bool Call(const char *f);
 
