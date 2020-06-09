@@ -1,7 +1,6 @@
 # Mini Lua-Adapter
-Use this minimal wrapper- / adapter-class as an interface between Lua and C++.
+Use this minimal wrapper- / adapter-class as an interface between Lua and C++:
 
-## Usage
 ```c++
 MiniLua lua{"test.lua"};
 
@@ -13,10 +12,18 @@ if(lua.Get("title", title))
      std::cout << title;
 ```
 
-## Compilation & test
+## Compile and test
+
+Linux or Unix:
 ```bash
 g++ MiniLua.cpp test.cpp -llua -ldl
 ```
 
-## Requirements
-[Download and install Lua](https://www.lua.org/download.html).
+### Build Lua and test MiniLua using CMake
+The [CMakeLists.txt](https://github.com/JlnWntr/Lua-Adapter/blob/master/MiniLua/CMakeLists.txt) in this directory downloads [Lua](https://www.lua.org) and tries to build it.
+It compiles a short [test](https://github.com/JlnWntr/Lua-Adapter/blob/master/MiniLua/test.cpp)-program, too.
+
+```bash
+$ cmake ./
+$ make
+```

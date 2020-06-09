@@ -26,7 +26,7 @@
 #ifdef LUA_ADAPTER_DEBUG
 #include <iostream>
 #define LUA_ADAPTER_PREFIX "Lua > "
-#warning Debug-information will be displayed during execution!
+// #warning Debug-information will be displayed during execution!
 #endif
 
 #include <lua.hpp>
