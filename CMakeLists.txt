@@ -32,6 +32,6 @@ set_property(TARGET test_lua PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE
 # Test
 add_test(
         NAME Run COMMAND
-        "./examples/test_lua"
+        "test_lua"
         WORKING_DIRECTORY examples)
 ENABLE_TESTING()
