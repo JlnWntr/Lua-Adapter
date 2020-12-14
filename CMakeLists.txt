@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 include(ExternalProject)
 
-set(LUA_VERSION "lua-5.4.0")
+set(LUA_VERSION "lua-5.4.2")
 set(LUA_URL  "https://www.lua.org/ftp/${LUA_VERSION}.tar.gz")
 
 ExternalProject_Add(lua
