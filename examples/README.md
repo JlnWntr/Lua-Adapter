@@ -18,7 +18,7 @@ int main(){
 ```
 
 ```bash
- $ g++-8 general_example.cpp -std=c++17 -llua -ldl -Wall
+ $ g++-8 test.cpp -std=c++17 -llua -ldl -Wall -DLUA_ADAPTER_DEBUG
 ```
 
 See [test.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/test.cpp) for *more* examples.
@@ -42,7 +42,7 @@ int main(){
 ```
 
 ```bash
- $ g++-8 table_example.cpp -std=c++17 -llua -ldl -Wall
+ $ g++-8 tables.cpp -std=c++17 -llua -ldl -Wall -DLUA_ADAPTER_DEBUG
 ```
 Please see [tables.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/tables.cpp) for *more* examples.
 
@@ -65,7 +65,7 @@ int main(){
 ```
 
 ```bash
- $ g++-8 function_example.cpp -std=c++17 -llua -ldl -Wall -fconcepts
+ $ g++-8 functions.cpp -std=c++17 -llua -ldl -fconcepts -Wall -DLUA_ADAPTER_DEBUG
 ```
 See [functions.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/functions.cpp) for even *more* examples.
 

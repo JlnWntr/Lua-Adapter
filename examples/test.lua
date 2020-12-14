@@ -2,6 +2,10 @@ number = 33.33
 float = 3.141
 
 title = "A title"
+--~ if _VERSION == 'Lua 5.4' then--test this 'const-feature ':
+    --~ local test_const_title<const> = "A const title"
+    --~ title = test_const_title
+--~ end
 
 width = 600
 height = 400
