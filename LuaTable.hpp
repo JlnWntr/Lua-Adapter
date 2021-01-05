@@ -51,10 +51,7 @@ public:
      * @return true on success, false on error
      */
     bool Open(const std::string &name) {
-        return this->Open(name.c_str());
-    }
-    bool Open(const char *name) {
-        if ((not this->Lua.get() or not this->Lua.get()->Lua()) or not name)
+        if ((not this->Lua.get() or not this->Lua.get()->Lua()))
             return false;
 
         if (lua_istable(this->Lua.get()->Lua(), -1)) {
@@ -62,7 +59,7 @@ public:
             std::cout << "\t" << LUA_ADAPTER_PREFIX << "opening nested table '"
                       << name << "' ... ";
 #endif
-            lua_getfield(this->Lua.get()->Lua(), -1, name);
+            lua_getfield(this->Lua.get()->Lua(), -1, name.c_str());
 
             if (lua_isnil(this->Lua.get()->Lua(), -1)) {
                 lua_pop(this->Lua.get()->Lua(), 1);
@@ -77,7 +74,7 @@ public:
             }
             return false;
         }
-        lua_getglobal(this->Lua.get()->Lua(), name);  // void
+        lua_getglobal(this->Lua.get()->Lua(), name.c_str());  // void
 
         if (lua_istable(this->Lua.get()->Lua(), -1)) {
 #ifdef LUA_ADAPTER_DEBUG
@@ -121,7 +118,7 @@ public:
      */
     template <typename R>
     bool Get(const char *name, R &r) {
-        if (not this->Lua.get() or not this->Lua.get()->Lua() or not name or
+        if (not this->Lua.get() or not this->Lua.get()->Lua() or
                 not lua_istable(this->Lua.get()->Lua(), -1))
             return false;
 

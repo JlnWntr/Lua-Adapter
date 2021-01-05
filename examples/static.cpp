@@ -13,7 +13,7 @@ int main() {
 
     lua.Load((const char *)luac_out, luac_out_len);
 
-    f.Call("Print", (const std::string)"hello");
+    f.Call("Print", "hello");
 
     return 0;
 }

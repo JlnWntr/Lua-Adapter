@@ -24,6 +24,7 @@
 #ifndef LUA_ADAPTER_H
 #include "../LuaAdapter.hpp"
 #endif
+
 #ifndef LUA_ADAPTER_DEBUG
 #include <iostream>
 #endif
@@ -58,7 +59,7 @@ int main() {
     std::cout << "title: " << title << std::endl;
 
     // set string
-    if(lua.Set("title", (std::string)"another title") == false)
+    if(lua.Set("title", "another title") == false)
         return 1;
     lua.Get("title", title);
     std::cout << "title: " << title << std::endl;

@@ -60,23 +60,28 @@ public:
      * @return true on success, false on error
      */
     template <typename A, typename R>
-    bool Call(const char *f, const auto c, const A *const a, R &r) {
-        if (not this->Lua.get() or not this->Lua.get()->Lua() or not f or
-                not(lua_getglobal(this->Lua.get()->Lua(), f) == LUA_TFUNCTION))
+    bool Call(const std::string f, const auto c, const A *const a, R &r) {
+        if (not this->Lua.get() or not this->Lua.get()->Lua() or
+                not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
             return false;
 
         for (auto i = 0; i < c; i++) {
             if (not(a + i)) break;
             if constexpr (std::is_same_v<double, A> or std::is_same_v<A, float>)
                 lua_pushnumber(this->Lua.get()->Lua(), a[i]);
-            else if constexpr (std::is_same_v<A, int>) {
+            else if constexpr (std::is_same_v<A, int>)
                 lua_pushinteger(this->Lua.get()->Lua(), a[i]);
-            } else if constexpr (std::is_same_v<A, std::string>)
+            else if constexpr (std::is_same_v<A, std::string>)
                 lua_pushlstring(this->Lua.get()->Lua(), a[i].c_str(), a[i].length());
+            else if constexpr (std::is_same_v<A, const char*>)
+                lua_pushlstring(this->Lua.get()->Lua(), a[i], strlen(a[i]));
             else if constexpr (std::is_same_v<A, bool>)
                 lua_pushboolean(this->Lua.get()->Lua(), a[i]);
         }
-        if (this->Pcall(c, 1, 0) == false) return false;
+
+        if (this->Pcall(c, 1, 0) == false){
+            return false;
+        }
         if constexpr (std::is_same_v<double, R> or std::is_same_v<R, float>) {
             if (lua_isnumber(this->Lua.get()->Lua(), -1))
                 r = lua_tonumber(this->Lua.get()->Lua(), -1);
@@ -93,10 +98,6 @@ public:
         lua_pop(this->Lua.get()->Lua(), 1);
         return true;
     }
-    template <typename A, typename R>
-    bool Call(const std::string f, const auto c, const A *const a, R &r) {
-        return this->Call(f.c_str(), c, a, r);
-    }
 
     /**
      * Calls a Lua-function
@@ -106,9 +107,9 @@ public:
      * @return true on success, false on error
      */
     template <typename A>
-    bool Call(const char *f, const auto c, const A *const a) {
-        if (not this->Lua.get() or not this->Lua.get()->Lua() or not f or
-                not(lua_getglobal(this->Lua.get()->Lua(), f) == LUA_TFUNCTION))
+    bool Test(const std::string f, const auto c, const A *const a) {
+        if (not this->Lua.get() or not this->Lua.get()->Lua() or
+                not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
             return false;
 
         for (auto i = 0; i < c; i++) {
@@ -119,14 +120,12 @@ public:
                 lua_pushinteger(this->Lua.get()->Lua(), a[i]);
             else if constexpr (std::is_same_v<A, std::string>)
                 lua_pushlstring(this->Lua.get()->Lua(), a[i].c_str(), a[i].length());
+            else if constexpr (std::is_same_v<A, const char*>)
+                lua_pushlstring(this->Lua.get()->Lua(), a[i], strlen(a[i]));
             else if constexpr (std::is_same_v<A, bool>)
                 lua_pushboolean(this->Lua.get()->Lua(), a[i]);
         }
         return this->Pcall(c, 0, 0);
-    }
-    template <typename A>
-    bool Call(const std::string f, const auto c, const A *const a) {
-        return this->Call(f.c_str(), c, a);
     }
 
     /**
@@ -137,12 +136,8 @@ public:
      * @return true on success, false on error
      */
     template <typename A, typename R>
-    bool Call(const char *f, const A a, R &r = LUA_ADAPTER_NULL) {
-        return this->Call(f, 1, (const A *)&a, r);
-    }
-    template <typename A, typename R>
     bool Call(const std::string f, const A a, R &r = LUA_ADAPTER_NULL) {
-        return this->Call(f.c_str(), 1, (const A *)&a, r);
+        return this->Call(f.c_str(), 1, &a, r);
     }
 
     /**
@@ -152,12 +147,8 @@ public:
      * @return true on success, false on error
      */
     template <typename A>
-    bool Call(const char *f, const A a) {
-        return this->Call(f, 1, (const A *)&a);
-    }
-    template <typename A>
     bool Call(const std::string f, const A a) {
-        return this->Call(f.c_str(), 1, (const A *)&a);
+        return this->Call(f.c_str(), a, LUA_ADAPTER_NULL);
     }
 
     /**
@@ -165,14 +156,11 @@ public:
      * @param f name of the Lua-function
      * @return true on success, false on error
      */
-    bool Call(const char *f) {
-        if (not this->Lua.get() or not this->Lua.get()->Lua() or not f or
-                not(lua_getglobal(this->Lua.get()->Lua(), f) == LUA_TFUNCTION))
+    bool Call(const std::string f) {
+        if (not this->Lua.get() or not this->Lua.get()->Lua() or
+                not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
             return false;
         return this->Pcall(0, 0, 0);
-    }
-    bool Call(const std::string f) {
-        return this->Call(f.c_str());
     }
 
     /**
@@ -182,16 +170,14 @@ public:
      * @param name of the function
      * @return true on success, false on error
      */
-    bool Push(Lua_callback_function function, const char *name) {
-        if (not this->Lua.get() or not this->Lua.get()->Lua() or not name)
+    bool Push(Lua_callback_function function, const std::string name) {
+        if (not this->Lua.get() or not this->Lua.get()->Lua())
             return false;
         lua_pushcfunction(this->Lua.get()->Lua(), function);
-        lua_setglobal(this->Lua.get()->Lua(), name);
+        lua_setglobal(this->Lua.get()->Lua(), name.c_str());
         return true;
     }
-    bool Push(Lua_callback_function function, const std::string name) {
-        return Push(function, name.c_str());
-    }
+
 
 private:
     std::shared_ptr<LuaState> Lua;

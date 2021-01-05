@@ -45,16 +45,17 @@ int main() {
     // THEN load the script:
     lua.Load("test.lua");
 
+    // one argument, no return value
+    luaFunction.Call("Print", "This is a string.");
+    luaFunction.Call("Print", 1);
+    luaFunction.Call("Print", 2.2);
+    luaFunction.Call("Print", true);
+
     // null arguments
     int Return_int{0};
     luaFunction.Call("Random", 0, Return_int);
     std::cout << "Random: " << Return_int << std::endl;
 
-    // one argument, no return value
-    luaFunction.Call("Print", (const std::string) "This is a string.");
-    luaFunction.Call("Print", 1);
-    luaFunction.Call("Print", 2.2);
-    luaFunction.Call("Print", true);
 
     // one argument, one return value
     const double double_arg {2.3};

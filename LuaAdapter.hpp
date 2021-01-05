@@ -32,6 +32,7 @@
 #include <lua.hpp>
 #include <memory>
 #include <string>
+#include <cstring>
 
 class LuaTable;
 
@@ -177,7 +178,7 @@ public:
     /**
      * Sets the value of a global Lua-variable.
      * @param name of the variable
-     * @param a the var's value
+     * @param a the value of the variable
      * @return true on success, false on error
      */
     template <typename A>
@@ -230,6 +231,8 @@ public:
             lua_pushboolean(this->Lua.get()->Lua(), a);
         else if constexpr (std::is_same_v<A, std::string>)
             lua_pushlstring(this->Lua.get()->Lua(), a.c_str(), a.length());
+        else if constexpr (std::is_same_v<A, const char*>)
+            lua_pushlstring(this->Lua.get()->Lua(), a, strlen(a));
         else
             return false;
         return true;

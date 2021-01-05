@@ -59,7 +59,7 @@ int main() {
 
         for (unsigned short int j = 1; j <= length; j++) {
             for (unsigned short int  i = 1; i <= length; i++) {
-                int temp = 0;
+                int temp {0};
                 luaTable.Get({j, i}, temp); // matrix[j][i]
                 std::cout << temp << " ";
             }
@@ -79,10 +79,10 @@ int main() {
         std::cout << "Y: " << Y << std::endl;
 
         if (luaTable.Open("Test")) { // open 'nested' table "Test"
-            int A = 0;
+            int A {0};
             luaTable.Get("A", A);
             std::cout << "\t A: " << A << std::endl;
-            int B = 0;
+            int B {0};
             luaTable.Get("B", B);
             std::cout << "\t B: " << B << std::endl;
 
