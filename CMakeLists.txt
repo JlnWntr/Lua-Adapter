@@ -21,9 +21,11 @@ set(LIBLUA_DIR "${SOURCE_DIR}/src")
 
 # Project to test liblua
 project(test_lua)
-set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${LIBLUA_DIR}/liblua.a)
 
+set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${LIBLUA_DIR}/liblua.a)
+add_dependencies(liblua lua)
 add_executable(test_lua examples/test.cpp)
+
 target_link_libraries(test_lua liblua)
 target_include_directories(test_lua PUBLIC ${LIBLUA_DIR})
 set_property(TARGET test_lua PROPERTY CXX_STANDARD 17)

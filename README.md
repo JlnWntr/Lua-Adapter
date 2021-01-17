@@ -15,7 +15,7 @@ int main(){
 }
 ```
 
-#### Test
+### Build and test Lua-Adapter using `g++`
 
 ```bash
 $ g++-8 the_program_above.cpp -std=c++17 -llua -ldl
@@ -23,7 +23,7 @@ $ g++-8 the_program_above.cpp -std=c++17 -llua -ldl
 Please see [more examples](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples).
 
 
-### Build Lua 5.4.2 and test LuaAdapter using CMake
+### Build Lua 5.4.2 and test Lua-Adapter using *CMake*
 The [CMakeLists.txt](https://github.com/JlnWntr/Lua-Adapter/blob/master/CMakeLists.txt) in this directory downloads [Lua](https://www.lua.org), builds it and test-runs [test.cpp](https://github.com/JlnWntr/Lua-Adapter/blob/master/examples/test.cpp).
 
 ```bash
