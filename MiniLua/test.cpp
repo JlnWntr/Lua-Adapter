@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020 JlnWntr (jlnwntr@gmail.com)
+ * Copyright (c) 2015-2021 JlnWntr (jlnwntr@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,40 +38,42 @@ int main() {
 
     // get int
     int width{0};
-    lua.Get("width", width);
-    std::cout << "width: " << width << "\n";
+        lua.Get("width", width);
+    std::cout << "width: " << width << std::endl;
 
     // get double
     double number{0};
     if(lua.Get("number", number))
-        std::cout << "number: " << number << "\n";
+        std::cout << "number: " << number << std::endl;
 
     // get float
     float flt{0.0};
     if(lua.Get("float", flt))
-        std::cout << "float: " << flt << "\n";
+        std::cout << "float: " << flt << std::endl;
 
     // get string
     std::string title{"empty"};
     if(lua.Get("title", title))
-        std::cout << "title: " << title << "\n";
+        std::cout << "title: " << title << std::endl;
 
     // get boolean
     bool boolean{false};
     if(lua.Get("fullscreen", boolean))
-        std::cout << "fullscreen: " << (boolean ? "true" : "false") << "\n";
+        std::cout << "fullscreen: " << (boolean ? "true" : "false") << std::endl;
 
     // three function arguments
     int result{0};
     int args[] = {1,2,3};
     if (lua.Call("Sum", 3, args, result))
-        std::cout << "1+2+3 = " << result << "\n";
+        std::cout << "1+2+3 = " << result << std::endl;
 
     // null function arguments, no return value
     lua.Call("Print_string");
 
     // one argument, no return value
     lua.Call("Power", 2);
+
+    std::cout << "Lua top: " << lua_gettop(lua.GetState()) << std::endl;
 
     return 0;
 }

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2015-2020 JlnWntr (jlnwntr@gmail.com)
+* Copyright (c) 2015-2021 JlnWntr (jlnwntr@gmail.com)
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
 
 #ifdef LUA_ADAPTER_DEBUG
 #define LUA_ADAPTER_PREFIX "Lua > "
-static int lua_message_handler (lua_State *L) {
-    luaL_traceback(L, L, nullptr, 1);
-    return 1;
-}
+//~ static int lua_message_handler (lua_State *L) {
+    //~ luaL_traceback(L, L, nullptr, 1);
+    //~ return 1;
+//~ }
 #endif
 
 MiniLua::MiniLua(const std::string &filename) : MiniLua() {
@@ -53,7 +53,7 @@ bool MiniLua::New(){
 }
 
 bool MiniLua::Load(const std::string &filename) {
-    if (not this->Lua or not (filename.length() > 0)){
+    if (not this->Lua or not (filename.length() > 0)){ //std::cout << "! \n";
 #ifdef LUA_ADAPTER_DEBUG
         std::cerr << LUA_ADAPTER_PREFIX << "Error. No lua-state available." << std::endl;
 #endif
@@ -67,25 +67,27 @@ bool MiniLua::Load(const std::string &filename) {
 #endif
         return false;
     }
+    const int result{
+        lua_pcall(this->Lua, 0, 0, 0)
+    };
+
 #ifdef LUA_ADAPTER_DEBUG
-    const int base {lua_gettop(this->Lua) - 1};
-    lua_pushcfunction(this->Lua, lua_message_handler);
-    lua_insert(this->Lua, base);
-    const int result{lua_pcall(this->Lua, 0, 0, base)};
+    //~ const int base {lua_gettop(this->Lua) - 1};
+    //~ lua_pushcfunction(this->Lua, lua_message_handler);
+    //~ lua_insert(this->Lua, base);
+
     if (result != LUA_OK){
-        std::cerr << LUA_ADAPTER_PREFIX << "Error in Lua-file ";
+        std::cerr << LUA_ADAPTER_PREFIX << "Error in Lua-file: ";
         std::cerr << lua_tostring(this->Lua, -1);
         std::cerr << std::endl;
     }
-    else
-        lua_pcall(this->Lua, 0, 0, 0);
-    lua_remove(this->Lua, base);
-#else
-    const int result{lua_pcall(this->Lua, 0, 0, 0)};
+    //~ else
+        //~ lua_pcall(this->Lua, 0, 0, 0);
+    //~ lua_remove(this->Lua, base);
+    //~ lua_pop(this->Lua, 1);
 #endif
-    if (result == LUA_OK)  return true;
 
-    return false;
+    return (result == LUA_OK);
 }
 
 bool MiniLua::Load(const char *bytecode, const size_t length){
