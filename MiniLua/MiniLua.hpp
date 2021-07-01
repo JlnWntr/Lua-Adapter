@@ -23,7 +23,13 @@
 #ifndef MINI_LUA_H
 #define MINI_LUA_H
 
+#ifndef LUA_ADAPTER_STATIC
 #include <lua.hpp>
+#else
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+#endif
 #include <string>
 
 typedef int (*Lua_callback_function)(lua_State *L);

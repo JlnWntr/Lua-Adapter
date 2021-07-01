@@ -29,7 +29,13 @@
 // #warning Debug-information will be displayed during execution!
 #endif
 
+#ifndef LUA_ADAPTER_STATIC
 #include <lua.hpp>
+#else
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+#endif
 #include <memory>
 #include <string>
 #include <cstring>
