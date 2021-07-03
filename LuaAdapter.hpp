@@ -26,7 +26,7 @@
 #ifdef LUA_ADAPTER_DEBUG
 #include <iostream>
 #define LUA_ADAPTER_PREFIX "Lua > "
-// #warning Debug-information will be displayed during execution!
+ // #warning Debug-information will be displayed during execution!
 #endif
 
 #ifndef LUA_ADAPTER_STATIC
@@ -45,11 +45,11 @@ class LuaTable;
 class LuaState
 {
 private:
-    lua_State *const lua;
+    lua_State* const lua;
 
 public:
-    LuaState(lua_State *const l) : lua{l} {}
-    LuaState() : lua{luaL_newstate()}
+    LuaState(lua_State* const l) : lua{ l } {}
+    LuaState() : lua{ luaL_newstate() }
     {
         luaL_openlibs(this->lua);
     }
@@ -57,9 +57,9 @@ public:
     {
         lua_close(this->lua);
     }
-    LuaState &operator=(const LuaState &) = delete;
-    LuaState(const LuaState &) = delete;
-    lua_State *const Lua() const
+    LuaState& operator=(const LuaState&) = delete;
+    LuaState(const LuaState&) = delete;
+    lua_State* const Lua() const
     {
         return this->lua;
     };
@@ -71,22 +71,22 @@ public:
     /**
      * Default-Constructor
      */
-    LuaAdapter() : Lua{std::make_shared<LuaState>()} {}
+    LuaAdapter() : Lua{ std::make_shared<LuaState>() } {}
 
     /**
      * Constructor
      * @param lua uses an pre-existing lua_state.
      * (See for example testCFunction() in test.cpp)
      */
-    LuaAdapter(lua_State *const lua) : Lua{std::make_shared<LuaState>(lua)} {}
-    LuaAdapter(LuaAdapter &lua) : Lua{lua.GetLuaState()} {}
-    LuaAdapter(const LuaAdapter &lua) : Lua{lua.GetLuaState()} {}
+    LuaAdapter(lua_State* const lua) : Lua{ std::make_shared<LuaState>(lua) } {}
+    LuaAdapter(LuaAdapter& lua) : Lua{ lua.GetLuaState() } {}
+    LuaAdapter(const LuaAdapter& lua) : Lua{ lua.GetLuaState() } {}
 
     /**
      * This constructor inits Lua and loads a .Lua-file.
      * @param filename .Lua-file to load
      */
-    LuaAdapter(const std::string &filename) : Lua{std::make_shared<LuaState>()}
+    LuaAdapter(const std::string& filename) : Lua{ std::make_shared<LuaState>() }
     {
         this->Load(filename);
     }
@@ -104,20 +104,20 @@ public:
      * @param length amounts of bytes
      * @return true on success, false on error
      */
-    bool Load(const std::string &filename)
+    bool Load(const std::string& filename)
     {
         return Load(filename.c_str());
     }
-    bool Load(const char *code, const size_t length = 0)
+    bool Load(const char* code, const size_t length = 0)
     {
         if (not this->Lua.get()
-                or  not this->Lua.get()->Lua()
-                or  not code
-                or  ( (length == 0) and
-                      (luaL_loadfile(this->Lua.get()->Lua(), code) != 0))
-                or  ( not(length == 0) and
-                      not(luaL_loadbuffer(this->Lua.get()->Lua(), code, length, nullptr) == 0))
-           )
+            or not this->Lua.get()->Lua()
+            or not code
+            or ((length == 0) and
+                (luaL_loadfile(this->Lua.get()->Lua(), code) != 0))
+            or (not(length == 0) and
+                not(luaL_loadbuffer(this->Lua.get()->Lua(), code, length, nullptr) == 0))
+            )
         {
 #ifdef LUA_ADAPTER_DEBUG
             std::cerr << LUA_ADAPTER_PREFIX << "Error. Could not load '";
@@ -143,11 +143,11 @@ public:
      * @return true on success, false on error
      */
     template <typename R>
-    bool Get(const char *name, R &r)
+    bool Get(const char* name, R& r)
     {
         if (not this->Lua.get()
-                or  not this->Lua.get()->Lua()
-                or  not name) return false;
+            or not this->Lua.get()->Lua()
+            or not name) return false;
 
         switch (lua_getglobal(this->Lua.get()->Lua(), name))
         {
@@ -158,7 +158,7 @@ public:
                     r = lua_tointeger(this->Lua.get()->Lua(), -1);
             }
             else if constexpr (std::is_same_v<double, R> or
-                               std::is_same_v<R, float>)
+                std::is_same_v<R, float>)
                 r = lua_tonumber(this->Lua.get()->Lua(), -1);
             break;
         case LUA_TBOOLEAN:
@@ -175,7 +175,7 @@ public:
         }
 #ifdef LUA_ADAPTER_DEBUG
         std::cout << LUA_ADAPTER_PREFIX << "got '" << name << "' = '" << r << "'"
-                  << std::endl;
+            << std::endl;
 #endif
         lua_pop(this->Lua.get()->Lua(), 1);
         return true;
@@ -188,11 +188,11 @@ public:
      * @return true on success, false on error
      */
     template <typename A>
-    bool Set(const char *name, const A &a)
+    bool Set(const char* name, const A& a)
     {
         if (not this->Lua.get()
-                or  not this->Lua.get()->Lua()
-                or  not name)
+            or not this->Lua.get()->Lua()
+            or not name)
             return false;
 
         if (this->Push(a) == true)
@@ -201,7 +201,7 @@ public:
 
 #ifdef LUA_ADAPTER_DEBUG
             std::cout << LUA_ADAPTER_PREFIX << "set '" << name << "' = '" << a << "'"
-                      << std::endl;
+                << std::endl;
 #endif
             return true;
         }
@@ -213,7 +213,7 @@ public:
      * @param string to execute, for example "test = io.read()"
      * @return true on success, false on error
      */
-    bool DoString(const char *string)
+    bool DoString(const char* string)
     {
         if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
         return luaL_dostring(this->Lua.get()->Lua(), string);
@@ -228,7 +228,7 @@ public:
     bool Push(A a)
     {
         if (not this->Lua.get()
-                or  not this->Lua.get()->Lua()) return false;
+            or not this->Lua.get()->Lua()) return false;
         if constexpr (std::is_same_v<A, int>)
             lua_pushinteger(this->Lua.get()->Lua(), a);
         else if constexpr (std::is_same_v<A, float> or std::is_same_v<A, double>)
@@ -251,7 +251,7 @@ public:
     bool Flush()
     {
         if (not this->Lua.get()
-                or  not this->Lua.get()->Lua()) return false;
+            or not this->Lua.get()->Lua()) return false;
         lua_settop(this->Lua.get()->Lua(), 0);
         return true;
     }
@@ -263,7 +263,7 @@ public:
     void Pop(int i = 1)
     {
         if (this->Lua.get()
-                and this->Lua.get()->Lua())
+            and this->Lua.get()->Lua())
             lua_pop(this->Lua.get()->Lua(), i);
     }
 
@@ -274,7 +274,7 @@ public:
     int GetTop() const
     {
         if (not this->Lua.get()
-                or  not this->Lua.get()->Lua()) return false;
+            or not this->Lua.get()->Lua()) return false;
         return lua_gettop(this->Lua.get()->Lua());
     }
 
@@ -288,7 +288,7 @@ public:
     int GetType() const
     {
         if (not this->Lua.get()
-                or  not this->Lua.get()->Lua()) return false;
+            or not this->Lua.get()->Lua()) return false;
         return lua_type(this->Lua.get()->Lua(), 0);
     }
 

@@ -35,29 +35,29 @@ public:
     /**
      * Default constructor
      */
-    LuaTable() : Lua{nullptr} {}
+    LuaTable() : Lua{ nullptr } {}
 
     /**
      * Constructor
      * @param lua uses an existing LuaState
      */
-    LuaTable(lua_State *const lua) : Lua{std::make_shared<LuaState>(lua)} {}
-    LuaTable(LuaAdapter &lua) : Lua{lua.GetLuaState()} {}
-    LuaTable(const LuaTable &) = delete;
+    LuaTable(lua_State* const lua) : Lua{ std::make_shared<LuaState>(lua) } {}
+    LuaTable(LuaAdapter& lua) : Lua{ lua.GetLuaState() } {}
+    LuaTable(const LuaTable&) = delete;
 
     /**
      * Opens a Lua-table
      * @param name Name of the table inside loaded Lua-state
      * @return true on success, false on error
      */
-    bool Open(const std::string &name) {
+    bool Open(const std::string& name) {
         if ((not this->Lua.get() or not this->Lua.get()->Lua()))
             return false;
 
         if (lua_istable(this->Lua.get()->Lua(), -1)) {
 #ifdef LUA_ADAPTER_DEBUG
             std::cout << "\t" << LUA_ADAPTER_PREFIX << "opening nested table '"
-                      << name << "' ... ";
+                << name << "' ... ";
 #endif
             lua_getfield(this->Lua.get()->Lua(), -1, name.c_str());
 
@@ -79,7 +79,7 @@ public:
         if (lua_istable(this->Lua.get()->Lua(), -1)) {
 #ifdef LUA_ADAPTER_DEBUG
             std::cout << LUA_ADAPTER_PREFIX << "open table '" << name << "'"
-                      << std::endl;
+                << std::endl;
 #endif
             return true;
         }
@@ -94,9 +94,9 @@ public:
      * @return the length of the table
      */
     int Length() {
-        int result{0};
+        int result{ 0 };
         if (not this->Lua.get() or not this->Lua.get()->Lua() or
-                not lua_istable(this->Lua.get()->Lua(), -1))
+            not lua_istable(this->Lua.get()->Lua(), -1))
             return result;
 
         lua_len(this->Lua.get()->Lua(), -1);
@@ -117,9 +117,9 @@ public:
      * @return true on success, false on error
      */
     template <typename R>
-    bool Get(const char *name, R &r) {
+    bool Get(const char* name, R& r) {
         if (not this->Lua.get() or not this->Lua.get()->Lua() or
-                not lua_istable(this->Lua.get()->Lua(), -1))
+            not lua_istable(this->Lua.get()->Lua(), -1))
             return false;
 
         lua_getfield(this->Lua.get()->Lua(), -1, name);
@@ -130,7 +130,7 @@ public:
         }
 #ifdef LUA_ADAPTER_DEBUG
         std::cout << "\t" << LUA_ADAPTER_PREFIX << "got field '" << name << "' = '"
-                  << r << "'" << std::endl;
+            << r << "'" << std::endl;
 #endif
         lua_pop(this->Lua.get()->Lua(), 1);
         return true;
@@ -143,9 +143,9 @@ public:
      * @return true on success, false on error
      */
     template <typename R>
-    bool Get(unsigned short int i, R &r) {
+    bool Get(unsigned short int i, R& r) {
         if (not this->Lua.get() or not this->Lua.get()->Lua() or
-                not lua_istable(this->Lua.get()->Lua(), -1) or (i < 1))
+            not lua_istable(this->Lua.get()->Lua(), -1) or (i < 1))
             return false;
         lua_rawgeti(this->Lua.get()->Lua(), -1, i);
 
@@ -156,7 +156,7 @@ public:
 
 #ifdef LUA_ADAPTER_DEBUG
         std::cout << "\t" << LUA_ADAPTER_PREFIX << "got " << i << "th field  = '"
-                  << r << "'" << std::endl;
+            << r << "'" << std::endl;
 #endif
         lua_pop(this->Lua.get()->Lua(), 1);
         return true;
@@ -173,19 +173,19 @@ public:
      * @return true on success, false on error
      */
     template <typename R>
-    bool Get(const std::vector<unsigned short int> &m, R &r) {
+    bool Get(const std::vector<unsigned short int>& m, R& r) {
         if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
-        for (auto &v : m)
+        for (auto& v : m)
             if (lua_istable(this->Lua.get()->Lua(), -1))
                 lua_rawgeti(this->Lua.get()->Lua(), -1, v);
 
-        const bool Result{this->convert(r)};
+        const bool Result{ this->convert(r) };
 #ifdef LUA_ADAPTER_DEBUG
         if (Result)
             std::cout << "\t" << LUA_ADAPTER_PREFIX
-                      << "got field "
-                      " = '"
-                      << r << "'" << std::endl;
+            << "got field "
+            " = '"
+            << r << "'" << std::endl;
 #endif
         while (lua_gettop(this->Lua.get()->Lua()) > 1)
             lua_pop(this->Lua.get()->Lua(), 1);
@@ -203,22 +203,26 @@ public:
 
 private:
     template <typename R>
-    bool convert(R &r) {
+    bool convert(R& r) {
         if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
         if (lua_isnumber(this->Lua.get()->Lua(), -1) and
-                !lua_isinteger(this->Lua.get()->Lua(), -1)) {
+            !lua_isinteger(this->Lua.get()->Lua(), -1)) {
             if constexpr (std::is_same_v<double, R> or std::is_same_v<R, float>)
                 r = lua_tonumber(this->Lua.get()->Lua(), -1);
-        } else if (lua_isinteger(this->Lua.get()->Lua(), -1)) {
+        }
+        else if (lua_isinteger(this->Lua.get()->Lua(), -1)) {
             if constexpr (std::is_same_v<R, int>)
                 r = lua_tointeger(this->Lua.get()->Lua(), -1);
-        } else if (lua_isboolean(this->Lua.get()->Lua(), -1)) {
+        }
+        else if (lua_isboolean(this->Lua.get()->Lua(), -1)) {
             if constexpr (std::is_same_v<R, bool>)
                 r = lua_toboolean(this->Lua.get()->Lua(), -1);
-        } else if (lua_isstring(this->Lua.get()->Lua(), -1)) {
+        }
+        else if (lua_isstring(this->Lua.get()->Lua(), -1)) {
             if constexpr (std::is_same_v<R, std::string>)
                 r = lua_tostring(this->Lua.get()->Lua(), -1);
-        } else
+        }
+        else
             return false;
         return true;
     }

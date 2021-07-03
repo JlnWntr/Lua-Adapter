@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-/* #define LUA_ADAPTER_DEBUG */
+ /* #define LUA_ADAPTER_DEBUG */
 
 #ifndef LUA_FUNCTION_H
 #include "../LuaFunction.hpp"
@@ -30,14 +30,14 @@
 #include <iostream>
 #endif
 
-static int test_function(lua_State *L);
+static int test_function(lua_State* L);
 
 int main() {
     LuaAdapter lua{};
-    LuaFunction luaFunction{lua};
+    LuaFunction luaFunction{ lua };
 
     // Define a C/C++-function that can be called from lua (see test.lua)
-    if(luaFunction.Push(test_function, "test_function") == false) {
+    if (luaFunction.Push(test_function, "test_function") == false) {
         std::cout << "Could NOT push C-function! \n";
         return 1;
     }
@@ -52,15 +52,15 @@ int main() {
     luaFunction.Call("Print", true);
 
     // null arguments
-    int Return_int{0};
+    int Return_int{ 0 };
     luaFunction.Call("Random", 0, Return_int);
     std::cout << "Random: " << Return_int << std::endl;
 
 
     // one argument, one return value
-    const double double_arg {2.3};
+    const double double_arg{ 2.3 };
     double double_result{};
-    const std::string function{"Inc"};
+    const std::string function{ "Inc" };
     luaFunction.Call(function, double_arg, double_result);
     std::cout << "Incrementing a double: " << double_result << std::endl;
 
@@ -70,18 +70,18 @@ int main() {
     std::cout << "String-function: " << Return_string << std::endl;
 
     // three arguments, one return value
-    int array[] = {1, 2, 3};
+    int array[] = { 1, 2, 3 };
     luaFunction.Call("Sum3", 3, array, Return_int);
     std::cout << "Sum(1, 2, 3) = " << Return_int << std::endl;
 
     // three arguments, NO return value
-    int test1[] = {3, 2, 1};
+    int test1[] = { 3, 2, 1 };
     luaFunction.Call("Sum3", 3, test1, LUA_ADAPTER_NULL);
     std::cout << "Called Sum3 without return-value.\n";
 
     // two arguments, one return value
-    int test2[] = {36, 24};
-    int result{0};
+    int test2[] = { 36, 24 };
+    int result{ 0 };
     luaFunction.Call("gcd", 2, test2, result);
     std::cout << "gcd(36, 24) = " << result << std::endl;
     std::cout << std::endl;
@@ -98,10 +98,10 @@ int main() {
 /**
  * This C++-function can be called from Lua
  */
-static int test_function(lua_State *L) {
+static int test_function(lua_State* L) {
     if (not L)
         return 0;
-    double number{lua_tonumber(L, 1)};
+    double number{ lua_tonumber(L, 1) };
     number *= 2;
     lua_pushnumber(L, number);
     return 1;

@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-/* #define LUA_ADAPTER_DEBUG */
+ /* #define LUA_ADAPTER_DEBUG */
 
 #ifndef LUA_TABLE_H
 #include "../LuaTable.hpp"
@@ -31,15 +31,15 @@
 #endif
 
 int main() {
-    LuaAdapter lua{"test.lua"};
-    LuaTable luaTable{lua};
+    LuaAdapter lua{ "test.lua" };
+    LuaTable luaTable{ lua };
 
     if (luaTable.Open("Table1")) {
-        int ID{0};
+        int ID{ 0 };
         luaTable.Get("ID", ID);
         std::cout << "ID: " << ID << std::endl;
 
-        int Value{0};
+        int Value{ 0 };
         luaTable.Get("Value", Value);
         std::cout << "Value: " << Value << std::endl;
 
@@ -54,13 +54,13 @@ int main() {
     if (luaTable.Open("matrix")) {
 
         // Get the length of the table
-        const unsigned short int length{(unsigned short int)luaTable.Length()};
+        const unsigned short int length{ (unsigned short int)luaTable.Length() };
         std::cout << "Table-length: " << length << std::endl;
 
         for (unsigned short int j = 1; j <= length; j++) {
-            for (unsigned short int  i = 1; i <= length; i++) {
-                int temp {0};
-                luaTable.Get({j, i}, temp); // matrix[j][i]
+            for (unsigned short int i = 1; i <= length; i++) {
+                int temp{ 0 };
+                luaTable.Get({ j, i }, temp); // matrix[j][i]
                 std::cout << temp << " ";
             }
             std::cout << std::endl;
@@ -70,19 +70,19 @@ int main() {
     std::cout << std::endl;
 
     if (luaTable.Open("Table2")) {
-        int X{0};
+        int X{ 0 };
         luaTable.Get("X", X);
         std::cout << "X: " << X << std::endl;
 
-        int Y{0};
+        int Y{ 0 };
         luaTable.Get("Y", Y);
         std::cout << "Y: " << Y << std::endl;
 
         if (luaTable.Open("Test")) { // open 'nested' table "Test"
-            int A {0};
+            int A{ 0 };
             luaTable.Get("A", A);
             std::cout << "\t A: " << A << std::endl;
-            int B {0};
+            int B{ 0 };
             luaTable.Get("B", B);
             std::cout << "\t B: " << B << std::endl;
 

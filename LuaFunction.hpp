@@ -29,22 +29,22 @@
 #endif
 
 static int LUA_ADAPTER_NULL{};
-typedef int (*Lua_callback_function)(lua_State *L);
+typedef int (*Lua_callback_function)(lua_State* L);
 
 class LuaFunction {
 public:
     /**
      * Default constructor
      */
-    LuaFunction() : Lua{nullptr} {}
+    LuaFunction() : Lua{ nullptr } {}
 
     /**
      * Constructor
      * @param lua uses an existing LuaState
      */
-    LuaFunction(lua_State *const lua) : Lua{std::make_shared<LuaState>(lua)} {}
-    LuaFunction(LuaAdapter &lua) : Lua{lua.GetLuaState()} {}
-    LuaFunction(const LuaFunction &) = delete;
+    LuaFunction(lua_State* const lua) : Lua{ std::make_shared<LuaState>(lua) } {}
+    LuaFunction(LuaAdapter& lua) : Lua{ lua.GetLuaState() } {}
+    LuaFunction(const LuaFunction&) = delete;
 
     /**
      * Destructor
@@ -60,9 +60,9 @@ public:
      * @return true on success, false on error
      */
     template <typename A, typename R>
-    bool Call(const std::string f, const auto c, const A *const a, R &r) {
+    bool Call(const std::string f, const auto c, const A* const a, R& r) {
         if (not this->Lua.get() or not this->Lua.get()->Lua() or
-                not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
+            not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
             return false;
 
         for (auto i = 0; i < c; i++) {
@@ -79,19 +79,22 @@ public:
                 lua_pushboolean(this->Lua.get()->Lua(), a[i]);
         }
 
-        if (this->Pcall(c, 1, 0) == false){
+        if (this->Pcall(c, 1, 0) == false) {
             return false;
         }
         if constexpr (std::is_same_v<double, R> or std::is_same_v<R, float>) {
             if (lua_isnumber(this->Lua.get()->Lua(), -1))
                 r = lua_tonumber(this->Lua.get()->Lua(), -1);
-        } else if constexpr (std::is_same_v<R, int>) {
+        }
+        else if constexpr (std::is_same_v<R, int>) {
             if (lua_isinteger(this->Lua.get()->Lua(), -1))
                 r = lua_tointeger(this->Lua.get()->Lua(), -1);
-        } else if constexpr (std::is_same_v<R, bool>) {
+        }
+        else if constexpr (std::is_same_v<R, bool>) {
             if (lua_isboolean(this->Lua.get()->Lua(), -1))
                 r = lua_toboolean(this->Lua.get()->Lua(), -1);
-        } else if constexpr (std::is_same_v<R, std::string>) {
+        }
+        else if constexpr (std::is_same_v<R, std::string>) {
             if (lua_isstring(this->Lua.get()->Lua(), -1))
                 r = lua_tostring(this->Lua.get()->Lua(), -1);
         }
@@ -107,9 +110,9 @@ public:
      * @return true on success, false on error
      */
     template <typename A>
-    bool Test(const std::string f, const auto c, const A *const a) {
+    bool Test(const std::string f, const auto c, const A* const a) {
         if (not this->Lua.get() or not this->Lua.get()->Lua() or
-                not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
+            not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
             return false;
 
         for (auto i = 0; i < c; i++) {
@@ -136,7 +139,7 @@ public:
      * @return true on success, false on error
      */
     template <typename A, typename R>
-    bool Call(const std::string f, const A a, R &r = LUA_ADAPTER_NULL) {
+    bool Call(const std::string f, const A a, R& r = LUA_ADAPTER_NULL) {
         return this->Call(f.c_str(), 1, &a, r);
     }
 
@@ -158,7 +161,7 @@ public:
      */
     bool Call(const std::string f) {
         if (not this->Lua.get() or not this->Lua.get()->Lua() or
-                not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
+            not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
             return false;
         return this->Pcall(0, 0, 0);
     }
@@ -192,7 +195,7 @@ private:
      */
     bool Pcall(int argc, int results, int msgh) {
         if (not this->Lua.get() or not this->Lua.get()->Lua()) return false;
-        const int call{lua_pcall(this->Lua.get()->Lua(), argc, results, msgh)};
+        const int call{ lua_pcall(this->Lua.get()->Lua(), argc, results, msgh) };
         if (call == LUA_OK) return true;
 
 #ifdef LUA_ADAPTER_DEBUG

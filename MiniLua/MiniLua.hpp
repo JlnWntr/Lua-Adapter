@@ -26,13 +26,13 @@
 #ifndef LUA_ADAPTER_STATIC
 #include <lua.hpp>
 #else
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 #endif
 #include <string>
 
-typedef int (*Lua_callback_function)(lua_State *L);
+typedef int (*Lua_callback_function)(lua_State* L);
 static int LUA_ADAPTER_NULL{};
 
 class MiniLua {
@@ -46,14 +46,14 @@ public:
     * This constructor open all the lua libs and a lua-file
     * @param filename .lua-file to load
     */
-    MiniLua(const std::string &filename);
+    MiniLua(const std::string& filename);
 
     /**
     * Loads (and runs) lua-file.
     * @param filename .lua-file to load
     * @return true on success, false on error
     */
-    bool Load(const std::string &filename);
+    bool Load(const std::string& filename);
 
     /**
     * Runs precompiled lua-bytecode.
@@ -61,7 +61,7 @@ public:
     * @param length number of bytes
     * @return true on success, false on error
     */
-    bool Load(const char *bytecode, const size_t length);
+    bool Load(const char* bytecode, const size_t length);
 
     /**
     * Gets the value of a lua-variable.
@@ -69,11 +69,11 @@ public:
     * @param result value is saved in this variable
     * @return true on success, false on error
     */
-    bool Get(const char *name, int &result);
-    bool Get(const char *name, std::string &result);
-    bool Get(const char *name, double &result);
-    bool Get(const char *name, float &result);
-    bool Get(const char *name, bool &result);
+    bool Get(const char* name, int& result);
+    bool Get(const char* name, std::string& result);
+    bool Get(const char* name, double& result);
+    bool Get(const char* name, float& result);
+    bool Get(const char* name, bool& result);
 
     /**
      * Calls a Lua-function
@@ -83,10 +83,10 @@ public:
      * @param r new value returned from the called Lua-function
      * @return true on success, false on error
      */
-    bool Call(const char *f, const unsigned short int c, const int *a, int &r = LUA_ADAPTER_NULL);
-    bool Call(const char *f, const unsigned short int c, const float *a, float &r);
-    bool Call(const char *f, const int a);
-    bool Call(const char *f);
+    bool Call(const char* f, const unsigned short int c, const int* a, int& r = LUA_ADAPTER_NULL);
+    bool Call(const char* f, const unsigned short int c, const float* a, float& r);
+    bool Call(const char* f, const int a);
+    bool Call(const char* f);
 
     /**
      * Makes a C-/C++-function available for Lua
@@ -95,7 +95,7 @@ public:
      * @param name of the function
      * @return true on success, false on error
      */
-    bool Push(Lua_callback_function function, const char *name);
+    bool Push(Lua_callback_function function, const char* name);
 
     /**
     * Closes the lua state
@@ -114,7 +114,7 @@ public:
      * Returns recent lua state
      * @return lua_State
      */
-    lua_State *const GetState() const {
+    lua_State* const GetState() const {
         return this->Lua;
     }
 
@@ -131,8 +131,8 @@ private:
     * @param name Name of the variable
     * @return true on success, false on error
     */
-    bool GetGlobal(const char *name);
+    bool GetGlobal(const char* name);
 
-    lua_State *Lua;
+    lua_State* Lua;
 };
 #endif

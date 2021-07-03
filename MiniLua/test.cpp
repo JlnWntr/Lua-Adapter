@@ -26,7 +26,7 @@
 #endif
 #include <iostream>
 
-static int test_function(lua_State *L);
+static int test_function(lua_State* L);
 
 int main() {
 
@@ -37,33 +37,33 @@ int main() {
     lua.Load("test.lua");
 
     // get int
-    int width{0};
-        lua.Get("width", width);
+    int width{ 0 };
+    lua.Get("width", width);
     std::cout << "width: " << width << std::endl;
 
     // get double
-    double number{0};
-    if(lua.Get("number", number))
+    double number{ 0 };
+    if (lua.Get("number", number))
         std::cout << "number: " << number << std::endl;
 
     // get float
-    float flt{0.0};
-    if(lua.Get("float", flt))
+    float flt{ 0.0 };
+    if (lua.Get("float", flt))
         std::cout << "float: " << flt << std::endl;
 
     // get string
-    std::string title{"empty"};
-    if(lua.Get("title", title))
+    std::string title{ "empty" };
+    if (lua.Get("title", title))
         std::cout << "title: " << title << std::endl;
 
     // get boolean
-    bool boolean{false};
-    if(lua.Get("fullscreen", boolean))
+    bool boolean{ false };
+    if (lua.Get("fullscreen", boolean))
         std::cout << "fullscreen: " << (boolean ? "true" : "false") << std::endl;
 
     // three function arguments
-    int result{0};
-    int args[] = {1,2,3};
+    int result{ 0 };
+    int args[] = { 1,2,3 };
     if (lua.Call("Sum", 3, args, result))
         std::cout << "1+2+3 = " << result << std::endl;
 
@@ -81,10 +81,10 @@ int main() {
 /**
  * This C++-function can be called from Lua
  */
-static int test_function(lua_State *L) {
+static int test_function(lua_State* L) {
     if (not L)
         return 0;
-    double number{lua_tonumber(L, 1)};
+    double number{ lua_tonumber(L, 1) };
     number *= 2;
     lua_pushnumber(L, number);
     return 1;

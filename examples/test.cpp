@@ -31,41 +31,41 @@
 
 int main() {
     LuaAdapter lua{};
-    if( not lua.Load("test.lua") ) {
-        #ifndef LUA_ADAPTER_DEBUG
+    if (not lua.Load("test.lua")) {
+#ifndef LUA_ADAPTER_DEBUG
         std::cout << "Can not find file 'test.lua'." << std::endl;
-        #endif
+#endif
         return 1;
     }
 
     // get height
-    int height{0};
+    int height{ 0 };
     lua.Get("height", height);
     std::cout << "height: " << height << std::endl;
 
     // get an int
-    int width{0};
+    int width{ 0 };
     lua.Get("width", width);
     std::cout << "width: " << width << std::endl;
 
     // get double
-    double number{0};
+    double number{ 0 };
     lua.Get("number", number);
     std::cout << "Number: " << number << std::endl;
 
     // get string
-    std::string title{"empty"};
+    std::string title{ "empty" };
     lua.Get("title", title);
     std::cout << "title: " << title << std::endl;
 
     // set string
-    if(lua.Set("title", "another title") == false)
+    if (lua.Set("title", "another title") == false)
         return 1;
     lua.Get("title", title);
     std::cout << "title: " << title << std::endl;
 
     // get boolean
-    bool boolean{false};
+    bool boolean{ false };
     lua.Get("fullscreen", boolean);
     std::cout << "fullscreen: " << (boolean ? "true" : "false") << std::endl;
 

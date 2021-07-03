@@ -9,9 +9,9 @@
 
 int main() {
     LuaAdapter lua{};
-    LuaFunction f{lua};
+    LuaFunction f{ lua };
 
-    lua.Load((const char *)luac_out, luac_out_len);
+    lua.Load((const char*)luac_out, luac_out_len);
 
     f.Call("Print", "hello");
 
