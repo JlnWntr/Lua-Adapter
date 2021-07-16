@@ -86,6 +86,7 @@ public:
     bool Call(const char* f, const unsigned short int c, const int* a, int& r = LUA_ADAPTER_NULL);
     bool Call(const char* f, const unsigned short int c, const float* a, float& r);
     bool Call(const char* f, const int a);
+    bool Call(const char* f, const std::string);
     bool Call(const char* f);
 
     /**

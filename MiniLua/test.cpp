@@ -72,6 +72,7 @@ int main() {
 
     // one argument, no return value
     lua.Call("Power", 2);
+    lua.Call("print", "that");
 
     std::cout << "Lua top: " << lua_gettop(lua.GetState()) << std::endl;
 

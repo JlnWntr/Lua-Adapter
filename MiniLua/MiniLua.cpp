@@ -214,11 +214,26 @@ bool MiniLua::Call(const char* f, const unsigned short int c, const float* a, fl
     return true;
 }
 
-bool MiniLua::Call(const char* f, const int a) {
-    if (not this->Lua or not f or not a
+bool MiniLua::Call(const char* f, const int a) {   
+    if (not this->Lua or not f 
         or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
         return false;
     lua_pushinteger(this->Lua, a);
+    if (lua_pcall(this->Lua, 1, 0, 0) == LUA_OK)
+        return true;
+#ifdef LUA_ADAPTER_DEBUG
+    std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
+    std::cerr << lua_tostring(this->Lua, -1) << "'\n";
+#endif
+    lua_pop(this->Lua, 1);
+    return false;
+}
+
+bool MiniLua::Call(const char* f, const std::string text) {
+    if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+        return false;
+        
+    lua_pushstring(this->Lua, text.c_str());
     if (lua_pcall(this->Lua, 1, 0, 0) == LUA_OK)
         return true;
 #ifdef LUA_ADAPTER_DEBUG
