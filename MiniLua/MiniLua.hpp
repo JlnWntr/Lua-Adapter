@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2015-2021 JlnWntr (jlnwntr@gmail.com)
+* Copyright (c) 2015-2023 JlnWntr (jlnwntr@gmail.com)
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -86,6 +86,7 @@ public:
     bool Call(const char *f, const unsigned short int c, const int *a, int &r = LUA_ADAPTER_NULL);
     bool Call(const char *f, const unsigned short int c, const float *a, float &r);
     bool Call(const char *f, const int a);
+    bool Call(const char *f, std::string a);
     bool Call(const char *f);
 
     /**

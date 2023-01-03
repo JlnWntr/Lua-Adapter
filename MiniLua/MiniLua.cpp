@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2015-2021 JlnWntr (jlnwntr@gmail.com)
+* Copyright (c) 2015-2023 JlnWntr (jlnwntr@gmail.com)
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -219,6 +219,20 @@ bool MiniLua::Call(const char *f, const int a) {
     or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
         return false;
     lua_pushinteger(this->Lua, a);
+    if(lua_pcall(this->Lua, 1, 0, 0) == LUA_OK)
+        return true;
+#ifdef LUA_ADAPTER_DEBUG
+    std::cerr << LUA_ADAPTER_PREFIX << "Error: pcall failed. ";
+    std::cerr << lua_tostring(this->Lua, -1) << "'\n";
+#endif
+    lua_pop(this->Lua, 1);
+    return false;
+}
+
+bool MiniLua::Call(const char *f, const std::string a) {
+    if(not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
+        return false;
+    lua_pushstring(this->Lua, a.c_str());
     if(lua_pcall(this->Lua, 1, 0, 0) == LUA_OK)
         return true;
 #ifdef LUA_ADAPTER_DEBUG
