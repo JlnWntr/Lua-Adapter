@@ -75,6 +75,17 @@ public:
     bool Get(const char *name, float &result);
     bool Get(const char *name, bool &result);
 
+
+  /**
+    * Sets the value of a lua-variable.
+    * @param name of the variable
+    * @param result value is saved in this variable
+    * @return true on success, false on error
+    */
+    bool Set(const char *name, std::string &a);
+
+
+
     /**
      * Calls a Lua-function
      * @param f name of the Lua-function

@@ -169,11 +169,19 @@ bool MiniLua::Get(const char *name, bool &result) {
     return true;
 }
 
+bool MiniLua::Set(const char *name, std::string &a) {
+    if (not this->Lua)
+        return false;
+    lua_pushlstring(this->Lua, a, strlen(a));
+    lua_setglobal(this->Lua, name);
+    return true;
+}
+
 bool MiniLua::Call(const char *f, const unsigned short int c, const int *a, int &r) {
     if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
         return false;
     for (auto i = 0; i < c; i++)
-        //if (a + i) //==nullptr
+        if (a + i)
             lua_pushinteger(this->Lua, a[i]);
 
     if (lua_pcall(this->Lua, c, 1, 0) != LUA_OK) {
@@ -197,7 +205,7 @@ bool MiniLua::Call(const char *f, const unsigned short int c, const float *a, fl
     if (not this->Lua or not f or not(lua_getglobal(this->Lua, f) == LUA_TFUNCTION))
         return false;
     for (auto i = 0; i < c; i++)
-        //if (a + i) //==nullptr
+        if (a + i)
             lua_pushnumber(this->Lua, a[i]);
 
     if (lua_pcall(this->Lua, c, 1, 0) != LUA_OK) {
