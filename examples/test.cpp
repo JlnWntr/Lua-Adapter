@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023 JlnWntr (jlnwntr@gmail.com)
+ * Copyright (c) 2015-2025 JlnWntr (jlnwntr@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,8 @@
  * SOFTWARE.
  */
 
-#ifndef LUA_ADAPTER_H
 #include "../LuaAdapter.hpp"
-#endif
+
 
 #ifndef LUA_ADAPTER_DEBUG
 #include <iostream>
