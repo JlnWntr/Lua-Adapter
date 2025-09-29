@@ -278,7 +278,7 @@ public:
         not(lua_getglobal(this->Lua.get()->Lua(), f.c_str()) == LUA_TFUNCTION))
       return false;
 
-    for (auto i = 0; i < c; i++) {
+    for (size_t i = 0; i < c; i++) {
       if (not(a + i))
         break;
       if constexpr (std::is_same_v<double, A> or std::is_same_v<A, float>)
